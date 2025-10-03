@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://br2yu8oq8h0at"
+path="res://.godot/imported/CUTE DEPRESSED.mp3-356b1e7e3f37e0ce7a54baa8a0386eae.mp3str"
+
+[deps]
+
+source_file="res://art/CUTE DEPRESSED.mp3"
+dest_files=["res://.godot/imported/CUTE DEPRESSED.mp3-356b1e7e3f37e0ce7a54baa8a0386eae.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,129 @@
+[gd_scene load_steps=9 format=3 uid="uid://yaeq7flcmtiq"]
+
+[ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_54icn"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bha7m"]
+texture = ExtResource("1_54icn")
+modulate_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_54icn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bha7m"]
+bg_color = Color(0.6, 0.6, 0.6, 0.392157)
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0.823529, 0, 0.313726)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3mjqk"]
+bg_color = Color(0.6, 0.6, 0.6, 0.392157)
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0.933333, 0.313726)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iefsv"]
+bg_color = Color(0.6, 0.6, 0.6, 0.690196)
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0, 0, 0.313726)
+shadow_size = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jcebo"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wmetd"]
+
+[node name="Floor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_bha7m")
+
+[node name="FloorBtns" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -335.5
+offset_top = -191.0
+offset_right = 335.5
+offset_bottom = 191.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 29
+
+[node name="floor1" type="Button" parent="FloorBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxEmpty_54icn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
+theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
+text = "Floor 1
+"
+
+[node name="floor2" type="Button" parent="FloorBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxEmpty_jcebo")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
+theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
+text = "Floor 2"
+
+[node name="floor3" type="Button" parent="FloorBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxEmpty_wmetd")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
+theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
+text = "Floor 3"
+
+[node name="mainmenu" type="Button" parent="FloorBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxEmpty_wmetd")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
+theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
+text = "Main Menu
+"

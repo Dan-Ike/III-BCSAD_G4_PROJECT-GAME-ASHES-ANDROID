@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3 uid="uid://bjg21ygjiqxou"]
+
+[ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="1_8ywga"]
+[ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
+[ext_resource type="Texture2D" uid="uid://bqr7e7tjqxf40" path="res://art/sword.png" id="2_cx18e"]
+[ext_resource type="Texture2D" uid="uid://h8o3yxkpgn82" path="res://art/speed.png" id="4_gmaj2"]
+
+[node name="TouchControls" type="CanvasLayer"]
+script = ExtResource("1_cx18e")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="left" type="TouchScreenButton" parent="Control"]
+position = Vector2(39, 514)
+scale = Vector2(0.242187, 0.238281)
+texture_normal = ExtResource("1_8ywga")
+action = "left"
+
+[node name="right" type="TouchScreenButton" parent="Control"]
+position = Vector2(373, 635)
+rotation = 3.14159
+scale = Vector2(0.245703, 0.235322)
+texture_normal = ExtResource("1_8ywga")
+action = "right"
+
+[node name="jump" type="TouchScreenButton" parent="Control"]
+position = Vector2(998, 513.858)
+rotation = 1.5708
+scale = Vector2(0.242242, 0.245702)
+texture_normal = ExtResource("1_8ywga")
+action = "jump"
+
+[node name="atk" type="TouchScreenButton" parent="Control"]
+position = Vector2(1063, 435)
+scale = Vector2(0.244141, 0.251953)
+texture_normal = ExtResource("2_cx18e")
+action = "z"
+
+[node name="dash" type="TouchScreenButton" parent="Control"]
+position = Vector2(873, 343)
+scale = Vector2(0.244141, 0.251953)
+texture_normal = ExtResource("4_gmaj2")
+action = "dash"
