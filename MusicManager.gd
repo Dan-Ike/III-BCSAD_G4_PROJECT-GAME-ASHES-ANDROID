@@ -59,3 +59,11 @@ func stop_song(immediate: bool = true):
 			await tween.finished
 			active_player.stop()
 			current_song = ""
+
+func set_volume(vol: float) -> void:
+	# Convert normalized volume (0.0–1.0) into decibels
+	var db = linear_to_db(clamp(vol, 0.0, 1.0))
+	if active_player:
+		active_player.volume_db = db
+	if inactive_player:
+		inactive_player.volume_db = db

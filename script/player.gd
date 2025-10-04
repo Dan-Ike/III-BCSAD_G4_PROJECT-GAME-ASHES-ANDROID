@@ -6,6 +6,7 @@ class_name Player
 @onready var deal_damage_zone: Area2D = $DealDamageZone
 @onready var damage_shape: CollisionShape2D = $DealDamageZone/CollisionShape2D
 @onready var player_hitbox: Area2D = $playerHitbox
+@onready var touch_controls: CanvasLayer = $"../Control/TouchControls"
 
 # Movement
 const SPEED := 200.0
@@ -251,7 +252,13 @@ func die() -> void:
 	attack_push_time = 0.0
 	velocity = Vector2.ZERO
 	animated_sprite.stop()
+
+	if touch_controls:
+		touch_controls.disable_all_controls()
+
 	handle_death_animation()
+
+
 
 func handle_death_animation() -> void:
 	$CollisionShape2D.position.y = 5

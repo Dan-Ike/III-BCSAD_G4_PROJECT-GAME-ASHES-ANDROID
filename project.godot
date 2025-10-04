@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+SaveManager="*res://SaveManager.gd"
 Global="*res://global.gd"
 MusicManager="*res://MusicManager.gd"
 

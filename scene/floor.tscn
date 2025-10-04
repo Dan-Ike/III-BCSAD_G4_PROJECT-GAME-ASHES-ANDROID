@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://yaeq7flcmtiq"]
+[gd_scene load_steps=10 format=3 uid="uid://yaeq7flcmtiq"]
 
 [ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_54icn"]
+[ext_resource type="Script" uid="uid://bhtjmndrdcrqu" path="res://script/floor.gd" id="1_bha7m"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bha7m"]
 texture = ExtResource("1_54icn")
@@ -49,6 +50,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_bha7m")
 
 [node name="Background" type="Panel" parent="."]
 layout_mode = 1
@@ -127,3 +129,8 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
 theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
 text = "Main Menu
 "
+
+[connection signal="pressed" from="FloorBtns/floor1" to="." method="_on_floor_1_pressed"]
+[connection signal="pressed" from="FloorBtns/floor2" to="." method="_on_floor_2_pressed"]
+[connection signal="pressed" from="FloorBtns/floor3" to="." method="_on_floor_3_pressed"]
+[connection signal="pressed" from="FloorBtns/mainmenu" to="." method="_on_mainmenu_pressed"]

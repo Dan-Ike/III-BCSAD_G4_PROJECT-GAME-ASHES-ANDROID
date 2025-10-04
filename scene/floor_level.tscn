@@ -1,0 +1,116 @@
+[gd_scene load_steps=5 format=3 uid="uid://q1fhwdc0e7vv"]
+
+[ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_tm3bt"]
+[ext_resource type="Script" uid="uid://bw4776do5sff3" path="res://script/floor_level.gd" id="1_x40ej"]
+[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="2_7sqjk"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7sqjk"]
+texture = ExtResource("1_tm3bt")
+modulate_color = Color(0.09, 0.09, 0.09, 1)
+
+[node name="FloorLevel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x40ej")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_7sqjk")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
+anchor_left = 0.5
+anchor_top = 0.466
+anchor_right = 0.5
+anchor_bottom = 0.466
+offset_left = -374.0
+offset_top = -216.52
+offset_right = 372.0
+offset_bottom = 216.48
+texture = ExtResource("2_7sqjk")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.501
+anchor_top = 0.076
+anchor_right = 0.501
+anchor_bottom = 0.076
+offset_left = -158.28
+offset_top = -31.72
+offset_right = 157.72
+offset_bottom = 32.28
+theme_override_font_sizes/font_size = 46
+text = "Floor 1 Level 1"
+
+[node name="next" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.893
+anchor_top = 0.474
+anchor_right = 0.893
+anchor_bottom = 0.474
+offset_left = -41.04
+offset_top = -26.28
+offset_right = 40.96
+offset_bottom = 26.72
+theme_override_font_sizes/font_size = 32
+text = "Next"
+
+[node name="prev" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.105
+anchor_top = 0.474
+anchor_right = 0.105
+anchor_bottom = 0.474
+offset_left = -40.4
+offset_top = -26.28
+offset_right = 41.6
+offset_bottom = 26.72
+theme_override_font_sizes/font_size = 32
+text = "Prev
+"
+
+[node name="play" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.859
+anchor_right = 0.5
+anchor_bottom = 0.859
+offset_left = -44.0
+offset_top = -26.48
+offset_right = 38.0
+offset_bottom = 26.52
+theme_override_font_sizes/font_size = 32
+text = "Play
+"
+
+[node name="back" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.909
+anchor_top = 0.094
+anchor_right = 0.909
+anchor_bottom = 0.094
+offset_left = -41.52
+offset_top = -26.68
+offset_right = 40.48
+offset_bottom = 26.32
+theme_override_font_sizes/font_size = 32
+text = "Back"
+
+[connection signal="pressed" from="next" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="prev" to="." method="_on_prev_pressed"]
+[connection signal="pressed" from="play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="back" to="." method="_on_back_pressed"]

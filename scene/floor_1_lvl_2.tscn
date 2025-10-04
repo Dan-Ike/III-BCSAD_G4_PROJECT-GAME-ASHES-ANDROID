@@ -1,10 +1,9 @@
-[gd_scene load_steps=37 format=3 uid="uid://bg6d6tg8kqasy"]
+[gd_scene load_steps=36 format=3 uid="uid://bg6d6tg8kqasy"]
 
 [ext_resource type="Script" uid="uid://bm5hiyjwtbwgi" path="res://script/floor_1_lvl_2.gd" id="1_acey2"]
 [ext_resource type="Texture2D" uid="uid://bbyycjd0cxjyj" path="res://art/free.png" id="1_ne0j8"]
 [ext_resource type="PackedScene" uid="uid://bsiqip3vsfyy2" path="res://scene/player.tscn" id="2_acey2"]
 [ext_resource type="PackedScene" uid="uid://b115ta3cgft87" path="res://scene/scene_transition_animation.tscn" id="3_uvuyi"]
-[ext_resource type="AudioStream" uid="uid://br2yu8oq8h0at" path="res://art/CUTE DEPRESSED.mp3" id="5_uvuyi"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="6_7u4f2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7u4f2"]
@@ -618,11 +617,6 @@ debug_color = Color(0.999132, 0, 0.122649, 0.42)
 
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("3_uvuyi")]
 position = Vector2(36, -5)
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("5_uvuyi")
-autoplay = true
-bus = &"Music"
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3

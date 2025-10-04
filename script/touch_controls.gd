@@ -14,8 +14,10 @@ extends CanvasLayer
 @onready var control_choice: OptionButton = $Options/ControlChoice
 
 var is_paused := false
+var pause_enabled: bool = true
 
 func _ready() -> void:
+	enable_pause()
 	_update_controls_visibility()
 	Global.control_type_changed.connect(_on_control_type_changed)
 	for node in [pause, pause_menu, option, exit, options]:
@@ -45,14 +47,27 @@ func _update_controls_visibility() -> void:
 	if Global.is_button_mode():
 		left.visible = Global.touchleft
 		right.visible = Global.touchright
-		virtual_joystick.visible = false
+		left.set_process(true)
+		right.set_process(true)
+		left.set_block_signals(false)
+		right.set_block_signals(false)
+		virtual_joystick.hide()
+		virtual_joystick.set_process(false)
+		virtual_joystick.set_block_signals(true)
 	else:
 		left.visible = false
 		right.visible = false
-		virtual_joystick.visible = true   
+		left.set_process(false)
+		right.set_process(false)
+		left.set_block_signals(true)
+		right.set_block_signals(true)
+		virtual_joystick.show()
+		virtual_joystick.set_process(true)
+		virtual_joystick.set_block_signals(false)
 	jump.visible = Global.touchjump
 	atk.visible = Global.touchatk
 	dash.visible = Global.touchdash
+	pause.visible = pause_enabled
 
 func _hide_all_controls() -> void:
 	left.visible = false
@@ -60,13 +75,17 @@ func _hide_all_controls() -> void:
 	jump.visible = false
 	atk.visible = false
 	dash.visible = false
-	virtual_joystick.visible = false
+	virtual_joystick.hide()
+	virtual_joystick.set_process(false)
+	virtual_joystick.set_block_signals(true)
 
 func _on_control_type_changed() -> void:
 	if not is_paused:
 		_update_controls_visibility()
 
 func _on_pause_pressed() -> void:
+	if not pause_enabled:
+		return
 	is_paused = !is_paused
 	
 	if is_paused:
@@ -77,7 +96,7 @@ func _on_pause_pressed() -> void:
 		get_tree().paused = false
 		pause_menu.visible = false
 		options.visible = false  
-		_update_controls_visibility() 
+		_update_controls_visibility()
 
 func _on_exit_pressed() -> void:
 	get_tree().paused = false 
@@ -91,3 +110,25 @@ func _on_back_pressed() -> void:
 func _on_option_pressed() -> void:
 	pause_menu.visible = false
 	options.visible = true
+
+func disable_pause() -> void:
+	pause_enabled = false
+	pause.set_block_signals(true)
+	pause.set_process(false)
+	_update_controls_visibility()
+	if is_paused:
+		_on_pause_pressed()
+
+func enable_pause() -> void:
+	pause_enabled = true
+	pause.set_block_signals(false)
+	pause.set_process(true)
+	_update_controls_visibility()
+
+func disable_all_controls() -> void:
+	self.visible = false
+	set_process(false)
+	set_block_signals(true)
+	virtual_joystick.hide()
+	virtual_joystick.set_process(false)
+	virtual_joystick.set_block_signals(true)

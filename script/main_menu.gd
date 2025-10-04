@@ -18,7 +18,7 @@ func _process(delta: float) -> void:
 	pass
 
 func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file("res://scene/floor_1_lvl_1.tscn")
+	get_tree().change_scene_to_file("res://scene/floor.tscn")
 
 func _on_options_pressed() -> void:
 	main_btns.visible = false

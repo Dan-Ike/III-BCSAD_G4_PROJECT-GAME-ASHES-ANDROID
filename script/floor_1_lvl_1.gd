@@ -19,24 +19,30 @@ func _process(delta: float) -> void:
 func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
 	if body is Player:
 		Global.gameStarted = true
-		#unlock_attack()
-		#unlock_double_jump()
 		unlock_dash()
+
+		# SAVE progress here
+		SaveManager.unlock_level("floor_1", "floor_1_lvl_2")
+
+		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
 		get_tree().change_scene_to_file("res://scene/floor_1_lvl_2.tscn")
 
 func unlock_double_jump():
 	Global.can_double_jump = true
+	SaveManager.unlock_ability("double_jump")
 
 func unlock_attack():
 	Global.touchatk = true
-	var controls = get_tree().root.get_node("TouchControls") 
+	SaveManager.unlock_ability("attack")
+	var controls = get_tree().root.get_node("TouchControls")
 	if controls:
 		controls.show_attack_button()
 
 func unlock_dash():
 	Global.touchdash = true
+	SaveManager.unlock_ability("dash")
 	var controls = get_tree().root.get_node("TouchControls")
 	if controls:
 		controls.show_dash_button()
@@ -45,6 +51,8 @@ func _on_floor_2_lvl_1_body_entered(body: Node2D) -> void:
 	if body is Player:
 		Global.gameStarted = true
 		unlock_attack()
+		SaveManager.unlock_level("floor_2", "floor_2_lvl_1")
+		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
 		get_tree().change_scene_to_file("res://scene/stage_level.tscn")
