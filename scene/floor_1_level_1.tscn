@@ -9664,7 +9664,7 @@ shape = SubResource("WorldBoundaryShape2D_m0xgo")
 debug_color = Color(0.999132, 0, 0.122649, 0.42)
 
 [node name="player" parent="." instance=ExtResource("3_lr844")]
-position = Vector2(555, 396)
+position = Vector2(7026, 455)
 
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)
