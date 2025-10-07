@@ -26,6 +26,12 @@ var joystick: bool = false
 
 var selected_floor: String = "floor_1"
 
+# Soul Light Control
+var soul_light_enabled: bool = false
+var saved_soul_mode: int = -1  # Stores the last soul mode (0=LEVEL1, 1=LEVEL2, 2=LEVEL3)
+enum SoulLightMode { LEVEL1, LEVEL2, LEVEL3 }
+
+
 #Controls
 signal control_type_changed
 var control_type: int = 0: set = set_control_type
@@ -62,6 +68,17 @@ func _ready() -> void:
 	if user_id != "" and OS.has_feature("network"):
 		if SaveManager.has_method("sync_from_supabase"):
 			SaveManager.sync_from_supabase(user_id)
+
+func enable_soul_light():
+	soul_light_enabled = true
+	if playerBody and playerBody.has_node("SoulLight"):
+		playerBody.get_node("SoulLight").visible = true
+
+func disable_soul_light():
+	soul_light_enabled = false
+	if playerBody and playerBody.has_node("SoulLight"):
+		playerBody.get_node("SoulLight").visible = false
+
 
 #session helper
 func set_session(user_info: Dictionary, access_token: String = "", refresh: String = "") -> void:

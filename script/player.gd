@@ -8,22 +8,25 @@ class_name Player
 @onready var player_hitbox: Area2D = $playerHitbox
 @onready var touch_controls: CanvasLayer = $"../Control/TouchControls"
 @onready var soul_light: PointLight2D = $SoulLight
+@onready var health_bar: ProgressBar = $HealthBar
 
-
-
-@export var soul_max: float = 100
-@export var soul_value: float = 100
-@export var soul_drain_rate: float = 3.0  # per second
+# --- Soul Light Settings ---
+@export var enable_soul_light_in_scene: bool = true
+@export var soul_max: float = 100.0
+@export var soul_value: float = 100.0
+@export var soul_drain_rate: float = 5.0  # per second
+@export var lvl2_damage_per_sec: int = 2
+@export var lvl3_damage_per_sec: int = 4
 
 enum SoulLightMode { LEVEL1, LEVEL2, LEVEL3 }
-@export var soul_mode: SoulLightMode = SoulLightMode.LEVEL1
+@export var soul_mode: SoulLightMode = SoulLightMode.LEVEL3
+
 
 var soul_damage_timer: float = 0.0
 var flicker_time: float = 0.0
-@export var flicker_speed: float = 20.0     # how fast the light flickers
-@export var flicker_intensity: float = 0.1  # how strong the flicker is
-@export var base_flicker_speed: float = 20.0
-@export var base_flicker_intensity: float = 0.1
+@export var flicker_speed: float = 3.0  # slower, calmer flicker
+@export var flicker_strength: float = 0.1  # gentle variation
+
 # Movement
 const SPEED := 200.0
 const JUMP_VELOCITY := -400.0
@@ -68,59 +71,89 @@ var facing_dir: int = 1
 func _ready() -> void:
 	Global.playerBody = self
 	Global.playerAlive = true
+	print("Player instance ID:", get_instance_id())
+
+	if enable_soul_light_in_scene:
+		Global.enable_soul_light()
+	else:
+		Global.disable_soul_light()
+
+	soul_light.visible = Global.soul_light_enabled
+
 	combo_timer = Timer.new()
 	combo_timer.one_shot = true
 	combo_timer.wait_time = 0.6
 	add_child(combo_timer)
 	combo_timer.connect("timeout", Callable(self, "_on_combo_timeout"))
+
 	if damage_shape:
 		damage_shape.disabled = true
 
+	print("Initialized soul_mode:", get_soul_mode_name(soul_mode))
+	# Restore soul mode if one was saved globally
+	if Global.saved_soul_mode != -1:
+		soul_mode = int(Global.saved_soul_mode)
+		print("Restored soul_mode from Global:", soul_mode)
+	else:
+		# Save current one if first time
+		Global.saved_soul_mode = int(soul_mode)
+		print("Saved new soul_mode to Global:", soul_mode)
+
+func get_soul_mode_name(mode: SoulLightMode) -> String:
+	match mode:
+		SoulLightMode.LEVEL1: return "LEVEL 1"
+		SoulLightMode.LEVEL2: return "LEVEL 2"
+		SoulLightMode.LEVEL3: return "LEVEL 3"
+		_: return "UNKNOWN"
+
 func _process(delta: float) -> void:
+	if dead:
+		return
+
 	# --- Drain soul ---
 	soul_value -= soul_drain_rate * delta
-	soul_value = clamp(soul_value, 0, soul_max)
+	soul_value = clamp(soul_value, 0.0, soul_max)
+	var normalized = soul_value / soul_max
 
-	var normalized = soul_value / soul_max  # 1.0 = full, 0.0 = empty
+	# --- Smooth Flicker ---
+	flicker_time += delta * flicker_speed
+	var flicker = sin(flicker_time) * flicker_strength * (1.0 - normalized)
+	soul_light.energy = lerp(0.1, 1.4, normalized) + flicker
+	soul_light.scale = Vector2.ONE * lerp(0.5, 1.3, normalized)
 
-	# --- Base light values ---
-	var base_energy = lerp(0.2, 1.5, normalized)
-	var base_scale = lerp(0.5, 1.5, normalized)
-
-	# --- Flicker that worsens as soul fades ---
-	flicker_time += delta * (base_flicker_speed + (1.0 - normalized) * 40.0)
-	var dynamic_intensity = base_flicker_intensity + (1.0 - normalized) * 0.2  # more chaos when weak
-
-	var flicker = sin(flicker_time) * dynamic_intensity
-	var random_flicker = randf_range(-dynamic_intensity, dynamic_intensity) * 0.5
-
-	soul_light.energy = base_energy + flicker + random_flicker
-	soul_light.scale = Vector2.ONE * (base_scale + flicker * 0.2)
-
-	# --- Damage handling ---
+	# --- Soul depletion effects ---
 	if soul_value <= 0:
+		print("Soul is zero, current mode:", soul_mode)
+		print("Zero soul check ID:", get_instance_id())
 		match soul_mode:
 			SoulLightMode.LEVEL1:
 				pass
 			SoulLightMode.LEVEL2:
-				apply_soul_damage(delta, 2)
+				_apply_soul_damage(delta, lvl2_damage_per_sec)
 			SoulLightMode.LEVEL3:
-				apply_soul_damage(delta, 5)
+				_apply_soul_damage(delta, lvl3_damage_per_sec)
 
 
-func apply_soul_damage(delta: float, dmg_per_sec: int) -> void:
+func _apply_soul_damage(delta: float, dmg_per_sec: int) -> void:
 	soul_damage_timer += delta
 	if soul_damage_timer >= 1.0:
+		print("Applying soul damage: ", dmg_per_sec)
 		take_damage(dmg_per_sec)
 		soul_damage_timer = 0.0
 
-func restore_soul_light():
-	soul_value = soul_max
-	soul_damage_timer = 0.0
+
+func restore_soul_light(amount: float) -> void:
+	soul_value = clamp(soul_value + amount, 0, soul_max)
+	if soul_value > 0:
+		can_take_damage = false
 
 func _physics_process(delta: float) -> void:
+	if dead:
+		return
+
 	Global.playerDamageZone = deal_damage_zone
 	Global.playerHitbox = player_hitbox
+
 	if not is_on_floor():
 		if not dashing: 
 			velocity.y += GRAVITY * delta
@@ -131,6 +164,7 @@ func _physics_process(delta: float) -> void:
 			jumps_left = 1
 		ground_dash_used = false
 		air_dashes_left = 2
+
 	if dashing:
 		velocity.x = facing_dir * DASH_SPEED
 		dash_time -= delta
@@ -142,12 +176,14 @@ func _physics_process(delta: float) -> void:
 			attack_push_time -= delta
 			if attack_push_time <= 0.0:
 				attack_push_speed = 0.0
+
 	if not dead:
 		handle_input(delta)
 		check_hitbox()
 	else:
 		velocity = Vector2.ZERO
 		return 
+
 	move_and_slide()
 
 func handle_input(delta: float) -> void:
@@ -159,16 +195,20 @@ func handle_input(delta: float) -> void:
 		elif not is_on_floor() and air_dashes_left > 0:
 			air_dashes_left -= 1
 			start_dash()
+
 	if current_attack and Input.is_action_just_pressed("jump") and jumps_left > 0:
 		cancel_attack()
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
 		return
+
 	if Input.is_action_just_pressed("jump") and jumps_left > 0 and not current_attack:
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
+
 	if not current_attack and not dashing and Input.is_action_just_pressed("z"):
 		start_attack()
+
 	if not dashing and attack_push_time <= 0.0:
 		var dirf := Input.get_axis("left", "right")
 		if abs(dirf) > 0.01:
@@ -179,6 +219,7 @@ func handle_input(delta: float) -> void:
 			velocity.x = move_toward(velocity.x, 0.0, SPEED * delta * 5.0)
 	elif is_on_floor() and not dashing and current_attack and attack_push_time <= 0.0:
 		velocity.x = 0.0
+
 	if not current_attack and not dashing:
 		handle_movement_animation()
 
@@ -282,10 +323,19 @@ func check_hitbox() -> void:
 		var hitbox_areas := player_hitbox.get_overlapping_areas()
 		if hitbox_areas.size() > 0:
 			var hitbox = hitbox_areas.front()
-			if hitbox and hitbox.get_parent() is BatEnemy:
-				damage = Global.batDamageAmount
-			elif hitbox and hitbox.get_parent() is Golem:
-				damage = Global.golemDamageAmount
+			if hitbox:
+				var parent = hitbox.get_parent()
+
+				# Enemy checks
+				if parent is BatEnemy:
+					damage = Global.batDamageAmount
+				elif parent is Golem:
+					damage = Global.golemDamageAmount
+
+				# Torch check
+				elif parent is Torch:
+					parent.ignite()
+
 	if can_take_damage and damage != 0:
 		take_damage(damage)
 
@@ -295,11 +345,13 @@ func take_damage(damage: int) -> void:
 	if health > 0:
 		health -= damage
 		print("player health: ", health)
+		health_bar.value = health
 		if health <= 0:
 			health = 0
 			die()
 		else:
 			take_damage_cooldown(1.0)
+
 
 func die() -> void:
 	if dead:
@@ -315,8 +367,6 @@ func die() -> void:
 		touch_controls.disable_all_controls()
 
 	handle_death_animation()
-
-
 
 func handle_death_animation() -> void:
 	$CollisionShape2D.position.y = 5
