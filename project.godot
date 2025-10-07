@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 SaveManager="*res://SaveManager.gd"
 Global="*res://global.gd"
 MusicManager="*res://MusicManager.gd"
+Supabase="*res://addons/supabase/Supabase/supabase.gd"
 
 [display]
 
@@ -31,7 +32,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/virtual_joystick/plugin.cfg")
+enabled=PackedStringArray("res://addons/supabase/plugin.cfg", "res://addons/virtual_joystick/plugin.cfg")
 
 [input]
 

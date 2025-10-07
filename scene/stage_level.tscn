@@ -201,6 +201,7 @@ position = Vector2(259, -177)
 position = Vector2(362, -171)
 
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("5_6w5wr")]
+visible = false
 position = Vector2(-1, -2)
 
 [node name="GolemSpawnPoint1" type="Marker2D" parent="."]
@@ -215,9 +216,11 @@ autoplay = true
 bus = &"Music"
 
 [node name="Control" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("8_h8sx3")]
+visible = false

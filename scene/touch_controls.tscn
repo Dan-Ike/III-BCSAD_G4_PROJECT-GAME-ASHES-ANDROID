@@ -179,7 +179,6 @@ offset_bottom = 149.96
 
 [node name="PauseMenu" type="Control" parent="."]
 process_mode = 3
-visible = false
 layout_mode = 3
 anchor_left = 0.496
 anchor_top = 0.494
@@ -227,24 +226,41 @@ offset_bottom = 37.513
 theme_override_font_sizes/font_size = 32
 text = "Option"
 
-[node name="exit" type="Button" parent="PauseMenu/Panel"]
+[node name="synch" type="Button" parent="PauseMenu/Panel"]
 process_mode = 3
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.507
-anchor_top = 0.681
+anchor_top = 0.611
+anchor_right = 0.507
+anchor_bottom = 0.611
+offset_left = -192.623
+offset_top = -37.451
+offset_right = 192.377
+offset_bottom = 37.549
+theme_override_font_sizes/font_size = 32
+text = "synch online
+"
+
+[node name="exit" type="Button" parent="PauseMenu/Panel"]
+process_mode = 3
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.51
+anchor_top = 0.817
 anchor_right = 0.51
-anchor_bottom = 0.681
-offset_left = -190.623
-offset_top = -37.321
+anchor_bottom = 0.817
+offset_left = -192.39
+offset_top = -37.297
 offset_right = 192.61
-offset_bottom = 37.679
+offset_bottom = 37.703
 theme_override_font_sizes/font_size = 32
 text = "Exit
 "
 
 [node name="Options" type="Panel" parent="."]
 process_mode = 3
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

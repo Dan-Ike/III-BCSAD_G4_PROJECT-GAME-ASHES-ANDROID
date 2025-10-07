@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://bsiqip3vsfyy2"]
+[gd_scene load_steps=54 format=3 uid="uid://bsiqip3vsfyy2"]
 
 [ext_resource type="Script" uid="uid://dyy271ir1vef4" path="res://script/player.gd" id="1_hjaqi"]
 [ext_resource type="Texture2D" uid="uid://ckkvoewai1fod" path="res://art/Player-Sheet.png" id="1_xo3ru"]
@@ -367,17 +367,25 @@ height = 25.9988
 radius = 5.0
 height = 18.0
 
+[sub_resource type="Gradient" id="Gradient_fvtld"]
+offsets = PackedFloat32Array(0, 0.616883)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ct4mp"]
+gradient = SubResource("Gradient_fvtld")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
 [node name="player" type="CharacterBody2D"]
 scale = Vector2(1.5172, 1.39921)
 script = ExtResource("1_hjaqi")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_xj5ck")
-animation = &"dash"
-frame = 10
-frame_progress = 1.0
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("CapsuleShape2D_6lu7o")
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -393,6 +401,7 @@ shape = SubResource("CapsuleShape2D_hjaqi")
 disabled = true
 
 [node name="playerHitbox" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="playerHitbox"]
 shape = SubResource("CapsuleShape2D_fvtld")
@@ -402,6 +411,13 @@ offset_left = -5.0
 offset_top = 11.0
 offset_right = 5.0
 offset_bottom = 14.0
+
+[node name="SoulLight" type="PointLight2D" parent="."]
+enabled = false
+energy = 2.0
+shadow_enabled = true
+texture = SubResource("GradientTexture2D_ct4mp")
+texture_scale = 4.81
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="ready" from="Camera2D" to="." method="_on_camera_2d_ready"]

@@ -1,3 +1,4 @@
+
 extends Control
 
 @onready var floor_1: Button = $FloorBtns/floor1
@@ -6,15 +7,18 @@ extends Control
 @onready var mainmenu: Button = $FloorBtns/mainmenu
 
 func _ready() -> void:
-	update_floor_buttons()
+	_update_floor_buttons()
 
-func update_floor_buttons() -> void:
-	# Floor 1 always unlocked
+func _update_floor_buttons() -> void:
+	# Floor 1 always available
 	floor_1.disabled = false
 	floor_1.text = "Floor 1"
 
 	# Floor 2
-	if SaveManager.is_floor_unlocked("floor_2"):
+	var f2_unlocked = false
+	if typeof(SaveManager) == TYPE_OBJECT and SaveManager.has_method("is_floor_unlocked"):
+		f2_unlocked = SaveManager.is_floor_unlocked("floor_2")
+	if f2_unlocked:
 		floor_2.disabled = false
 		floor_2.text = "Floor 2"
 	else:
@@ -22,7 +26,10 @@ func update_floor_buttons() -> void:
 		floor_2.text = "Floor 2 (Locked)"
 
 	# Floor 3
-	if SaveManager.is_floor_unlocked("floor_3"):
+	var f3_unlocked = false
+	if typeof(SaveManager) == TYPE_OBJECT and SaveManager.has_method("is_floor_unlocked"):
+		f3_unlocked = SaveManager.is_floor_unlocked("floor_3")
+	if f3_unlocked:
 		floor_3.disabled = false
 		floor_3.text = "Floor 3"
 	else:

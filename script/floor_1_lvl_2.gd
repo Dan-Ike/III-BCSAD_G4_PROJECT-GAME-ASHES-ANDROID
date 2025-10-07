@@ -10,7 +10,7 @@ func _ready() -> void:
 	scene_transition_animation.play("fade_out")
 	player_camera.enabled = false
 	camera_2d_2.enabled = true
-
+	MusicManager.play_song("level1")
 
 func _process(delta: float) -> void:
 	pass
@@ -18,33 +18,30 @@ func _process(delta: float) -> void:
 func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
 	if body is Player:
 		Global.gameStarted = true
+		unlock_dash()
+		unlock_double_jump()
+		SaveManager.mark_level_completed(1, 2)  
+		SaveManager.advance_to_level(1, 3)      
+		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/stage_level.tscn")
-
+		get_tree().change_scene_to_file("res://scene/floor_1_level_3.tscn")
 
 func _on_floor_2_lvl_1_body_entered(body: Node2D) -> void:
 	if body is Player:
 		Global.gameStarted = true
-		var controls = get_tree().root.get_node("TouchControls")
-		if controls:
-			controls.disable_pause()
+		unlock_dash()
+		unlock_double_jump()
+		SaveManager.mark_level_completed(1, 2)  
+		SaveManager.advance_to_level(1, 3)      
+		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/lobby_level.tscn")
+		get_tree().change_scene_to_file("res://scene/floor_1_level_3.tscn")
 
 func _on_spike_collision_body_entered(body: Node2D) -> void:
 	if body is Player and body.can_take_damage:
 		body.take_damage(Global.spikeDamageAmount)
-
-
-func _on_floor_1_lvl_1_body_entered(body: Node2D) -> void:
-	if body is Player:
-		Global.gameStarted = true
-		body.touch_controls.disable_all_controls() 
-		scene_transition_animation.play("fade_in")
-		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/floor_1_lvl_1.tscn")
 
 func unlock_double_jump():
 	Global.can_double_jump = true
@@ -63,13 +60,3 @@ func unlock_dash():
 	var controls = get_tree().root.get_node("TouchControls")
 	if controls:
 		controls.show_dash_button()
-
-func _on_floor_1_lvl_3_body_entered(body: Node2D) -> void:
-	if body is Player:
-		Global.gameStarted = true
-		unlock_double_jump()
-		SaveManager.unlock_level("floor_1", "floor_1_lvl_3")
-		body.touch_controls.disable_all_controls() 
-		scene_transition_animation.play("fade_in")
-		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/lobby_level.tscn")

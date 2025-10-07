@@ -13,6 +13,8 @@ extends CanvasLayer
 @onready var virtual_joystick: VirtualJoystick = $"Control/Virtual Joystick"
 @onready var control_choice: OptionButton = $Options/ControlChoice
 
+@onready var synch: Button = $PauseMenu/Panel/synch
+
 var is_paused := false
 var pause_enabled: bool = true
 
@@ -25,6 +27,7 @@ func _ready() -> void:
 	pause.pressed.connect(_on_pause_pressed)
 	option.pressed.connect(_on_option_pressed)
 	exit.pressed.connect(_on_exit_pressed)
+	synch.pressed.connect(_on_synch_pressed)
 	pause_menu.visible = false
 	options.visible = false
 	control_choice.clear()
@@ -33,6 +36,21 @@ func _ready() -> void:
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_mode_selected)
 	Global.control_type_changed.connect(_sync_with_global)
+	_update_synch_button()
+
+func _process(_delta: float) -> void: 
+	_update_synch_button() 
+
+func _update_synch_button() -> void: 
+	var online = OS.has_feature("network") and SaveManager.current_user_id != "" 
+	synch.disabled = not online 
+
+func _on_synch_pressed() -> void: 
+	if SaveManager.current_user_id != "": 
+		print("🔄 Manual sync triggered") 
+		SaveManager.push_all_to_supabase() 
+	else: 
+		print("⚠️ No logged-in user, cannot sync.")
 
 func _on_control_mode_selected(index: int) -> void:
 	Global.set_control_type(index)

@@ -7,7 +7,23 @@ class_name Player
 @onready var damage_shape: CollisionShape2D = $DealDamageZone/CollisionShape2D
 @onready var player_hitbox: Area2D = $playerHitbox
 @onready var touch_controls: CanvasLayer = $"../Control/TouchControls"
+@onready var soul_light: PointLight2D = $SoulLight
 
+
+
+@export var soul_max: float = 100
+@export var soul_value: float = 100
+@export var soul_drain_rate: float = 3.0  # per second
+
+enum SoulLightMode { LEVEL1, LEVEL2, LEVEL3 }
+@export var soul_mode: SoulLightMode = SoulLightMode.LEVEL1
+
+var soul_damage_timer: float = 0.0
+var flicker_time: float = 0.0
+@export var flicker_speed: float = 20.0     # how fast the light flickers
+@export var flicker_intensity: float = 0.1  # how strong the flicker is
+@export var base_flicker_speed: float = 20.0
+@export var base_flicker_intensity: float = 0.1
 # Movement
 const SPEED := 200.0
 const JUMP_VELOCITY := -400.0
@@ -59,6 +75,48 @@ func _ready() -> void:
 	combo_timer.connect("timeout", Callable(self, "_on_combo_timeout"))
 	if damage_shape:
 		damage_shape.disabled = true
+
+func _process(delta: float) -> void:
+	# --- Drain soul ---
+	soul_value -= soul_drain_rate * delta
+	soul_value = clamp(soul_value, 0, soul_max)
+
+	var normalized = soul_value / soul_max  # 1.0 = full, 0.0 = empty
+
+	# --- Base light values ---
+	var base_energy = lerp(0.2, 1.5, normalized)
+	var base_scale = lerp(0.5, 1.5, normalized)
+
+	# --- Flicker that worsens as soul fades ---
+	flicker_time += delta * (base_flicker_speed + (1.0 - normalized) * 40.0)
+	var dynamic_intensity = base_flicker_intensity + (1.0 - normalized) * 0.2  # more chaos when weak
+
+	var flicker = sin(flicker_time) * dynamic_intensity
+	var random_flicker = randf_range(-dynamic_intensity, dynamic_intensity) * 0.5
+
+	soul_light.energy = base_energy + flicker + random_flicker
+	soul_light.scale = Vector2.ONE * (base_scale + flicker * 0.2)
+
+	# --- Damage handling ---
+	if soul_value <= 0:
+		match soul_mode:
+			SoulLightMode.LEVEL1:
+				pass
+			SoulLightMode.LEVEL2:
+				apply_soul_damage(delta, 2)
+			SoulLightMode.LEVEL3:
+				apply_soul_damage(delta, 5)
+
+
+func apply_soul_damage(delta: float, dmg_per_sec: int) -> void:
+	soul_damage_timer += delta
+	if soul_damage_timer >= 1.0:
+		take_damage(dmg_per_sec)
+		soul_damage_timer = 0.0
+
+func restore_soul_light():
+	soul_value = soul_max
+	soul_damage_timer = 0.0
 
 func _physics_process(delta: float) -> void:
 	Global.playerDamageZone = deal_damage_zone

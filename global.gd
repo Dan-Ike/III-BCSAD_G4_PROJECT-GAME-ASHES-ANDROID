@@ -1,20 +1,21 @@
 extends Node
 
-var playerBody: CharacterBody2D
-var playerDamageZone: Area2D
-var playerDamageAmount: int
-var batDamageZone: Area2D
-var batDamageAmount: int
-var playerAlive: bool
-var gameStarted: bool
-var golemDamageZone: Area2D
-var golemDamageAmount: int
-var playerHitbox: Area2D
-var current_wave: int
-var moving_to_next_wave: bool
-var spikeDamageAmount: int = 9999 
+#Player/Game
+var playerBody
+var playerDamageZone
+var playerDamageAmount
+var batDamageZone
+var batDamageAmount
+var playerAlive
+var gameStarted
+var golemDamageZone
+var golemDamageAmount
+var playerHitbox
+var current_wave
+var moving_to_next_wave
+var spikeDamageAmount: int = 9999
 
-# Abilities
+#Abilities
 var can_double_jump: bool = false
 var touchleft: bool = true
 var touchright: bool = true
@@ -25,31 +26,92 @@ var joystick: bool = false
 
 var selected_floor: String = "floor_1"
 
-
-# Controls
+#Controls
 signal control_type_changed
 var control_type: int = 0: set = set_control_type
 
+#Supabase Auth
+var supabase: Node = null
+var session: Dictionary = {}
+
+#Supabase Tokens
+var session_token: String = ""  
+var refresh_token: String = ""   
+
+
 func _ready() -> void:
-	# Load data from save file
-	SaveManager.load()
+	var SupabaseScript = load("res://addons/supabase/Supabase/supabase.gd")
+	if SupabaseScript:
+		supabase = SupabaseScript.new()
+		add_child(supabase)
+		if supabase.has_method("load_nodes"):
+			supabase.load_nodes()
+		print("Global: Supabase node created (if plugin present)")
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.load()
+		var ct = SaveManager.get_setting("control_type")
+		if ct != null:
+			control_type = ct
+		var vol = SaveManager.get_setting("music_volume")
+		if vol != null and MusicManager and MusicManager.has_method("set_volume"):
+			MusicManager.set_volume(vol)
+		can_double_jump = SaveManager.has_ability("double_jump")
+		touchatk = SaveManager.has_ability("attack")
+		touchdash = SaveManager.has_ability("dash")
+	var user_id = _get_user_id()
+	if user_id != "" and OS.has_feature("network"):
+		if SaveManager.has_method("sync_from_supabase"):
+			SaveManager.sync_from_supabase(user_id)
 
-	# Restore settings
-	control_type = SaveManager.get_setting("control_type")
-	var vol = SaveManager.get_setting("music_volume")
-	if vol != null:
-		MusicManager.set_volume(vol)
+#session helper
+func set_session(user_info: Dictionary, access_token: String = "", refresh: String = "") -> void:
+	session = user_info
+	if access_token != "":
+		session_token = access_token
+	if refresh != "":
+		refresh_token = refresh
 
-	# Restore abilities
-	can_double_jump = SaveManager.data["progress"]["abilities"]["double_jump"]
-	touchatk = SaveManager.data["progress"]["abilities"]["attack"]
-	touchdash = SaveManager.data["progress"]["abilities"]["dash"]
+func clear_session() -> void:
+	session = {}
+	session_token = "" 
+	refresh_token = ""  
+	print("Global: Session cleared completely")
 
+func get_current_user() -> Dictionary:
+	return session
+
+func get_avatar_url() -> String:
+	if session.has("user_metadata") and session["user_metadata"].has("avatar_url"):
+		return session["user_metadata"]["avatar_url"]
+	return ""
+
+func get_full_name() -> String:
+	if session.has("user_metadata") and session["user_metadata"].has("full_name"):
+		return session["user_metadata"]["full_name"]
+	return "Guest"
+
+#supabase auth helper
+func get_auth() -> Node:
+	if not supabase:
+		return null
+	if supabase.has_node("auth"):
+		return supabase.get_node("auth")
+	if supabase.has_method("get_auth"):
+		return supabase.get_auth()
+	return null
+
+func _get_user_id() -> String:
+	if session.has("id"):
+		return str(session["id"])
+	return ""
+
+#control settings
 func set_control_type(value: int) -> void:
 	if control_type == value:
 		return
 	control_type = value
-	SaveManager.set_setting("control_type", value)  # persist change
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.set_setting("control_type", value)
 	emit_signal("control_type_changed")
 
 func is_button_mode() -> bool:
@@ -58,19 +120,25 @@ func is_button_mode() -> bool:
 func is_joystick_mode() -> bool:
 	return control_type == 1
 
-# -- Ability unlock helpers that also save --
+#abilities
 func unlock_double_jump():
 	can_double_jump = true
-	SaveManager.unlock_ability("double_jump")
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.unlock_ability("double_jump")
 
 func unlock_attack():
 	touchatk = true
-	SaveManager.unlock_ability("attack")
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.unlock_ability("attack")
 
 func unlock_dash():
 	touchdash = true
-	SaveManager.unlock_ability("dash")
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.unlock_ability("dash")
 
+#music
 func set_music_volume(value: float) -> void:
-	SaveManager.set_setting("music_volume", value)  # save persistently
-	MusicManager.set_volume(value)  # apply immediately
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.set_setting("music_volume", value)
+	if MusicManager and MusicManager.has_method("set_volume"):
+		MusicManager.set_volume(value)

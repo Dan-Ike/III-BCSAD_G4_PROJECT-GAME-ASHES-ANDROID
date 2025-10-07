@@ -12,7 +12,6 @@ func _ready() -> void:
 	camera_2d_2.enabled = true
 	MusicManager.play_song("level1")
 
-
 func _process(delta: float) -> void:
 	pass
 
@@ -20,14 +19,12 @@ func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
 	if body is Player:
 		Global.gameStarted = true
 		unlock_dash()
-
-		# SAVE progress here
-		SaveManager.unlock_level("floor_1", "floor_1_lvl_2")
-
+		SaveManager.mark_level_completed(1, 1) 
+		SaveManager.advance_to_level(1, 2)     
 		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/floor_1_lvl_2.tscn")
+		get_tree().change_scene_to_file("res://scene/floor_1_level_2.tscn")
 
 func unlock_double_jump():
 	Global.can_double_jump = true
@@ -46,16 +43,6 @@ func unlock_dash():
 	var controls = get_tree().root.get_node("TouchControls")
 	if controls:
 		controls.show_dash_button()
-
-func _on_floor_2_lvl_1_body_entered(body: Node2D) -> void:
-	if body is Player:
-		Global.gameStarted = true
-		unlock_attack()
-		SaveManager.unlock_level("floor_2", "floor_2_lvl_1")
-		body.touch_controls.disable_all_controls() 
-		scene_transition_animation.play("fade_in")
-		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/stage_level.tscn")
 
 func _on_spike_collision_body_entered(body: Node2D) -> void:
 	if body is Player and body.can_take_damage:
