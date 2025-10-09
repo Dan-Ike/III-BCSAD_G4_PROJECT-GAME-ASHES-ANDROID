@@ -15,6 +15,10 @@ var current_wave
 var moving_to_next_wave
 var spikeDamageAmount: int = 9999
 
+# Floor and Level Tracking
+var current_floor: int = 1
+var current_level: int = 1
+
 #Abilities
 var can_double_jump: bool = false
 var touchleft: bool = true
@@ -159,3 +163,23 @@ func set_music_volume(value: float) -> void:
 		SaveManager.set_setting("music_volume", value)
 	if MusicManager and MusicManager.has_method("set_volume"):
 		MusicManager.set_volume(value)
+
+# Floor/Level Management
+func set_floor_level(floor: int, level: int) -> void:
+	current_floor = floor
+	current_level = level
+	print("Global: Set floor %d, level %d" % [floor, level])
+
+func advance_level() -> void:
+	current_level += 1
+	print("Global: Advanced to level %d" % current_level)
+
+func advance_floor() -> void:
+	current_floor += 1
+	current_level = 1  # Reset level when advancing floor
+	print("Global: Advanced to floor %d, level reset to 1" % current_floor)
+
+func reset_progress() -> void:
+	current_floor = 1
+	current_level = 1
+	print("Global: Progress reset to floor 1, level 1")

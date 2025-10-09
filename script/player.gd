@@ -10,27 +10,47 @@ class_name Player
 @onready var soul_light: PointLight2D = $SoulLight
 @onready var health_bar: ProgressBar = $HealthBar
 
+@onready var sfx_run: AudioStreamPlayer = $SFX_Run
+@onready var sfx_dash: AudioStreamPlayer = $SFX_Dash
+@onready var sfx_jump: AudioStreamPlayer = $SFX_Jump
+@onready var sfx_fall: AudioStreamPlayer = $SFX_Fall
+@onready var sfx_land: AudioStreamPlayer = $SFX_Land
+@onready var sfx_atk_1: AudioStreamPlayer = $SFX_Atk1
+@onready var sfx_atk_2: AudioStreamPlayer = $SFX_Atk2
+
 # --- Soul Light Settings ---
 @export var enable_soul_light_in_scene: bool = true
 @export var soul_max: float = 100.0
 @export var soul_value: float = 100.0
-@export var soul_drain_rate: float = 5.0  # per second
-@export var lvl2_damage_per_sec: int = 2
-@export var lvl3_damage_per_sec: int = 4
 
 enum SoulLightMode { LEVEL1, LEVEL2, LEVEL3 }
-@export var soul_mode: SoulLightMode = SoulLightMode.LEVEL3
+@export var soul_mode: SoulLightMode = SoulLightMode.LEVEL1
 
+# Soul Light Mode Configuration
+const LEVEL1_DRAIN_RATE: float = 2.0
+const LEVEL1_MIN_SOUL: float = 10.0
+const LEVEL1_DAMAGE_PER_SEC: int = 0
+const LEVEL1_RECOVER_RATE: float = 10.0
+
+const LEVEL2_DRAIN_RATE: float = 3.0
+const LEVEL2_MIN_SOUL: float = 0.0
+const LEVEL2_DAMAGE_PER_SEC: int = 3
+const LEVEL2_RECOVER_RATE: float = 5.0
+
+const LEVEL3_DRAIN_RATE: float = 5.0
+const LEVEL3_MIN_SOUL: float = 0.0
+const LEVEL3_DAMAGE_PER_SEC: int = 5
+const LEVEL3_RECOVER_RATE: float = 2.0
 
 var soul_damage_timer: float = 0.0
 var flicker_time: float = 0.0
-@export var flicker_speed: float = 3.0  # slower, calmer flicker
-@export var flicker_strength: float = 0.1  # gentle variation
+@export var flicker_speed: float = 3.0
+@export var flicker_strength: float = 0.1
 
 # Movement
-const SPEED := 200.0
+var SPEED: float = 200
 const JUMP_VELOCITY := -400.0
-const GRAVITY := 900.0
+var GRAVITY: float = 900
 
 # Attack push
 const ATTACK_PUSH_SINGLE := 120.0
@@ -51,7 +71,7 @@ var dash_time: float = 0.0
 var dash_gravity_backup: float = 0.0
 var dash_on_cooldown: bool = false
 var ground_dash_used: bool = false
-var air_dashes_left: int = 2
+var air_dashes_left: int = 1
 
 # Combat / combo
 var attack_type: String = ""
@@ -68,92 +88,168 @@ var dead: bool = false
 var jumps_left: int = 1
 var facing_dir: int = 1
 
+# Track if player is in torch light
+var in_torch_light: bool = false
+
+# Track previous air state to prevent sound spam
+var was_in_air: bool = false
+
+
 func _ready() -> void:
 	Global.playerBody = self
 	Global.playerAlive = true
-	print("Player instance ID:", get_instance_id())
-
+	#print("Player instance ID:", get_instance_id())
 	if enable_soul_light_in_scene:
 		Global.enable_soul_light()
 	else:
 		Global.disable_soul_light()
-
 	soul_light.visible = Global.soul_light_enabled
-
 	combo_timer = Timer.new()
 	combo_timer.one_shot = true
 	combo_timer.wait_time = 0.6
 	add_child(combo_timer)
 	combo_timer.connect("timeout", Callable(self, "_on_combo_timeout"))
-
 	if damage_shape:
 		damage_shape.disabled = true
-
-	print("Initialized soul_mode:", get_soul_mode_name(soul_mode))
-	# Restore soul mode if one was saved globally
+	#print("Initialized soul_mode:", get_soul_mode_name(soul_mode))
 	if Global.saved_soul_mode != -1:
 		soul_mode = int(Global.saved_soul_mode)
-		print("Restored soul_mode from Global:", soul_mode)
+		#print("Restored soul_mode from Global:", soul_mode)
 	else:
-		# Save current one if first time
 		Global.saved_soul_mode = int(soul_mode)
-		print("Saved new soul_mode to Global:", soul_mode)
+		#print("Saved new soul_mode to Global:", soul_mode)
+	
+	_print_mode_info()
+
+
+func play_sfx_once(sfx: AudioStreamPlayer) -> void:
+	#"""Play a one-shot sound effect (jump, land, attack, dash)"""
+	sfx.stop()
+	sfx.play()
+
+func play_sfx_loop(sfx: AudioStreamPlayer) -> void:
+	#"""Play a looping sound effect (run, fall)"""
+	if not sfx.playing:
+		sfx.play()
+
+func stop_looping_sounds() -> void:
+	#"""Stop all looping sounds (run, fall)"""
+	sfx_run.stop()
+	sfx_fall.stop()
+
+func stop_all_sounds() -> void:
+	#"""Stop all sound effects"""
+	for s in [sfx_run, sfx_fall, sfx_jump, sfx_land, sfx_atk_1, sfx_atk_2, sfx_dash]:
+		s.stop()
+
+func _print_mode_info() -> void:
+	print("=== Soul Light Mode: ", get_soul_mode_name(soul_mode), " ===")
+	match soul_mode:
+		SoulLightMode.LEVEL1:
+			print("  Drain: ", LEVEL1_DRAIN_RATE, "/sec")
+			print("  Min Soul: ", LEVEL1_MIN_SOUL)
+			print("  HP Damage: ", LEVEL1_DAMAGE_PER_SEC, "/sec")
+			print("  Recovery: ", LEVEL1_RECOVER_RATE, "/sec")
+		SoulLightMode.LEVEL2:
+			print("  Drain: ", LEVEL2_DRAIN_RATE, "/sec")
+			print("  Min Soul: ", LEVEL2_MIN_SOUL)
+			print("  HP Damage: ", LEVEL2_DAMAGE_PER_SEC, "/sec")
+			print("  Recovery: ", LEVEL2_RECOVER_RATE, "/sec")
+		SoulLightMode.LEVEL3:
+			print("  Drain: ", LEVEL3_DRAIN_RATE, "/sec")
+			print("  Min Soul: ", LEVEL3_MIN_SOUL)
+			print("  HP Damage: ", LEVEL3_DAMAGE_PER_SEC, "/sec")
+			print("  Recovery: ", LEVEL3_RECOVER_RATE, "/sec")
 
 func get_soul_mode_name(mode: SoulLightMode) -> String:
 	match mode:
-		SoulLightMode.LEVEL1: return "LEVEL 1"
-		SoulLightMode.LEVEL2: return "LEVEL 2"
-		SoulLightMode.LEVEL3: return "LEVEL 3"
+		SoulLightMode.LEVEL1: return "LEVEL 1 (Easy)"
+		SoulLightMode.LEVEL2: return "LEVEL 2 (Normal)"
+		SoulLightMode.LEVEL3: return "LEVEL 3 (Hard)"
 		_: return "UNKNOWN"
+
+func get_current_drain_rate() -> float:
+	match soul_mode:
+		SoulLightMode.LEVEL1: return LEVEL1_DRAIN_RATE
+		SoulLightMode.LEVEL2: return LEVEL2_DRAIN_RATE
+		SoulLightMode.LEVEL3: return LEVEL3_DRAIN_RATE
+		_: return 2.0
+
+func get_min_soul_value() -> float:
+	match soul_mode:
+		SoulLightMode.LEVEL1: return LEVEL1_MIN_SOUL
+		SoulLightMode.LEVEL2: return LEVEL2_MIN_SOUL
+		SoulLightMode.LEVEL3: return LEVEL3_MIN_SOUL
+		_: return 0.0
+
+func get_damage_per_sec() -> int:
+	match soul_mode:
+		SoulLightMode.LEVEL1: return LEVEL1_DAMAGE_PER_SEC
+		SoulLightMode.LEVEL2: return LEVEL2_DAMAGE_PER_SEC
+		SoulLightMode.LEVEL3: return LEVEL3_DAMAGE_PER_SEC
+		_: return 0
+
+func get_recover_rate() -> float:
+	match soul_mode:
+		SoulLightMode.LEVEL1: return LEVEL1_RECOVER_RATE
+		SoulLightMode.LEVEL2: return LEVEL2_RECOVER_RATE
+		SoulLightMode.LEVEL3: return LEVEL3_RECOVER_RATE
+		_: return 10.0
+
+func restore_soul_light(amount: float) -> void:
+	if dead:
+		return
+	var prev_value: float = soul_value
+	soul_value = clamp(soul_value + amount, get_min_soul_value(), soul_max)
+	soul_damage_timer = 0.0
+	_update_soul_light_visual()
+	#if int(prev_value / 10) != int(soul_value / 10):
+		#print("[Player] Soul: %.1f -> %.1f" % [prev_value, soul_value])
+
 
 func _process(delta: float) -> void:
 	if dead:
 		return
+	if not in_torch_light:
+		var drain_rate = get_current_drain_rate()
+		var min_soul = get_min_soul_value()
+		soul_value -= drain_rate * delta
+		soul_value = clamp(soul_value, min_soul, soul_max)
+	_update_soul_light_visual()
+	var min_soul = get_min_soul_value()
+	if soul_value <= min_soul:
+		var damage_per_sec = get_damage_per_sec()
+		if damage_per_sec > 0:
+			_apply_soul_damage(delta, damage_per_sec)
 
-	# --- Drain soul ---
-	soul_value -= soul_drain_rate * delta
-	soul_value = clamp(soul_value, 0.0, soul_max)
-	var normalized = soul_value / soul_max
-
-	# --- Smooth Flicker ---
-	flicker_time += delta * flicker_speed
+func _update_soul_light_visual() -> void:
+	if not soul_light:
+		return
+	var min_soul = get_min_soul_value()
+	var effective_max = soul_max - min_soul
+	var effective_value = soul_value - min_soul
+	var normalized = clamp(effective_value / effective_max, 0.0, 1.0)
+	flicker_time += get_process_delta_time() * flicker_speed
 	var flicker = sin(flicker_time) * flicker_strength * (1.0 - normalized)
-	soul_light.energy = lerp(0.1, 1.4, normalized) + flicker
-	soul_light.scale = Vector2.ONE * lerp(0.5, 1.3, normalized)
-
-	# --- Soul depletion effects ---
-	if soul_value <= 0:
-		print("Soul is zero, current mode:", soul_mode)
-		print("Zero soul check ID:", get_instance_id())
-		match soul_mode:
-			SoulLightMode.LEVEL1:
-				pass
-			SoulLightMode.LEVEL2:
-				_apply_soul_damage(delta, lvl2_damage_per_sec)
-			SoulLightMode.LEVEL3:
-				_apply_soul_damage(delta, lvl3_damage_per_sec)
-
+	var min_energy = 0.3 if soul_mode == SoulLightMode.LEVEL1 else 0.1
+	var min_scale = 0.7 if soul_mode == SoulLightMode.LEVEL1 else 0.5
+	soul_light.energy = lerp(min_energy, 1.4, normalized) + flicker
+	soul_light.scale = Vector2.ONE * lerp(min_scale, 1.3, normalized)
 
 func _apply_soul_damage(delta: float, dmg_per_sec: int) -> void:
 	soul_damage_timer += delta
 	if soul_damage_timer >= 1.0:
-		print("Applying soul damage: ", dmg_per_sec)
+		#print("[Soul Damage] Taking ", dmg_per_sec, " HP damage (Soul depleted)")
 		take_damage(dmg_per_sec)
 		soul_damage_timer = 0.0
 
-
-func restore_soul_light(amount: float) -> void:
-	soul_value = clamp(soul_value + amount, 0, soul_max)
-	if soul_value > 0:
-		can_take_damage = false
-
 func _physics_process(delta: float) -> void:
 	if dead:
+		velocity = Vector2.ZERO
 		return
-
 	Global.playerDamageZone = deal_damage_zone
 	Global.playerHitbox = player_hitbox
-
+	var was_on_floor_before = is_on_floor()
 	if not is_on_floor():
 		if not dashing: 
 			velocity.y += GRAVITY * delta
@@ -163,8 +259,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			jumps_left = 1
 		ground_dash_used = false
-		air_dashes_left = 2
-
+		air_dashes_left = 1
 	if dashing:
 		velocity.x = facing_dir * DASH_SPEED
 		dash_time -= delta
@@ -176,15 +271,21 @@ func _physics_process(delta: float) -> void:
 			attack_push_time -= delta
 			if attack_push_time <= 0.0:
 				attack_push_speed = 0.0
-
 	if not dead:
 		handle_input(delta)
 		check_hitbox()
-	else:
-		velocity = Vector2.ZERO
-		return 
-
 	move_and_slide()
+	if not was_on_floor_before and is_on_floor():
+		#print("[LAND] Player landed! Velocity.x:", velocity.x)
+		was_in_air = false
+		stop_looping_sounds()
+		await get_tree().process_frame
+		sfx_land.stream_paused = false
+		sfx_land.play()
+		#print("[LAND] Land sound playing:", sfx_land.playing)
+	if was_on_floor_before and not is_on_floor():
+		#print("[AIR] Player became airborne!")
+		was_in_air = true
 
 func handle_input(delta: float) -> void:
 	if Input.is_action_just_pressed("dash") and not dashing and not dash_on_cooldown:
@@ -195,31 +296,40 @@ func handle_input(delta: float) -> void:
 		elif not is_on_floor() and air_dashes_left > 0:
 			air_dashes_left -= 1
 			start_dash()
-
 	if current_attack and Input.is_action_just_pressed("jump") and jumps_left > 0:
 		cancel_attack()
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
+		was_in_air = true
+		stop_all_sounds()
+		await get_tree().process_frame
+		sfx_jump.stream_paused = false
+		sfx_jump.play()
 		return
-
 	if Input.is_action_just_pressed("jump") and jumps_left > 0 and not current_attack:
+		print("[JUMP] Jump button pressed! Playing jump sound...")
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
-
+		was_in_air = true
+		stop_all_sounds()
+		await get_tree().process_frame
+		sfx_jump.stream_paused = false
+		sfx_jump.play()
+		#print("[JUMP] Jump sound playing:", sfx_jump.playing)
+		#print("[JUMP] Jump sound stream:", sfx_jump.stream)
 	if not current_attack and not dashing and Input.is_action_just_pressed("z"):
 		start_attack()
-
 	if not dashing and attack_push_time <= 0.0:
-		var dirf := Input.get_axis("left", "right")
-		if abs(dirf) > 0.01:
-			facing_dir = sign(dirf)
-			velocity.x = dirf * SPEED
-			toggle_split_sprite(facing_dir)
-		else:
-			velocity.x = move_toward(velocity.x, 0.0, SPEED * delta * 5.0)
-	elif is_on_floor() and not dashing and current_attack and attack_push_time <= 0.0:
-		velocity.x = 0.0
-
+		if not is_on_floor() or not current_attack:
+			var dirf := Input.get_axis("left", "right")
+			if abs(dirf) > 0.01:
+				facing_dir = sign(dirf)
+				velocity.x = dirf * SPEED
+				toggle_split_sprite(facing_dir)
+			else:
+				velocity.x = move_toward(velocity.x, 0.0, SPEED * delta * 5.0)
+		elif is_on_floor() and current_attack:
+			velocity.x = 0.0
 	if not current_attack and not dashing:
 		handle_movement_animation()
 
@@ -228,6 +338,8 @@ func start_dash() -> void:
 	dashing = true
 	dash_time = DASH_DURATION
 	animated_sprite.play("dash")
+	stop_looping_sounds()
+	play_sfx_once(sfx_dash)
 	dash_gravity_backup = velocity.y
 	velocity.y = 0
 
@@ -279,6 +391,8 @@ func cancel_attack() -> void:
 	attack_push_speed = 0.0
 	if damage_shape:
 		damage_shape.disabled = true
+	sfx_atk_1.stop()
+	sfx_atk_2.stop()
 	animated_sprite.play("idle")
 
 func _on_combo_timeout() -> void:
@@ -288,19 +402,31 @@ func handle_movement_animation() -> void:
 	if is_on_floor() and not current_attack:
 		if abs(velocity.x) < 10.0:
 			animated_sprite.play("idle")
+			stop_looping_sounds()
 		else:
 			animated_sprite.play("run")
+			sfx_fall.stop()
+			play_sfx_loop(sfx_run)
 	elif not is_on_floor() and not current_attack:
 		animated_sprite.play("fall")
+		sfx_run.stop()
+		if velocity.y > 50:
+			play_sfx_loop(sfx_fall)
 
 func toggle_split_sprite(dir: int) -> void:
 	animated_sprite.flip_h = dir == -1
 	deal_damage_zone.scale.x = dir
 
 func handle_attack_animation(a_type: String) -> void:
+	stop_looping_sounds()
 	var animation_name := "%s_atk" % a_type
 	animated_sprite.play(animation_name)
 	toggle_damage_collision(a_type)
+	match a_type:
+		"single", "air":
+			play_sfx_once(sfx_atk_1)
+		"double":
+			play_sfx_once(sfx_atk_2)
 
 func toggle_damage_collision(a_type: String) -> void:
 	var wait_time := 0.5
@@ -325,17 +451,10 @@ func check_hitbox() -> void:
 			var hitbox = hitbox_areas.front()
 			if hitbox:
 				var parent = hitbox.get_parent()
-
-				# Enemy checks
 				if parent is BatEnemy:
 					damage = Global.batDamageAmount
 				elif parent is Golem:
 					damage = Global.golemDamageAmount
-
-				# Torch check
-				elif parent is Torch:
-					parent.ignite()
-
 	if can_take_damage and damage != 0:
 		take_damage(damage)
 
@@ -352,7 +471,6 @@ func take_damage(damage: int) -> void:
 		else:
 			take_damage_cooldown(1.0)
 
-
 func die() -> void:
 	if dead:
 		return 
@@ -360,12 +478,17 @@ func die() -> void:
 	current_attack = false
 	dashing = false
 	attack_push_time = 0.0
+	attack_push_speed = 0.0
 	velocity = Vector2.ZERO
 	animated_sprite.stop()
-
+	stop_all_sounds()
 	if touch_controls:
 		touch_controls.disable_all_controls()
-
+	Input.action_release("left")
+	Input.action_release("right")
+	Input.action_release("jump")
+	Input.action_release("z")
+	Input.action_release("dash")
 	handle_death_animation()
 
 func handle_death_animation() -> void:
@@ -375,7 +498,14 @@ func handle_death_animation() -> void:
 	$Camera2D.zoom = Vector2(4, 4)
 	await get_tree().create_timer(1.0).timeout
 	Global.playerAlive = false
-	get_tree().reload_current_scene()
+	var died_on_floor = Global.current_floor
+	var died_on_level = Global.current_level
+	print("[Player] Died on Floor %d, Level %d" % [died_on_floor, died_on_level])
+	var game_over_scene = preload("res://scene/game_over.tscn")
+	var game_over = game_over_scene.instantiate()
+	get_tree().root.add_child(game_over)
+	if game_over.has_method("show_game_over"):
+		game_over.show_game_over(died_on_floor, died_on_level)
 
 func take_damage_cooldown(wait_time: float) -> void:
 	can_take_damage = false

@@ -8,9 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="6_nito4"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pl8x0"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nito4"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nr1lh"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pl8x0"]
 bg_color = Color(0.6, 0.6, 0.6, 0.392157)
 border_color = Color(0.8, 0.8, 0.8, 0)
 corner_radius_top_left = 4
@@ -20,7 +20,7 @@ corner_radius_bottom_left = 4
 shadow_color = Color(1, 0.823529, 0, 0.313726)
 shadow_size = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fqcvx"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nr1lh"]
 bg_color = Color(0.6, 0.6, 0.6, 0.392157)
 border_color = Color(0.8, 0.8, 0.8, 0)
 corner_radius_top_left = 4
@@ -30,7 +30,7 @@ corner_radius_bottom_left = 4
 shadow_color = Color(0, 0, 0.933333, 0.313726)
 shadow_size = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kfhhv"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fqcvx"]
 bg_color = Color(0.6, 0.6, 0.6, 0.690196)
 border_color = Color(0.8, 0.8, 0.8, 0)
 corner_radius_top_left = 4
@@ -40,15 +40,15 @@ corner_radius_bottom_left = 4
 shadow_color = Color(1, 0, 0, 0.313726)
 shadow_size = 10
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_genjj"]
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_kfhhv"]
 color = Color(0.980104, 0.87028, 0.863563, 1)
 thickness = 5
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_8eo88"]
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_genjj"]
 color = Color(1, 0.21268, 0.159696, 1)
 thickness = 5
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_kir6f"]
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_8eo88"]
 color = Color(1, 0.211765, 0.160784, 1)
 thickness = 5
 
@@ -259,17 +259,15 @@ text = "Exit
 "
 
 [node name="Options" type="Panel" parent="."]
-process_mode = 3
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -245.0
-offset_top = -221.0
-offset_right = 254.0
-offset_bottom = 221.0
+anchors_preset = -1
+anchor_left = 0.509
+anchor_top = 0.606
+anchor_right = 0.509
+anchor_bottom = 0.606
+offset_left = -253.52
+offset_top = -297.32
+offset_right = 245.48
+offset_bottom = 144.68
 
 [node name="Label" type="Label" parent="Options"]
 layout_mode = 1
@@ -293,53 +291,108 @@ theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
 theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
 theme_override_font_sizes/font_size = 30
-theme_override_styles/focus = SubResource("StyleBoxEmpty_pl8x0")
-theme_override_styles/hover = SubResource("StyleBoxFlat_nr1lh")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_fqcvx")
-theme_override_styles/normal = SubResource("StyleBoxFlat_kfhhv")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_nito4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pl8x0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nr1lh")
+theme_override_styles/normal = SubResource("StyleBoxFlat_fqcvx")
 text = "Back"
 
 [node name="Label2" type="Label" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.18
-anchor_top = 0.29
+anchor_top = 0.131
 anchor_right = 0.555
-anchor_bottom = 0.29
+anchor_bottom = 0.231
 offset_left = 0.179993
-offset_top = -22.18
+offset_top = 0.0979958
 offset_right = 0.0549927
-offset_bottom = 21.82
+offset_bottom = -0.102005
 theme_override_font_sizes/font_size = 24
 text = "Music Volume"
 vertical_alignment = 1
 
+[node name="Label4" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.184
+anchor_top = 0.296
+anchor_right = 0.545
+anchor_bottom = 0.396
+offset_left = 0.18399
+offset_top = 0.167999
+offset_right = 7.04498
+offset_bottom = -0.0320129
+theme_override_font_sizes/font_size = 24
+text = "SFX Volume"
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.198
+anchor_top = 0.509
+anchor_right = 0.559
+anchor_bottom = 0.609
+offset_left = 0.19799
+offset_top = 0.0220032
+offset_right = 7.05899
+offset_bottom = -0.178009
+theme_override_font_sizes/font_size = 24
+text = "Control"
+vertical_alignment = 1
+
 [node name="AudioControl" type="HSlider" parent="Options"]
-layout_mode = 0
-offset_left = 96.0
-offset_top = 152.0
-offset_right = 403.0
-offset_bottom = 209.0
-theme_override_styles/slider = SubResource("StyleBoxLine_genjj")
-theme_override_styles/grabber_area = SubResource("StyleBoxLine_8eo88")
-theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_kir6f")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.484
+anchor_top = 0.253
+anchor_right = 0.484
+anchor_bottom = 0.253
+offset_left = -153.516
+offset_top = -7.82601
+offset_right = 153.484
+offset_bottom = 8.17399
+theme_override_styles/slider = SubResource("StyleBoxLine_kfhhv")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_genjj")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_8eo88")
 max_value = 1.0
 step = 0.05
 value = 0.5
 script = ExtResource("7_nito4")
 audio_bus_name = "Music"
 
+[node name="AudioSoundControl2" type="HSlider" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.484
+anchor_top = 0.45
+anchor_right = 0.484
+anchor_bottom = 0.45
+offset_left = -153.516
+offset_top = -7.90001
+offset_right = 153.484
+offset_bottom = 8.09999
+theme_override_styles/slider = SubResource("StyleBoxLine_kfhhv")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_genjj")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_8eo88")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("7_nito4")
+audio_bus_name = "SFX"
+
 [node name="ControlChoice" type="OptionButton" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.503
-anchor_top = 0.662
+anchor_top = 0.678
 anchor_right = 0.503
-anchor_bottom = 0.662
+anchor_bottom = 0.678
 offset_left = -158.997
-offset_top = -30.604
+offset_top = -23.676
 offset_right = 159.003
-offset_bottom = 30.396
+offset_bottom = 23.324
 theme_override_font_sizes/font_size = 28
 selected = 0
 item_count = 2
@@ -348,22 +401,8 @@ popup/item_0/id = 0
 popup/item_1/text = "Joystick"
 popup/item_1/id = 1
 
-[node name="Label3" type="Label" parent="Options"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.18
-anchor_top = 0.5
-anchor_right = 0.555
-anchor_bottom = 0.5
-offset_left = 0.179993
-offset_top = -21.0
-offset_right = 0.0549927
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 24
-text = "Control"
-vertical_alignment = 1
-
 [connection signal="pressed" from="PauseMenu/Panel/option" to="." method="_on_option_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/exit" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="Options/back" to="." method="_on_back_pressed"]
 [connection signal="value_changed" from="Options/AudioControl" to="Options/AudioControl" method="_on_value_changed"]
+[connection signal="value_changed" from="Options/AudioSoundControl2" to="Options/AudioSoundControl2" method="_on_value_changed"]

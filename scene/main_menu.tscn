@@ -78,6 +78,7 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_hxu56")
 
 [node name="MainBtns" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.508
@@ -155,7 +156,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Options" type="Panel" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.509
@@ -199,28 +199,43 @@ text = "Back"
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.18
-anchor_top = 0.238
+anchor_top = 0.131
 anchor_right = 0.555
-anchor_bottom = 0.238
+anchor_bottom = 0.231
 offset_left = 0.179993
-offset_top = -22.196
+offset_top = 0.0979958
 offset_right = 0.0549927
-offset_bottom = 21.804
+offset_bottom = -0.102005
 theme_override_font_sizes/font_size = 24
 text = "Music Volume"
+vertical_alignment = 1
+
+[node name="Label4" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.184
+anchor_top = 0.296
+anchor_right = 0.545
+anchor_bottom = 0.396
+offset_left = 0.18399
+offset_top = 0.167999
+offset_right = 7.04498
+offset_bottom = -0.0320129
+theme_override_font_sizes/font_size = 24
+text = "SFX Volume"
 vertical_alignment = 1
 
 [node name="Label3" type="Label" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.18
-anchor_top = 0.5
+anchor_left = 0.198
+anchor_top = 0.509
 anchor_right = 0.559
-anchor_bottom = 0.5
-offset_left = 2.17999
-offset_top = -23.0
-offset_right = 0.0589905
-offset_bottom = 21.0
+anchor_bottom = 0.609
+offset_left = 0.19799
+offset_top = 0.0220032
+offset_right = 7.05899
+offset_bottom = -0.178009
 theme_override_font_sizes/font_size = 24
 text = "Control"
 vertical_alignment = 1
@@ -228,14 +243,14 @@ vertical_alignment = 1
 [node name="AudioControl" type="HSlider" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.361
-anchor_right = 0.5
-anchor_bottom = 0.361
-offset_left = -153.5
-offset_top = -28.562
-offset_right = 153.5
-offset_bottom = 28.438
+anchor_left = 0.484
+anchor_top = 0.253
+anchor_right = 0.484
+anchor_bottom = 0.253
+offset_left = -153.516
+offset_top = -7.82601
+offset_right = 153.484
+offset_bottom = 8.17399
 theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
@@ -245,17 +260,37 @@ value = 0.5
 script = ExtResource("5_sepwh")
 audio_bus_name = "Music"
 
+[node name="AudioSoundControl2" type="HSlider" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.484
+anchor_top = 0.45
+anchor_right = 0.484
+anchor_bottom = 0.45
+offset_left = -153.516
+offset_top = -7.90001
+offset_right = 153.484
+offset_bottom = 8.09999
+theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("5_sepwh")
+audio_bus_name = "SFX"
+
 [node name="ControlChoice" type="OptionButton" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.503
-anchor_top = 0.662
+anchor_top = 0.678
 anchor_right = 0.503
-anchor_bottom = 0.662
+anchor_bottom = 0.678
 offset_left = -158.997
-offset_top = -30.604
+offset_top = -23.676
 offset_right = 159.003
-offset_bottom = 30.396
+offset_bottom = 23.324
 theme_override_font_sizes/font_size = 28
 selected = 0
 item_count = 2
@@ -299,3 +334,4 @@ texture = ExtResource("5_14wem")
 [connection signal="pressed" from="MainBtns/exit" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="Options/back" to="." method="_on_back_pressed"]
 [connection signal="value_changed" from="Options/AudioControl" to="Options/AudioControl" method="_on_value_changed"]
+[connection signal="value_changed" from="Options/AudioSoundControl2" to="Options/AudioSoundControl2" method="_on_value_changed"]

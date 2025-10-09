@@ -6,6 +6,8 @@ extends Node2D
 @onready var spike_collision = $spike_collision
 
 func _ready() -> void:
+	Global.set_floor_level(1, 3)
+	
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 	scene_transition_animation.play("fade_out")
 	player_camera.enabled = false
@@ -22,6 +24,8 @@ func _on_floor_2_lvl_1_body_entered(body: Node2D) -> void:
 		unlock_double_jump()
 		SaveManager.mark_level_completed(1, 3)  
 		SaveManager.advance_to_level(2, 1)      
+		Global.advance_level()
+		Global.advance_floor()
 		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout

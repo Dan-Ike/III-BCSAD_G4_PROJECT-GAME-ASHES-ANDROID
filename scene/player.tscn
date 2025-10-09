@@ -1,8 +1,13 @@
-[gd_scene load_steps=54 format=3 uid="uid://bsiqip3vsfyy2"]
+[gd_scene load_steps=59 format=3 uid="uid://bsiqip3vsfyy2"]
 
 [ext_resource type="Script" uid="uid://dyy271ir1vef4" path="res://script/player.gd" id="1_hjaqi"]
 [ext_resource type="Texture2D" uid="uid://ckkvoewai1fod" path="res://art/Player-Sheet.png" id="1_xo3ru"]
 [ext_resource type="PackedScene" uid="uid://cqh7gljsbhp3c" path="res://scene/health_bar.tscn" id="3_fvtld"]
+[ext_resource type="AudioStream" uid="uid://kua61atu4slu" path="res://audio/running-14658.mp3" id="4_ct4mp"]
+[ext_resource type="AudioStream" uid="uid://c7kiawpooytsx" path="res://audio/simple-whoosh-382724.mp3" id="5_s4jxa"]
+[ext_resource type="AudioStream" uid="uid://caqwsp46ui1ih" path="res://audio/land-81509.mp3" id="6_oh5ij"]
+[ext_resource type="AudioStream" uid="uid://u8mcqto11ouk" path="res://audio/sword-sound-2-36274.mp3" id="7_g2vtq"]
+[ext_resource type="AudioStream" uid="uid://cce7m1n2f5jpu" path="res://audio/sword-slash-and-swing-185432.mp3" id="8_2fvbb"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hjaqi"]
 atlas = ExtResource("1_xo3ru")
@@ -382,7 +387,7 @@ script = ExtResource("1_hjaqi")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_xj5ck")
-animation = &"idle"
+animation = &"run"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_6lu7o")
@@ -415,6 +420,33 @@ energy = 2.0
 shadow_enabled = true
 texture = SubResource("GradientTexture2D_ct4mp")
 texture_scale = 4.81
+
+[node name="SFX_Run" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_ct4mp")
+bus = &"SFX"
+
+[node name="SFX_Dash" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_s4jxa")
+bus = &"SFX"
+
+[node name="SFX_Jump" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_s4jxa")
+bus = &"SFX"
+
+[node name="SFX_Fall" type="AudioStreamPlayer" parent="."]
+bus = &"SFX"
+
+[node name="SFX_Land" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_oh5ij")
+bus = &"SFX"
+
+[node name="SFX_Atk1" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_g2vtq")
+bus = &"SFX"
+
+[node name="SFX_Atk2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_2fvbb")
+bus = &"SFX"
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="ready" from="Camera2D" to="." method="_on_camera_2d_ready"]

@@ -9658,6 +9658,7 @@ debug_color = Color(0.999132, 0, 0.122649, 0.42)
 
 [node name="player" parent="." instance=ExtResource("56_a2x1i")]
 position = Vector2(263, 573)
+enable_soul_light_in_scene = false
 
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)
