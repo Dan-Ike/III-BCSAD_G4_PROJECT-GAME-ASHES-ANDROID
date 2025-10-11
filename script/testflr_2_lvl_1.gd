@@ -19,6 +19,7 @@ extends Node2D
 @export var max_brightness: float = 1.0
 @export var tint_color: Color = Color(1.0, 1.0, 1.0)
 @onready var camera_2d: Camera2D = $Camera2D
+@onready var navigation_region_2d: NavigationRegion2D = $NavigationRegion2D
 
 var torch_list: Array[Torch] = []
 var indicator_list: Array[ColorRect] = []
@@ -30,8 +31,8 @@ const COLOR_LIT = Color(1.0, 0.9, 0.0, 1.0)
 
 func _ready() -> void:
 	Global.set_floor_level(2, 1)
-	player_camera.enabled = true
-	camera_2d.enabled = false
+	player_camera.enabled = false
+	camera_2d.enabled = true
 	unlock_double_jump()
 	unlock_shine()
 	if scene_transition_animation:

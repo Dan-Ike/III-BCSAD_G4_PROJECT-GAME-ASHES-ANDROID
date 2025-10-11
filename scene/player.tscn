@@ -366,7 +366,7 @@ height = 16.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hjaqi"]
 radius = 5.99972
-height = 60.3754
+height = 25.045
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fvtld"]
 radius = 5.0
@@ -388,7 +388,8 @@ script = ExtResource("1_hjaqi")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_xj5ck")
-animation = &"run"
+animation = &"single_atk"
+frame = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_6lu7o")
@@ -402,7 +403,7 @@ collision_layer = 8
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DealDamageZone"]
-position = Vector2(34.2737, 0.714689)
+position = Vector2(17.7959, 0.714689)
 rotation = 1.56112
 shape = SubResource("CapsuleShape2D_hjaqi")
 disabled = true

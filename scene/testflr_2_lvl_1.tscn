@@ -158,9 +158,9 @@ polygon = PackedVector2Array(0, 79, 638, 79, 638, 112, -1, 117)
 polygon = PackedVector2Array(-8, 52, 57, 51, 56, 62, -6, 65)
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_t3uvb"]
-vertices = PackedVector2Array(1265.12, 87.9219, 1266.87, 225.961, 738, 224.031, 738, 84.0703)
+vertices = PackedVector2Array(1430.85, 279.703, 642.82, 255.289, 637.18, -48.1094, 1460.08, -57.8594)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(728, 74, 1275, 78, 1277, 236, 728, 234)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(633, 265, 627, -58, 1471, -68, 1440, 290)])
 
 [node name="testflr2lvl1" type="Node2D"]
 script = ExtResource("1_in4j6")
@@ -206,9 +206,10 @@ occluder = SubResource("OccluderPolygon2D_in4j6")
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(636, 85)
 
-[node name="AdvancedEnemy" parent="." instance=ExtResource("5_yhns4")]
-position = Vector2(1003, 48)
-enemy_type = 2
+[node name="AdvancedEnemy" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("5_yhns4")]
+position = Vector2(689, 67)
+navigation_region = NodePath("../NavigationRegion2D")
+enemy_type = 1
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 position = Vector2(3, -148)

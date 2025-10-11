@@ -493,7 +493,7 @@ radius = 155.261
 radius = 276.306
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wpjdb"]
-radius = 28.0
+radius = 25.0799
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yabtt"]
 height = 28.0146
