@@ -366,7 +366,7 @@ height = 16.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hjaqi"]
 radius = 5.99972
-height = 25.9988
+height = 60.3754
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fvtld"]
 radius = 5.0
@@ -383,6 +383,7 @@ fill_from = Vector2(0.5, 0.5)
 
 [node name="player" type="CharacterBody2D"]
 scale = Vector2(1.5172, 1.39921)
+collision_layer = 2
 script = ExtResource("1_hjaqi")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -397,14 +398,18 @@ enabled = false
 zoom = Vector2(2.5, 2.5)
 
 [node name="DealDamageZone" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DealDamageZone"]
-position = Vector2(17, 0)
+position = Vector2(34.2737, 0.714689)
 rotation = 1.56112
 shape = SubResource("CapsuleShape2D_hjaqi")
 disabled = true
 
 [node name="playerHitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="playerHitbox"]
 shape = SubResource("CapsuleShape2D_fvtld")

@@ -15,7 +15,8 @@ var data := {
 		"abilities": {
 			"double_jump": false,
 			"attack": false,
-			"dash": false
+			"dash": false,
+			"shine": false
 		}
 	},
 	"collectables": [],
@@ -78,8 +79,11 @@ func _load_local() -> void:
 					data["progress"]["abilities"] = {
 						"double_jump": false,
 						"attack": false,
-						"dash": false
+						"dash": false,
+						"shine": false
 					}
+				elif not data["progress"]["abilities"].has("shine"):
+					data["progress"]["abilities"]["shine"] = false
 				print("SaveManager: Local save loaded - Current: Floor %d Level %d" % [
 					data["progress"]["current_floor"], 
 					data["progress"]["current_level"]
@@ -98,8 +102,9 @@ func _apply_abilities_to_global() -> void:
 		Global.can_double_jump = abilities.get("double_jump", false)
 		Global.touchatk = abilities.get("attack", false)
 		Global.touchdash = abilities.get("dash", false)
-		print("SaveManager: Applied abilities - DoubleJump: %s, Attack: %s, Dash: %s" % [
-			Global.can_double_jump, Global.touchatk, Global.touchdash
+		Global.touchshine = abilities.get("shine", false) 
+		print("SaveManager: Applied abilities - DoubleJump: %s, Attack: %s, Dash: %s, Shine: %s" % [
+			Global.can_double_jump, Global.touchatk, Global.touchdash, Global.touchshine
 		])
 
 #set and get

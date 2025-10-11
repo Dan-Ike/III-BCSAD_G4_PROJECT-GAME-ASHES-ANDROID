@@ -1,6 +1,7 @@
 extends Node2D
 
 @onready var player: Player = $player
+@onready var player_camera = $player/Camera2D
 @onready var canvas_modulate: CanvasModulate = $CanvasModulate
 @onready var scene_transition_animation = $SceneTransitionAnimation/AnimationPlayer
 @onready var torch: Torch = $Torch
@@ -17,6 +18,7 @@ extends Node2D
 @export var min_brightness: float = 0.2
 @export var max_brightness: float = 1.0
 @export var tint_color: Color = Color(1.0, 1.0, 1.0)
+@onready var camera_2d: Camera2D = $Camera2D
 
 var torch_list: Array[Torch] = []
 var indicator_list: Array[ColorRect] = []
@@ -28,7 +30,10 @@ const COLOR_LIT = Color(1.0, 0.9, 0.0, 1.0)
 
 func _ready() -> void:
 	Global.set_floor_level(2, 1)
+	player_camera.enabled = true
+	camera_2d.enabled = false
 	unlock_double_jump()
+	unlock_shine()
 	if scene_transition_animation:
 		scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 		scene_transition_animation.play("fade_out")
@@ -42,6 +47,9 @@ func _ready() -> void:
 func unlock_double_jump():
 	Global.can_double_jump = true
 	SaveManager.unlock_ability("double_jump")
+func unlock_shine():
+	Global.unlock_shine()
+	print("[Floor 2-1] Shine ability unlocked!")
 
 func _setup_torch_system() -> void:
 	#"""Initialize torch tracking and indicators"""

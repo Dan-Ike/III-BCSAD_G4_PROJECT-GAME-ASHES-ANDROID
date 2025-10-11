@@ -5,25 +5,21 @@ extends Node2D
 @onready var scene_transition_animation = $SceneTransitionAnimation/AnimationPlayer
 @onready var spike_collision = $spike_collision
 @onready var cutscene: CanvasLayer = $Cutscene
+@onready var player: Player = $player
 
 
 func _ready() -> void:
 	# Set current floor and level in Global
 	Global.set_floor_level(1, 1)
 	
-	#scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
-	#scene_transition_animation.play("fade_out")
-	#player_camera.enabled = false
-	#camera_2d_2.enabled = true
-	#MusicManager.play_song("level1")
-	
+	# Start with cutscene - everything disabled
 	player_camera.enabled = false
 	camera_2d_2.enabled = false
-	MusicManager.stop_song() 
-
+	MusicManager.stop_song()
+	
+	# Show and start cutscene
 	cutscene.visible = true
 	cutscene.start_cutscene()
-
 
 
 func _process(delta: float) -> void:

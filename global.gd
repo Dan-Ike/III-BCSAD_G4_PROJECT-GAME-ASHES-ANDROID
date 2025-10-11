@@ -15,6 +15,10 @@ var current_wave
 var moving_to_next_wave
 var spikeDamageAmount: int = 9999
 
+# Advanced Enemy Support
+var advancedEnemyDamageZone
+var advancedEnemyDamageAmount: int = 0
+
 # Floor and Level Tracking
 var current_floor: int = 1
 var current_level: int = 1
@@ -26,6 +30,7 @@ var touchright: bool = true
 var touchjump: bool = true
 var touchatk: bool = false
 var touchdash: bool = false
+var touchshine: bool = false 
 var joystick: bool = false
 
 var selected_floor: String = "floor_1"
@@ -68,6 +73,7 @@ func _ready() -> void:
 		can_double_jump = SaveManager.has_ability("double_jump")
 		touchatk = SaveManager.has_ability("attack")
 		touchdash = SaveManager.has_ability("dash")
+		touchshine = SaveManager.has_ability("shine")
 	var user_id = _get_user_id()
 	if user_id != "" and OS.has_feature("network"):
 		if SaveManager.has_method("sync_from_supabase"):
@@ -120,6 +126,12 @@ func get_auth() -> Node:
 	if supabase.has_method("get_auth"):
 		return supabase.get_auth()
 	return null
+
+func unlock_shine():
+	touchshine = true
+	if typeof(SaveManager) == TYPE_OBJECT:
+		SaveManager.unlock_ability("shine")
+	print("Global: Shine ability unlocked!")
 
 func _get_user_id() -> String:
 	if session.has("id"):

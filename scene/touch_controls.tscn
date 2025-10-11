@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=16 format=3 uid="uid://bjg21ygjiqxou"]
 
 [ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="1_8ywga"]
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://h8o3yxkpgn82" path="res://art/speed.png" id="4_gmaj2"]
 [ext_resource type="Texture2D" uid="uid://c4d750n7vg2w7" path="res://art/pause.png" id="5_bwiib"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="6_nito4"]
+[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="6_pl8x0"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nito4"]
@@ -165,6 +166,24 @@ position = Vector2(21, 13)
 scale = Vector2(0.121094, 0.150391)
 texture_normal = ExtResource("5_bwiib")
 action = "pause"
+
+[node name="Control7" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.878
+anchor_top = 0.445
+anchor_right = 0.878
+anchor_bottom = 0.445
+offset_left = -66.8401
+offset_top = -52.4
+offset_right = 67.1599
+offset_bottom = 52.6
+
+[node name="shine" type="TouchScreenButton" parent="Control/Control7"]
+process_mode = 3
+position = Vector2(-4.99993, -13)
+scale = Vector2(1.03906, 0.953125)
+texture_normal = ExtResource("6_pl8x0")
+action = "shine"
 
 [node name="Virtual Joystick" parent="Control" instance=ExtResource("6_nito4")]
 layout_mode = 1

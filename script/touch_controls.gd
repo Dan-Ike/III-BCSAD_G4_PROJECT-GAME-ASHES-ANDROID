@@ -14,6 +14,7 @@ extends CanvasLayer
 @onready var control_choice: OptionButton = $Options/ControlChoice
 
 @onready var synch: Button = $PauseMenu/Panel/synch
+@onready var shine: TouchScreenButton = $Control/Control7/shine
 
 var is_paused := false
 var pause_enabled: bool = true

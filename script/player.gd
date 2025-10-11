@@ -35,12 +35,12 @@ const LEVEL1_RECOVER_RATE: float = 10.0
 const LEVEL2_DRAIN_RATE: float = 3.0
 const LEVEL2_MIN_SOUL: float = 0.0
 const LEVEL2_DAMAGE_PER_SEC: int = 3
-const LEVEL2_RECOVER_RATE: float = 5.0
+const LEVEL2_RECOVER_RATE: float = 8.0
 
 const LEVEL3_DRAIN_RATE: float = 5.0
 const LEVEL3_MIN_SOUL: float = 0.0
 const LEVEL3_DAMAGE_PER_SEC: int = 5
-const LEVEL3_RECOVER_RATE: float = 2.0
+const LEVEL3_RECOVER_RATE: float = 5.0
 
 var soul_damage_timer: float = 0.0
 var flicker_time: float = 0.0
@@ -94,6 +94,23 @@ var in_torch_light: bool = false
 # Track previous air state to prevent sound spam
 var was_in_air: bool = false
 
+# Shine Ability
+var shine_available: bool = false
+var shine_active: bool = false
+var shine_on_cooldown: bool = false
+var shine_heal_timer: float = 0.0
+const SHINE_COOLDOWN: float = 30.0
+const SHINE_SOUL_BOOST: float = 500.0
+const SHINE_HEAL_PER_SEC: int = 5
+const SHINE_DURATION: float = 10.0  # Maximum duration if not interrupted
+var shine_time_left: float = 0.0
+
+# Knockback system
+var is_being_knocked_back: bool = false
+var knockback_velocity: Vector2 = Vector2.ZERO
+var knockback_duration: float = 0.3
+var knockback_timer: float = 0.0
+var knockback_friction: float = 0.9
 
 func _ready() -> void:
 	Global.playerBody = self
@@ -112,6 +129,9 @@ func _ready() -> void:
 	if damage_shape:
 		damage_shape.disabled = true
 	#print("Initialized soul_mode:", get_soul_mode_name(soul_mode))
+	if typeof(SaveManager) == TYPE_OBJECT:
+		if SaveManager.has_ability("shine"):
+			Global.touchshine = true 
 	if Global.saved_soul_mode != -1:
 		soul_mode = int(Global.saved_soul_mode)
 		#print("Restored soul_mode from Global:", soul_mode)
@@ -120,6 +140,26 @@ func _ready() -> void:
 		#print("Saved new soul_mode to Global:", soul_mode)
 	
 	_print_mode_info()
+
+func apply_knockback(force: Vector2) -> void:
+	"""Apply knockback force to the player"""
+	if dead:
+		return
+	
+	print("[Player] Knockback applied: ", force)
+	is_being_knocked_back = true
+	knockback_velocity = force
+	knockback_timer = knockback_duration
+	
+	# Cancel current actions
+	if dashing:
+		_end_dash()
+	if current_attack:
+		cancel_attack()
+	
+	# Show hurt reaction
+	if animated_sprite:
+		animated_sprite.play("idle")  # Use idle since no hurt animation
 
 
 func play_sfx_once(sfx: AudioStreamPlayer) -> void:
@@ -203,8 +243,8 @@ func restore_soul_light(amount: float) -> void:
 	soul_value = clamp(soul_value + amount, get_min_soul_value(), soul_max)
 	soul_damage_timer = 0.0
 	_update_soul_light_visual()
-	#if int(prev_value / 10) != int(soul_value / 10):
-		#print("[Player] Soul: %.1f -> %.1f" % [prev_value, soul_value])
+	if int(prev_value / 10) != int(soul_value / 10):
+		print("[Player] Soul: %.1f -> %.1f" % [prev_value, soul_value])
 
 
 func _process(delta: float) -> void:
@@ -215,6 +255,13 @@ func _process(delta: float) -> void:
 		var min_soul = get_min_soul_value()
 		soul_value -= drain_rate * delta
 		soul_value = clamp(soul_value, min_soul, soul_max)
+	
+	_update_shine_availability()
+	
+	# NEW: Handle active shine ability
+	if shine_active:
+		_handle_shine_active(delta)
+	
 	_update_soul_light_visual()
 	var min_soul = get_min_soul_value()
 	if soul_value <= min_soul:
@@ -225,6 +272,12 @@ func _process(delta: float) -> void:
 func _update_soul_light_visual() -> void:
 	if not soul_light:
 		return
+	
+	# If shine is active, keep it bright (handled in _handle_shine_active)
+	if shine_active:
+		return
+	
+	# Normal soul light behavior
 	var min_soul = get_min_soul_value()
 	var effective_max = soul_max - min_soul
 	var effective_value = soul_value - min_soul
@@ -247,47 +300,87 @@ func _physics_process(delta: float) -> void:
 	if dead:
 		velocity = Vector2.ZERO
 		return
+	
 	Global.playerDamageZone = deal_damage_zone
 	Global.playerHitbox = player_hitbox
+	
 	var was_on_floor_before = is_on_floor()
-	if not is_on_floor():
-		if not dashing: 
+	
+	# Handle knockback (PRIORITY)
+	if is_being_knocked_back:
+		knockback_timer -= delta
+		
+		# Apply knockback velocity
+		velocity.x = knockback_velocity.x
+		
+		# Apply gravity during knockback
+		if not is_on_floor():
 			velocity.y += GRAVITY * delta
+		
+		# Reduce knockback over time
+		knockback_velocity *= knockback_friction
+		
+		# End knockback
+		if knockback_timer <= 0.0 or is_on_floor():
+			is_being_knocked_back = false
+			knockback_velocity = Vector2.ZERO
+			knockback_timer = 0.0
 	else:
-		if Global.can_double_jump:
-			jumps_left = 2
+		# Normal physics (only when not being knocked back)
+		if not is_on_floor():
+			if not dashing: 
+				velocity.y += GRAVITY * delta
 		else:
-			jumps_left = 1
-		ground_dash_used = false
-		air_dashes_left = 1
-	if dashing:
-		velocity.x = facing_dir * DASH_SPEED
-		dash_time -= delta
-		if dash_time <= 0.0:
-			_end_dash()
-	else:
-		if attack_push_time > 0.0:
-			velocity.x = attack_push_speed
-			attack_push_time -= delta
-			if attack_push_time <= 0.0:
-				attack_push_speed = 0.0
-	if not dead:
-		handle_input(delta)
-		check_hitbox()
+			if Global.can_double_jump:
+				jumps_left = 2
+			else:
+				jumps_left = 1
+			ground_dash_used = false
+			air_dashes_left = 1
+		
+		if dashing:
+			velocity.x = facing_dir * DASH_SPEED
+			dash_time -= delta
+			if dash_time <= 0.0:
+				_end_dash()
+		else:
+			if attack_push_time > 0.0:
+				velocity.x = attack_push_speed
+				attack_push_time -= delta
+				if attack_push_time <= 0.0:
+					attack_push_speed = 0.0
+		
+		if not dead:
+			handle_input(delta)
+			check_hitbox()
+	
 	move_and_slide()
+	
 	if not was_on_floor_before and is_on_floor():
-		#print("[LAND] Player landed! Velocity.x:", velocity.x)
 		was_in_air = false
 		stop_looping_sounds()
 		await get_tree().process_frame
 		sfx_land.stream_paused = false
 		sfx_land.play()
-		#print("[LAND] Land sound playing:", sfx_land.playing)
+	
 	if was_on_floor_before and not is_on_floor():
-		#print("[AIR] Player became airborne!")
 		was_in_air = true
 
+func _update_shine_availability() -> void:
+	if shine_on_cooldown or shine_active:
+		shine_available = false
+		return
+	
+	# Shine is available as long as there's at least 1 soul light left
+	if soul_value >= 1.0:
+		shine_available = true
+	else:
+		shine_available = false
+
 func handle_input(delta: float) -> void:
+	if Input.is_action_just_pressed("shine") and Global.touchshine:
+		if shine_available and not shine_active and not shine_on_cooldown:
+			_activate_shine()
 	if Input.is_action_just_pressed("dash") and not dashing and not dash_on_cooldown:
 		if is_on_floor() and not ground_dash_used:
 			ground_dash_used = true
@@ -443,24 +536,115 @@ func toggle_damage_collision(a_type: String) -> void:
 		damage_shape.disabled = true
 	current_attack = false
 
+# Replace your check_hitbox() function with this:
+
+# Replace your check_hitbox() function with this (Godot 4 compatible):
+
 func check_hitbox() -> void:
 	var damage: int = 0
 	if player_hitbox:
 		var hitbox_areas := player_hitbox.get_overlapping_areas()
 		if hitbox_areas.size() > 0:
-			var hitbox = hitbox_areas.front()
-			if hitbox:
-				var parent = hitbox.get_parent()
-				if parent is BatEnemy:
-					damage = Global.batDamageAmount
-				elif parent is Golem:
-					damage = Global.golemDamageAmount
+			for hitbox in hitbox_areas:
+				if hitbox:
+					var parent = hitbox.get_parent()
+					
+					# Check if parent is BatEnemy (using is keyword if class exists)
+					if parent is BatEnemy:
+						damage = Global.batDamageAmount
+						break
+					
+					# Check if parent is Golem
+					elif parent is Golem:
+						damage = Global.golemDamageAmount
+						break
+					
+					# Check if it's an AdvancedEnemy (by checking properties - Godot 4 syntax)
+					elif "damage_to_deal" in parent and "enemy_type" in parent:
+						# This is likely an AdvancedEnemy
+						damage = parent.damage_to_deal
+						break
+					
+					# Fallback: check if parent has damage_to_deal property
+					elif "damage_to_deal" in parent:
+						damage = parent.damage_to_deal
+						break
+	
 	if can_take_damage and damage != 0:
 		take_damage(damage)
+
+func _activate_shine() -> void:
+	print("[Shine] Ability activated!")
+	shine_active = true
+	shine_available = false
+	shine_time_left = SHINE_DURATION
+	shine_heal_timer = 0.0
+	
+	# Boost soul light energy temporarily
+	if soul_light:
+		soul_light.energy = SHINE_SOUL_BOOST / 100.0  # Scale for visual effect
+		soul_light.scale = Vector2.ONE * 2.0
+	
+	# Play activation sound (if you have one)
+	# play_sfx_once(sfx_shine)
+
+func _handle_shine_active(delta: float) -> void:
+	shine_time_left -= delta
+	shine_heal_timer += delta
+	
+	# Heal 5 HP per second
+	if shine_heal_timer >= 1.0:
+		if health < health_max:
+			health += SHINE_HEAL_PER_SEC
+			health = min(health, health_max)
+			health_bar.value = health
+			print("[Shine] Healed 5 HP. Current health: ", health)
+		shine_heal_timer = 0.0
+	
+	# Keep soul light at max while shining
+	soul_value = soul_max
+	
+	# Maintain bright visual effect
+	if soul_light:
+		soul_light.energy = SHINE_SOUL_BOOST / 100.0
+		soul_light.scale = Vector2.ONE * 2.0
+	
+	# End shine if duration expires
+	if shine_time_left <= 0.0:
+		_end_shine(false)
+
+func _start_shine_cooldown() -> void:
+	shine_on_cooldown = true
+	print("[Shine] Cooldown started (30 seconds)")
+	await get_tree().create_timer(SHINE_COOLDOWN).timeout
+	shine_on_cooldown = false
+	print("[Shine] Cooldown finished! Ability ready.")
+
+func _end_shine(interrupted: bool) -> void:
+	if not shine_active:
+		return
+	
+	shine_active = false
+	shine_time_left = 0.0
+	
+	if interrupted:
+		print("[Shine] Ability interrupted!")
+	else:
+		print("[Shine] Ability completed!")
+	
+	# Start cooldown
+	_start_shine_cooldown()
+	
+	# Reset soul light visual to normal
+	_update_soul_light_visual()
 
 func take_damage(damage: int) -> void:
 	if damage == 0 or dead:
 		return
+	
+	if shine_active:
+		_end_shine(true)
+	
 	if health > 0:
 		health -= damage
 		print("player health: ", health)
