@@ -29,7 +29,7 @@ func _on_floor_2_lvl_1_body_entered(body: Node2D) -> void:
 		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/testflr_2_lvl_1.tscn")
+		get_tree().change_scene_to_file("res://scene/floor_2_level_1.tscn")
 
 func _on_spike_collision_body_entered(body: Node2D) -> void:
 	if body is Player and body.can_take_damage:

@@ -33,6 +33,8 @@ var touchdash: bool = false
 var touchshine: bool = false 
 var joystick: bool = false
 
+var is_retrying_level: bool = false
+
 var selected_floor: String = "floor_1"
 
 # Soul Light Control
@@ -78,6 +80,10 @@ func _ready() -> void:
 	if user_id != "" and OS.has_feature("network"):
 		if SaveManager.has_method("sync_from_supabase"):
 			SaveManager.sync_from_supabase(user_id)
+
+func set_retrying(value: bool) -> void:
+	is_retrying_level = value
+	print("[Global] Retry flag set to: ", value)
 
 func enable_soul_light():
 	soul_light_enabled = true

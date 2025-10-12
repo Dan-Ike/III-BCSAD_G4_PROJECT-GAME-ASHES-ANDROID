@@ -1,18 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://bletdowgl1r03"]
+[gd_scene load_steps=4 format=3 uid="uid://328bqvoevr2x"]
 
-[ext_resource type="Script" uid="uid://c30b4ipvsdq27" path="res://script/cutscene.gd" id="1_drs7p"]
+[ext_resource type="Script" uid="uid://b2ciyf6aiwyhj" path="res://script/good_ending.gd" id="1_ebubx"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8lxk"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ebubx"]
+bg_color = Color(0, 0, 0, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_drs7p"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ch3ek"]
+bg_color = Color(0.299547, 0.299547, 0.299547, 1)
 
-[node name="Cutscene" type="CanvasLayer"]
-script = ExtResource("1_drs7p")
+[node name="good_ending" type="CanvasLayer"]
+script = ExtResource("1_ebubx")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="Background" type="TextureRect" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 112.0
+offset_bottom = -115.0
 grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
@@ -32,10 +44,11 @@ anchor_left = 0.1
 anchor_top = 0.839
 anchor_right = 0.904
 anchor_bottom = 0.976
+offset_left = -124.0
 offset_top = -0.0800171
-offset_right = -0.120117
-offset_bottom = 0.279968
-theme_override_styles/panel = SubResource("StyleBoxFlat_j8lxk")
+offset_right = 121.88
+offset_bottom = 14.28
+theme_override_styles/panel = SubResource("StyleBoxFlat_ebubx")
 
 [node name="TextMargin" type="MarginContainer" parent="TextContainer"]
 layout_mode = 2
@@ -48,6 +61,7 @@ theme_override_constants/margin_bottom = 20
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
@@ -61,7 +75,7 @@ grow_vertical = 2
 [node name="SummaryPanel" type="PanelContainer" parent="SummaryContainer"]
 custom_minimum_size = Vector2(800, 500)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_drs7p")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ch3ek")
 
 [node name="SummaryMargin" type="MarginContainer" parent="SummaryContainer/SummaryPanel"]
 layout_mode = 2

@@ -17,7 +17,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
-func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
+func _on_floor_1_lvl_3_body_entered(body: Node2D) -> void:
 	if body is Player:
 		Global.gameStarted = true
 		unlock_dash()

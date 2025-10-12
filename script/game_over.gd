@@ -1,5 +1,4 @@
 extends CanvasLayer
-
 @onready var overlay: ColorRect = $Overlay
 @onready var center_container: CenterContainer = $CenterContainer
 @onready var title: Label = $CenterContainer/Panel/MarginContainer/VBox/Title
@@ -18,12 +17,31 @@ var quotes: Dictionary = {
 		"Do not fear the darkness — it teaches you to see the light.",
 		"Only by losing everything do we learn what matters most."
 	],
+	"1_3": [
+		"git gud",
+		"ah nahulog"
+	],
+	"2_1": [
+		"dilim ba",
+		"sakit"
+	],
+	"2_2": [
+		"ubos ba pasensya",
+		"inner peace"
+	],
+	"3_1": [
+		"weeak",
+		"hina."
+	],
+	"3_2": [
+		"paayos",
+		"fsdfds"
+	],
 	"default": [
 		"Sometimes falling is the only way to rise.",
 		"Darkness is not the end — it's where stars are born."
 	]
 }
-
 
 func _ready() -> void:
 	# CRITICAL: Process even when paused
@@ -35,7 +53,8 @@ func _ready() -> void:
 	# Connect buttons
 	retry.pressed.connect(_on_retry_pressed)
 	main_menu.pressed.connect(_on_main_menu_pressed)
-
+	
+	# DON'T play music here - wait until show_game_over is called
 
 func show_game_over(floor_num: int, level_num: int) -> void:
 	# Seed RNG for varied quotes
@@ -43,6 +62,9 @@ func show_game_over(floor_num: int, level_num: int) -> void:
 	rng.randomize()
 	
 	print("[GameOver] Showing game over for Floor %d, Level %d" % [floor_num, level_num])
+	
+	# Play game over music ONLY when actually showing game over
+	MusicManager.play_song("gameover")
 	
 	# Update floor/level label
 	floor_level.text = "Floor %d - Level %d" % [floor_num, level_num]
@@ -83,21 +105,27 @@ func show_game_over(floor_num: int, level_num: int) -> void:
 	# Pause the game
 	get_tree().paused = true
 
-
 func _on_retry_pressed() -> void:
 	print("[GameOver] Retry pressed")
+	
+	# Set retry flag BEFORE reloading
+	Global.set_retrying(true)
+	
+	# STOP game over music before reloading
+	MusicManager.stop_song()
 	
 	# Hide the UI
 	visible = false
 	
 	# Unpause and reload
 	get_tree().paused = false
-	#await get_tree().create_timer(0.1).timeout
 	get_tree().reload_current_scene()
-
 
 func _on_main_menu_pressed() -> void:
 	print("[GameOver] Main menu pressed")
+	
+	# STOP game over music
+	MusicManager.stop_music()
 	
 	# Hide the UI
 	visible = false
@@ -105,5 +133,6 @@ func _on_main_menu_pressed() -> void:
 	# Unpause and go to menu
 	get_tree().paused = false
 	Global.reset_progress()
-	#await get_tree().create_timer(0.1).timeout
+	
+	# Main menu will handle its own music
 	get_tree().change_scene_to_file("res://scene/main_menu.tscn")

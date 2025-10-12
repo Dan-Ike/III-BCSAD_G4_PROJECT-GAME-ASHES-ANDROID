@@ -39,6 +39,7 @@ func _update_floor_buttons() -> void:
 func _on_floor_1_pressed() -> void:
 	Global.selected_floor = "floor_1"
 	get_tree().change_scene_to_file("res://scene/floor_level.tscn")
+	
 
 func _on_floor_2_pressed() -> void:
 	Global.selected_floor = "floor_2"

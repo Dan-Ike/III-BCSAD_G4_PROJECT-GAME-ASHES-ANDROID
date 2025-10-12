@@ -20,7 +20,8 @@ var data := {
 		}
 	},
 	"collectables": [],
-	"settings": {}
+	"settings": {},
+	"watched_cutscenes": []  # Track which cutscenes have been watched
 }
 
 var current_user_id: String = ""
@@ -84,6 +85,8 @@ func _load_local() -> void:
 					}
 				elif not data["progress"]["abilities"].has("shine"):
 					data["progress"]["abilities"]["shine"] = false
+				if not data.has("watched_cutscenes"):
+					data["watched_cutscenes"] = []
 				print("SaveManager: Local save loaded - Current: Floor %d Level %d" % [
 					data["progress"]["current_floor"], 
 					data["progress"]["current_level"]
@@ -183,6 +186,37 @@ func is_level_unlocked(floor_name: String, level_name: String) -> bool:
 			return true
 	return false
 
+#cutscene tracking
+func mark_cutscene_watched(cutscene_id: String) -> void:
+	"""Mark a cutscene as watched"""
+	if not data.has("watched_cutscenes"):
+		data["watched_cutscenes"] = []
+	
+	if cutscene_id not in data["watched_cutscenes"]:
+		data["watched_cutscenes"].append(cutscene_id)
+		_save_local()
+		print("SaveManager: Cutscene '%s' marked as watched" % cutscene_id)
+		
+		if current_user_id != "":
+			push_all_to_supabase()
+
+func has_watched_cutscene(cutscene_id: String) -> bool:
+	"""Check if a cutscene has been watched"""
+	if not data.has("watched_cutscenes"):
+		data["watched_cutscenes"] = []
+		return false
+	
+	return cutscene_id in data["watched_cutscenes"]
+
+func reset_cutscene_history() -> void:
+	"""Reset all watched cutscenes (useful for debugging or new game+)"""
+	data["watched_cutscenes"] = []
+	_save_local()
+	print("SaveManager: All cutscene history reset")
+	
+	if current_user_id != "":
+		push_all_to_supabase()
+
 #supabase sync
 func sync_from_supabase(user_id: String) -> void:
 	if user_id == "":
@@ -228,6 +262,7 @@ func push_all_to_supabase() -> void:
 		"is_completed": false,  
 		"abilities": data["progress"].get("abilities", {}),
 		"completed_levels": data["progress"].get("completed_levels", {}),
+		"watched_cutscenes": data.get("watched_cutscenes", []),
 		"last_played_at": "now()"
 	}
 	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
@@ -246,7 +281,23 @@ func _merge_completed_levels(local_completed: Dictionary, cloud_completed: Dicti
 			merged[key] = true
 	return merged
 
-# compare which is hight, local vs supabase
+func _merge_watched_cutscenes(local_watched: Array, cloud_watched: Array) -> Array:
+	"""Merge watched cutscenes from local and cloud"""
+	var merged = []
+	
+	# Add all local watched cutscenes
+	for cutscene in local_watched:
+		if cutscene not in merged:
+			merged.append(cutscene)
+	
+	# Add all cloud watched cutscenes
+	for cutscene in cloud_watched:
+		if cutscene not in merged:
+			merged.append(cutscene)
+	
+	return merged
+
+# compare which is high, local vs supabase
 func _get_highest_completed_level(completed_levels: Dictionary) -> Dictionary:
 	var highest = {"floor": 0, "level": 0}
 	for key in completed_levels:
@@ -274,11 +325,21 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				var cloud_level = int(row.get("level_number", 1))
 				var cloud_completed = row.get("completed_levels", {})
 				var cloud_abilities = row.get("abilities", {})
+				var cloud_watched = row.get("watched_cutscenes", [])
+				
 				var local_floor = data["progress"]["current_floor"]
 				var local_level = data["progress"]["current_level"]
 				var local_completed = data["progress"].get("completed_levels", {})
+				var local_watched = data.get("watched_cutscenes", [])
+				
+				# Merge completed levels
 				var merged_completed = _merge_completed_levels(local_completed, cloud_completed)
 				data["progress"]["completed_levels"] = merged_completed
+				
+				# Merge watched cutscenes
+				var merged_watched = _merge_watched_cutscenes(local_watched, cloud_watched)
+				data["watched_cutscenes"] = merged_watched
+				
 				var local_highest = _get_highest_completed_level(local_completed)
 				var cloud_highest = _get_highest_completed_level(cloud_completed)
 				var use_cloud_position = false
@@ -297,7 +358,7 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 						data["progress"]["abilities"][ability] = true
 				_save_local()
 				_apply_abilities_to_global()
-				print("SaveManager: Sync complete - Completed levels: %s" % data["progress"]["completed_levels"])
+				print("SaveManager: Sync complete - Completed levels: %s, Watched cutscenes: %s" % [data["progress"]["completed_levels"], data["watched_cutscenes"]])
 				push_all_to_supabase()
 			else:
 				print("SaveManager: No cloud progress found, pushing local to cloud")

@@ -1,13 +1,12 @@
-[gd_scene load_steps=16 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=15 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
-[ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_3er1b"]
-[ext_resource type="FontFile" uid="uid://qbigf5scgon2" path="res://art/HauntedHillSpooky-Spooky.ttf" id="2_hxu56"]
+[ext_resource type="Texture2D" uid="uid://cnq08b1w83cji" path="res://art/3.png" id="2_sepwh"]
 [ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="5_14wem"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="5_sepwh"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hxu56"]
-texture = ExtResource("1_3er1b")
+texture = ExtResource("2_sepwh")
 modulate_color = Color(0.650128, 0.650128, 0.650128, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hxu56"]
@@ -78,17 +77,16 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_hxu56")
 
 [node name="MainBtns" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.508
 anchor_top = 0.631
 anchor_right = 0.508
 anchor_bottom = 0.631
-offset_left = -203.24
-offset_top = -158.32
-offset_right = 203.76
-offset_bottom = 157.68
+offset_left = -446.24
+offset_top = -146.32
+offset_right = -39.24
+offset_bottom = 169.68
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 20
@@ -117,7 +115,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_2fwvj")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
-text = "Options
+text = "Settings
 "
 
 [node name="exit" type="Button" parent="MainBtns"]
@@ -134,38 +132,18 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
 text = "Exit
 "
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.259
-anchor_right = 0.5
-anchor_bottom = 0.259
-offset_left = -95.5
-offset_top = -51.48
-offset_right = 95.5
-offset_bottom = 51.52
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_y = 10
-theme_override_fonts/font = ExtResource("2_hxu56")
-theme_override_font_sizes/font_size = 64
-text = "Ashes"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="Options" type="Panel" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.509
 anchor_top = 0.606
 anchor_right = 0.509
 anchor_bottom = 0.606
-offset_left = -247.52
-offset_top = -211.32
-offset_right = 251.48
-offset_bottom = 230.68
+offset_left = -500.52
+offset_top = -174.32
+offset_right = -1.52002
+offset_bottom = 267.68
 
 [node name="Label" type="Label" parent="Options"]
 layout_mode = 1
@@ -174,7 +152,7 @@ anchor_right = 1.0
 offset_bottom = 78.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 32
-text = "Options"
+text = "Settings"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -228,16 +206,31 @@ vertical_alignment = 1
 [node name="Label3" type="Label" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.198
+anchor_left = 0.076
 anchor_top = 0.509
-anchor_right = 0.559
+anchor_right = 0.335
 anchor_bottom = 0.609
-offset_left = 0.19799
+offset_left = 0.0759888
 offset_top = 0.0220032
-offset_right = 7.05899
+offset_right = -0.165009
 offset_bottom = -0.178009
 theme_override_font_sizes/font_size = 24
 text = "Control"
+vertical_alignment = 1
+
+[node name="Label5" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.519
+anchor_top = 0.509
+anchor_right = 0.778
+anchor_bottom = 0.609
+offset_left = 0.0189819
+offset_top = 0.0220032
+offset_right = -0.222015
+offset_bottom = -0.178009
+theme_override_font_sizes/font_size = 24
+text = "Cutscene"
 vertical_alignment = 1
 
 [node name="AudioControl" type="HSlider" parent="Options"]
@@ -283,14 +276,14 @@ audio_bus_name = "SFX"
 [node name="ControlChoice" type="OptionButton" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.503
-anchor_top = 0.678
-anchor_right = 0.503
-anchor_bottom = 0.678
-offset_left = -158.997
-offset_top = -23.676
-offset_right = 159.003
-offset_bottom = 23.324
+anchor_left = 0.226
+anchor_top = 0.673
+anchor_right = 0.226
+anchor_bottom = 0.673
+offset_left = -71.774
+offset_top = -23.466
+offset_right = 72.226
+offset_bottom = 23.534
 theme_override_font_sizes/font_size = 28
 selected = 0
 item_count = 2
@@ -299,7 +292,27 @@ popup/item_0/id = 0
 popup/item_1/text = "Joystick"
 popup/item_1/id = 1
 
+[node name="CutsceneChoice" type="OptionButton" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.677
+anchor_top = 0.673
+anchor_right = 0.677
+anchor_bottom = 0.673
+offset_left = -71.823
+offset_top = -23.466
+offset_right = 72.177
+offset_bottom = 23.534
+theme_override_font_sizes/font_size = 28
+selected = 0
+item_count = 2
+popup/item_0/text = "Play Once"
+popup/item_0/id = 0
+popup/item_1/text = "Always"
+popup/item_1/id = 1
+
 [node name="GoogleLogin" type="TextureRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.922
@@ -315,6 +328,7 @@ mouse_default_cursor_shape = 2
 texture = ExtResource("5_14wem")
 
 [node name="ProfilePic" type="TextureRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.098

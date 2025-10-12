@@ -32,12 +32,14 @@ texture = SubResource("GradientTexture2D_icg1l")
 texture_scale = 4.0
 
 [node name="IgniteDetect" type="Area2D" parent="."]
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="IgniteDetect"]
 position = Vector2(-1, 43)
 shape = SubResource("CapsuleShape2D_36k3j")
 
 [node name="TorchLight" type="Area2D" parent="."]
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TorchLight"]
 position = Vector2(-0.5, -7.25)

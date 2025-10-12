@@ -5,6 +5,9 @@ extends Control
 @onready var control_choice: OptionButton = $Options/ControlChoice
 @onready var google_login: TextureRect = $GoogleLogin
 @onready var profile_pic: TextureRect = $ProfilePic
+@onready var cutscene_choice: OptionButton = $Options/CutsceneChoice
+@onready var start_button: Button = $MainBtns/start
+@onready var loading: CanvasLayer = $loading
 
 const SUPABASE_URL = "https://fsntwndbknzhmotgphtj.supabase.co"
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbnR3bmRia256aG1vdGdwaHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NjUwMjAsImV4cCI6MjA3NTE0MTAyMH0.ZJESWD5jcH2rmFodnwHpI_cSsQWqnk1Fk-mmcrjP5mE"
@@ -18,28 +21,66 @@ func _ready() -> void:
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
+	
+	var saved_cutscene_pref = SaveManager.get_setting("cutscene_preference")
+	if saved_cutscene_pref == null:
+		saved_cutscene_pref = "play_once"  # Default
+		SaveManager.set_setting("cutscene_preference", saved_cutscene_pref)
+	
+	if saved_cutscene_pref == "play_once":
+		cutscene_choice.select(0)
+	elif saved_cutscene_pref == "always":
+		cutscene_choice.select(1)
+	
+	cutscene_choice.item_selected.connect(_on_cutscene_choice_selected)
+	
 	google_login.gui_input.connect(_on_google_login_input)
 	profile_pic.gui_input.connect(_on_profile_click)
+	
 	if Global.get_current_user().size() > 0:
 		google_login.visible = false
 		_update_google_profile_image(Global.get_avatar_url())
 	else:
 		google_login.visible = true
 		_update_profile_placeholder()
+	
 	print("Main menu ready")
-	_load_session()
+	#_load_session()
+	
 	if OS.has_feature("Android"):
 		_check_for_deep_link()
 		get_tree().root.focus_entered.connect(_on_app_focus_gained)
+		
+	_update_start_button_text()
+	google_login.visible = false
+	google_login.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _update_start_button_text() -> void:
+	"""Update Start button to show 'Continue' if player has progress"""
+	if start_button:
+		# Check if player has completed at least one level
+		var has_progress = SaveManager.data["progress"]["completed_levels"].size() > 0
+		
+		# Or check if they're past the first level
+		var current_floor = SaveManager.data["progress"]["current_floor"]
+		var current_level = SaveManager.data["progress"]["current_level"]
+		var is_past_first_level = (current_floor > 1) or (current_floor == 1 and current_level > 1)
+		
+		if has_progress or is_past_first_level:
+			start_button.text = "Continue"
+		else:
+			start_button.text = "Start Game"
 
 func _on_app_focus_gained():
 	if OS.has_feature("Android"):
 		print("App resumed - checking for deep link")
 		_check_for_deep_link()
 
+
 func _exit_tree():
 	if get_tree() and get_tree().root and get_tree().root.focus_entered.is_connected(_on_app_focus_gained):
 		get_tree().root.focus_entered.disconnect(_on_app_focus_gained)
+
 
 #android deep link handler
 func _check_for_deep_link():
@@ -58,6 +99,7 @@ func _check_for_deep_link():
 			print("Deep link detected in user args:", arg)
 			_parse_oauth_callback(arg)
 			return
+
 
 func _parse_oauth_callback(url: String):
 	"""Parse tokens from OAuth callback URL"""
@@ -86,6 +128,7 @@ func _parse_oauth_callback(url: String):
 	else:
 		_show_error("No access token found in callback")
 
+
 #google login
 func _on_google_login_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
@@ -97,6 +140,7 @@ func _on_google_login_input(event: InputEvent) -> void:
 			_login_with_pasted_token()
 			_start_google_oauth_flow()
 
+
 func _start_google_oauth_flow():
 	var redirect_url = ""
 	if OS.has_feature("Android"):
@@ -105,6 +149,7 @@ func _start_google_oauth_flow():
 		redirect_url = SUPABASE_URL + "/auth/v1/callback"
 	var oauth_url = SUPABASE_URL + "/auth/v1/authorize?provider=google&prompt=select_account&redirect_to=" + redirect_url
 	OS.shell_open(oauth_url)
+
 
 #manual login for desktop
 func _login_with_pasted_token():
@@ -153,6 +198,7 @@ func _perform_login(access_token: String, refresh_tok: String = ""):
 	print("Fetching user info with access token")
 	http.request(url, headers, HTTPClient.METHOD_GET)
 
+
 func _on_user_info_request_completed(result, response_code, headers, body, access_token, refresh_tok):
 	if http.request_completed.is_connected(_on_user_info_request_completed):
 		http.request_completed.disconnect(_on_user_info_request_completed)
@@ -180,6 +226,7 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 			google_login.visible = true
 			_update_profile_placeholder()
 
+
 func _refresh_access_token():
 	var stored_refresh = Global.refresh_token
 	if stored_refresh == "":
@@ -197,6 +244,7 @@ func _refresh_access_token():
 	var body = JSON.stringify({"refresh_token": stored_refresh})
 	print("Attempting to refresh access token")
 	http.request(url, headers, HTTPClient.METHOD_POST, body)
+
 
 func _on_refresh_token_response(result, response_code, headers, body):
 	if http.request_completed.is_connected(_on_refresh_token_response):
@@ -219,12 +267,14 @@ func _on_refresh_token_response(result, response_code, headers, body):
 		_show_error("❌ Refresh failed (" + str(response_code) + "): " + text)
 		_handle_refresh_failure()
 
+
 func _handle_refresh_failure():
 	"""Handle failed refresh - clear session and show login"""
 	google_login.visible = true
 	_update_profile_placeholder()
 	_clear_session_file()
 	Global.clear_session()
+
 
 func _save_session(token: String, refresh: String, user_data: Dictionary) -> void:
 	var session = {
@@ -239,6 +289,7 @@ func _save_session(token: String, refresh: String, user_data: Dictionary) -> voi
 		print("Session saved to file")
 	else:
 		push_error("Failed to save session file")
+
 
 func _load_session() -> void:
 	if FileAccess.file_exists("user://session.json"):
@@ -260,11 +311,13 @@ func _load_session() -> void:
 		else:
 			print("Could not parse session file")
 
+
 func _clear_session_file() -> void:
 	"""Delete the session file"""
 	if FileAccess.file_exists("user://session.json"):
 		DirAccess.remove_absolute("user://session.json")
 		print("Session file deleted")
+
 
 func _update_google_profile_image(avatar_url: String):
 	if avatar_url == "":
@@ -284,12 +337,14 @@ func _update_google_profile_image(avatar_url: String):
 	)
 	http_avatar.request(avatar_url)
 
+
 func _update_profile_placeholder():
 	var img = Image.new()
 	img.create(64, 64, false, Image.FORMAT_RGB8)
 	img.fill(Color(0.2, 0.6, 1.0))
 	profile_pic.texture = ImageTexture.create_from_image(img)
 	print("Placeholder profile loaded!")
+
 
 #logout
 func _on_profile_click(event: InputEvent) -> void:
@@ -307,22 +362,47 @@ func _on_profile_click(event: InputEvent) -> void:
 			add_child(dlg)
 			dlg.popup_centered()
 
+
 #controls
 func _on_control_choice_selected(index: int) -> void:
 	Global.control_type = index
 
+
+#cutscene preference
+func _on_cutscene_choice_selected(index: int) -> void:
+	var preference = "play_once"
+	if index == 0:
+		preference = "play_once"
+	elif index == 1:
+		preference = "always"
+	
+	SaveManager.set_setting("cutscene_preference", preference)
+	print("Cutscene preference set to: %s" % preference)
+
+
 func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file("res://scene/floor.tscn")
+	Global.is_retrying_level = false
+	
+	# If you have a loading screen in main menu
+	if has_node("LoadingScreen"):
+		var loader = get_node("LoadingScreen")
+		loader.start_loading("res://scene/floor.tscn")
+	else:
+		get_tree().change_scene_to_file("res://scene/floor.tscn")
+
 
 func _on_options_pressed() -> void:
 	main_btns.visible = false
 	options.visible = true
 
+
 func _on_exit_pressed() -> void:
 	get_tree().quit()
 
+
 func _on_back_pressed() -> void:
 	_ready()
+
 
 #error
 func _show_error(msg: String) -> void:
@@ -330,6 +410,7 @@ func _show_error(msg: String) -> void:
 	dlg.dialog_text = msg
 	add_child(dlg)
 	dlg.popup_centered()
+
 
 func _show_info(msg: String) -> void:
 	"""Show info message to user"""

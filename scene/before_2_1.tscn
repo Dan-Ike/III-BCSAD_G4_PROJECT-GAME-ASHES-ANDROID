@@ -1,0 +1,125 @@
+[gd_scene load_steps=4 format=3 uid="uid://cqeev4lpf6ncp"]
+
+[ext_resource type="Script" uid="uid://cudo7mmj0krnl" path="res://script/before_2_1.gd" id="1_th4eu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j4gxf"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_th4eu"]
+bg_color = Color(0.299547, 0.299547, 0.299547, 1)
+
+[node name="before_2_1" type="CanvasLayer"]
+script = ExtResource("1_th4eu")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Background" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 112.0
+offset_bottom = -115.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ClickArea" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextContainer" type="PanelContainer" parent="."]
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.839
+anchor_right = 0.904
+anchor_bottom = 0.976
+offset_left = -124.0
+offset_top = -0.0800171
+offset_right = 121.88
+offset_bottom = 14.28
+theme_override_styles/panel = SubResource("StyleBoxFlat_j4gxf")
+
+[node name="TextMargin" type="MarginContainer" parent="TextContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 20
+
+[node name="TextLabel" type="Label" parent="TextContainer/TextMargin"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="SummaryContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SummaryPanel" type="PanelContainer" parent="SummaryContainer"]
+custom_minimum_size = Vector2(800, 500)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_th4eu")
+
+[node name="SummaryMargin" type="MarginContainer" parent="SummaryContainer/SummaryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="SummaryVBox" type="VBoxContainer" parent="SummaryContainer/SummaryPanel/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="SummaryTitle" type="Label" parent="SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Story So Far"
+horizontal_alignment = 1
+
+[node name="SummaryText" type="Label" parent="SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "\"Summary here woohoo\""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="SkipButton" type="Button" parent="."]
+anchors_preset = -1
+anchor_left = 0.85
+anchor_top = 0.029
+anchor_right = 0.965
+anchor_bottom = 0.107
+offset_top = 0.119999
+offset_right = -0.200073
+offset_bottom = -0.0400085
+text = "Skip"
+
+[node name="ContinueButton" type="Button" parent="."]
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.85
+anchor_right = 0.6
+anchor_bottom = 0.95
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Continue"

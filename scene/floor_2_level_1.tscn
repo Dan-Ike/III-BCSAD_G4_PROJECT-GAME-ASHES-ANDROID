@@ -1,10 +1,11 @@
-[gd_scene load_steps=52 format=3 uid="uid://bxryvbb5d6pj3"]
+[gd_scene load_steps=53 format=3 uid="uid://bxryvbb5d6pj3"]
 
 [ext_resource type="Script" uid="uid://bkxj4rm42sjs1" path="res://script/testflr_2_lvl_1.gd" id="1_w1861"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_7fund"]
 [ext_resource type="PackedScene" uid="uid://bsiqip3vsfyy2" path="res://scene/player.tscn" id="3_pqfmk"]
 [ext_resource type="PackedScene" uid="uid://dogiokehlidko" path="res://scene/torch.tscn" id="4_oakjt"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="5_w1861"]
+[ext_resource type="PackedScene" uid="uid://cqeev4lpf6ncp" path="res://scene/before_2_1.tscn" id="6_7fund"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_7fund")
@@ -277,10 +278,11 @@ size = Vector2(223, 9)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_eo782"]
 size = Vector2(51.25, 66.5)
 
-[node name="testflr2lvl1" type="Node2D"]
+[node name="floor_2_level_1" type="Node2D"]
 script = ExtResource("1_w1861")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
+visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="TileMap" type="TileMap" parent="."]
@@ -296,7 +298,6 @@ layer_2/tile_data = PackedInt32Array(262150, 131072, 1, 262151, 131072, 1, 26215
 
 [node name="player" parent="." instance=ExtResource("3_pqfmk")]
 position = Vector2(255, -53)
-soul_mode = 2
 
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)
@@ -308,18 +309,23 @@ limit_smoothed = true
 
 [node name="Torch" parent="." instance=ExtResource("4_oakjt")]
 position = Vector2(1706, -1336)
+enable_greed_mechanic = false
 
 [node name="Torch2" parent="." instance=ExtResource("4_oakjt")]
 position = Vector2(3361, -309)
+enable_greed_mechanic = false
 
 [node name="Torch5" parent="." instance=ExtResource("4_oakjt")]
 position = Vector2(3361, -565)
+enable_greed_mechanic = false
 
 [node name="Torch3" parent="." instance=ExtResource("4_oakjt")]
 position = Vector2(129, -309)
+enable_greed_mechanic = false
 
 [node name="Torch6" parent="." instance=ExtResource("4_oakjt")]
 position = Vector2(129, -565)
+enable_greed_mechanic = false
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
@@ -932,6 +938,7 @@ occluder = SubResource("OccluderPolygon2D_6toq2")
 occluder = SubResource("OccluderPolygon2D_ur3eq")
 
 [node name="spike_collision" type="Area2D" parent="."]
+collision_mask = 2
 
 [node name="CollisionShape2D15" type="CollisionShape2D" parent="spike_collision"]
 position = Vector2(2056, -693)
@@ -1410,6 +1417,7 @@ debug_color = Color(0.999132, 0, 0.122649, 0.42)
 
 [node name="floor2lvl2" type="Area2D" parent="."]
 position = Vector2(-3915, -576)
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="floor2lvl2"]
 position = Vector2(7286, 605)
@@ -1417,34 +1425,34 @@ shape = SubResource("RectangleShape2D_eo782")
 debug_color = Color(0.671141, 0.508701, 0, 0.42)
 
 [node name="1" type="ColorRect" parent="."]
-offset_left = 3304.0
-offset_top = 32.0
-offset_right = 3321.0
-offset_bottom = 48.0
+offset_left = 3322.0
+offset_top = 47.0
+offset_right = 3339.0
+offset_bottom = 63.0
 
 [node name="2" type="ColorRect" parent="."]
-offset_left = 3321.0
-offset_top = -7.0
-offset_right = 3338.0
-offset_bottom = 9.0
+offset_left = 3322.0
+offset_top = 13.0
+offset_right = 3339.0
+offset_bottom = 29.0
 
 [node name="3" type="ColorRect" parent="."]
-offset_left = 3360.0
-offset_top = -31.0
-offset_right = 3377.0
-offset_bottom = -15.0
+offset_left = 3363.0
+offset_top = -28.0
+offset_right = 3380.0
+offset_bottom = -12.0
 
 [node name="4" type="ColorRect" parent="."]
-offset_left = 3405.0
-offset_top = -11.0
-offset_right = 3422.0
-offset_bottom = 5.0
+offset_left = 3406.0
+offset_top = 14.0
+offset_right = 3423.0
+offset_bottom = 30.0
 
 [node name="5" type="ColorRect" parent="."]
-offset_left = 3422.0
-offset_top = 35.0
-offset_right = 3439.0
-offset_bottom = 51.0
+offset_left = 3407.0
+offset_top = 48.0
+offset_right = 3424.0
+offset_bottom = 64.0
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -1453,6 +1461,8 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("5_w1861")]
+
+[node name="before_2_1" parent="." instance=ExtResource("6_7fund")]
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor2lvl2" to="." method="_on_floor_2_lvl_2_body_entered"]

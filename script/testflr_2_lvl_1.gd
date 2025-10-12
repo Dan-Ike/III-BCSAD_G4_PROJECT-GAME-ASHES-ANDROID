@@ -18,8 +18,10 @@ extends Node2D
 @export var min_brightness: float = 0.2
 @export var max_brightness: float = 1.0
 @export var tint_color: Color = Color(1.0, 1.0, 1.0)
-@onready var camera_2d: Camera2D = $Camera2D
+#@onready var camera_2d: Camera2D = $Camera2D
 @onready var navigation_region_2d: NavigationRegion2D = $NavigationRegion2D
+@onready var camera_2d_2: Camera2D = $player/Camera2D2
+@onready var before_2_1: CanvasLayer = $before_2_1
 
 var torch_list: Array[Torch] = []
 var indicator_list: Array[ColorRect] = []
@@ -32,18 +34,49 @@ const COLOR_LIT = Color(1.0, 0.9, 0.0, 1.0)
 func _ready() -> void:
 	Global.set_floor_level(2, 1)
 	player_camera.enabled = false
-	camera_2d.enabled = true
-	unlock_double_jump()
-	unlock_shine()
+	camera_2d_2.enabled = true
+	#unlock_double_jump()
+	#unlock_shine()
 	if scene_transition_animation:
 		scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 		scene_transition_animation.play("fade_out")
-	MusicManager.play_song("level1") #lvl1 muna 
+	#MusicManager.play_song("level1") #lvl1 muna 
 	_setup_torch_system()
 	_update_soul_light_state()
 	if floor_2_lvl_2:
 		floor_2_lvl_2.body_entered.connect(_on_floor_2_lvl_2_body_entered)
 	#print("[Floor 2-1] Torch puzzle initialized - Light all 5 torches to proceed!")
+	var should_play_cutscene = _should_show_cutscene()
+	
+	if should_play_cutscene:
+		player_camera.enabled = false
+		camera_2d_2.enabled = true
+		before_2_1.visible = true
+		before_2_1.start_cutscene("floor_2_level_1_prologue")
+	else:
+		get_tree().paused = false  
+		player_camera.enabled = true
+		camera_2d_2.enabled = true
+		MusicManager.play_song("level2")
+		
+		if before_2_1:
+			before_2_1.queue_free()
+	Global.set_retrying(false)
+
+
+func _should_show_cutscene() -> bool:
+	"""Determine if cutscene should play based on user preference"""
+	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
+	
+	if cutscene_pref == null:
+		cutscene_pref = "play_once"
+	
+	if cutscene_pref == "always":
+		return not Global.is_retrying_level
+	elif cutscene_pref == "play_once":
+		return not SaveManager.has_watched_cutscene("floor_2_level_1_prologue")
+	
+	return false
 
 func unlock_double_jump():
 	Global.can_double_jump = true
@@ -150,12 +183,13 @@ func _on_floor_2_lvl_2_body_entered(body: Node2D) -> void:
 	SaveManager.mark_level_completed(2, 1)
 	SaveManager.advance_to_level(2, 2)
 	Global.advance_level()
+	unlock_shine()
 	if body.touch_controls:
 		body.touch_controls.disable_all_controls()
 	if scene_transition_animation:
 		scene_transition_animation.play("fade_in")
 	await get_tree().create_timer(0.5).timeout
-	get_tree().change_scene_to_file("res://scene/testflr_2_lvl_1.tscn")
+	get_tree().change_scene_to_file("res://scene/floor_2_level_2.tscn")
 
 func _count_lit_torches() -> int:
 	#"""Helper to count currently lit torches"""
@@ -166,5 +200,8 @@ func _count_lit_torches() -> int:
 	return count
 
 func _on_spike_collision_body_entered(body: Node2D) -> void:
+	#if body is Player and body.can_take_damage:
+		#body.take_damage(Global.spikeDamageAmount)
 	if body is Player and body.can_take_damage:
-		body.take_damage(Global.spikeDamageAmount)
+		Global.is_retrying_level = true
+		body.die()

@@ -1,6 +1,8 @@
 extends CharacterBody2D
 class_name Player
 
+signal player_died
+
 # Nodes
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var deal_damage_zone: Area2D = $DealDamageZone
@@ -675,12 +677,20 @@ func die() -> void:
 	Input.action_release("dash")
 	handle_death_animation()
 
+
 func handle_death_animation() -> void:
+	player_died.emit()
+	
 	$CollisionShape2D.position.y = 5
 	animated_sprite.play("death")
 	await get_tree().create_timer(0.5).timeout
 	$Camera2D.zoom = Vector2(4, 4)
 	await get_tree().create_timer(1.0).timeout
+	var parent_level = get_parent()
+	if parent_level and parent_level.has_method("_on_player_died"):
+		if "ending_playing" in parent_level and parent_level.ending_playing:
+			return  
+	
 	Global.playerAlive = false
 	var died_on_floor = Global.current_floor
 	var died_on_level = Global.current_level

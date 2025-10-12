@@ -10,8 +10,10 @@ var inactive_player: AudioStreamPlayer
 var music_library := {
 	"menu": preload("res://audio/mortal-gaming-144000.mp3"),
 	"level1": preload("res://audio/we-rollin-shubh-levinho-144001.mp3"),
-	"boss": preload("res://audio/energy-gaming-electro-trap-with-heavy-drums-and-futuristic-bass-drops-301131.mp3"),
-	"gameover": preload("res://audio/energy-gaming-electro-trap-with-heavy-drums-and-futuristic-bass-drops-301131.mp3")
+	"level2": preload("res://audio/vikings-147827.mp3"),
+	"level3": preload("res://audio/jonathan-gaming-143999.mp3"),
+	"boss": preload("res://audio/victory-awaits-in-the-gaming-universe_astronaut-265184.mp3"),
+	"gameover": preload("res://audio/game_defeat-_-game-over-373827.mp3")
 }
 
 @export var crossfade_time := 1.5

@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://bt7f0p1pmqjrg"]
+
+[ext_resource type="Script" uid="uid://ooadbak8am2k" path="res://script/loading.gd" id="1_bxkk0"]
+[ext_resource type="Texture2D" uid="uid://bsx1ha3cumqvs" path="res://art/2.png" id="1_qb5h4"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bxkk0"]
+texture = ExtResource("1_qb5h4")
+modulate_color = Color(0.347817, 0.347817, 0.347817, 1)
+
+[node name="loading" type="CanvasLayer"]
+script = ExtResource("1_bxkk0")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_bxkk0")
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 1092.0
+offset_top = 665.0
+offset_right = 1265.0
+offset_bottom = 710.0
+theme_override_font_sizes/font_size = 32
+text = "Loading . . ."

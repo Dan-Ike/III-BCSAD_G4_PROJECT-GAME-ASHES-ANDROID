@@ -86,6 +86,7 @@ func _update_controls_visibility() -> void:
 	jump.visible = Global.touchjump
 	atk.visible = Global.touchatk
 	dash.visible = Global.touchdash
+	shine.visible = Global.touchshine
 	pause.visible = pause_enabled
 
 func _hide_all_controls() -> void:
@@ -94,6 +95,7 @@ func _hide_all_controls() -> void:
 	jump.visible = false
 	atk.visible = false
 	dash.visible = false
+	shine.visible = false
 	virtual_joystick.hide()
 	virtual_joystick.set_process(false)
 	virtual_joystick.set_block_signals(true)

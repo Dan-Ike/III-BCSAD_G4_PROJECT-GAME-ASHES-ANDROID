@@ -714,6 +714,7 @@ func take_damage(damage: int) -> void:
 	if health <= 0:
 		health = 0
 		dead = true
+		animated_sprite.play("death")
 		print("[Enemy] DEFEATED!")
 	else:
 		if animated_sprite:

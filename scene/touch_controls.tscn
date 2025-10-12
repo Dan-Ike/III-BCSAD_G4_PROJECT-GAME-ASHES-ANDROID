@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://h8o3yxkpgn82" path="res://art/speed.png" id="4_gmaj2"]
 [ext_resource type="Texture2D" uid="uid://c4d750n7vg2w7" path="res://art/pause.png" id="5_bwiib"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="6_nito4"]
-[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="6_pl8x0"]
+[ext_resource type="Texture2D" uid="uid://brj1q1al7gv8k" path="res://art/brightness.png" id="6_pl8x0"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nito4"]
@@ -173,15 +173,15 @@ anchor_left = 0.878
 anchor_top = 0.445
 anchor_right = 0.878
 anchor_bottom = 0.445
-offset_left = -66.8401
-offset_top = -52.4
-offset_right = 67.1599
-offset_bottom = 52.6
+offset_left = -91.8401
+offset_top = -20.4
+offset_right = 42.1599
+offset_bottom = 84.6
 
 [node name="shine" type="TouchScreenButton" parent="Control/Control7"]
 process_mode = 3
-position = Vector2(-4.99993, -13)
-scale = Vector2(1.03906, 0.953125)
+position = Vector2(13.9999, 6)
+scale = Vector2(0.1875, 0.1875)
 texture_normal = ExtResource("6_pl8x0")
 action = "shine"
 
