@@ -64,9 +64,9 @@ func _on_floor_3_lvl_2_body_entered(body: Node2D) -> void:
 		Global.gameStarted = true
 		#unlock_dash()
 		#unlock_double_jump()
-		SaveManager.mark_level_completed(3, 1)  
-		SaveManager.advance_to_level(3, 2)      
-		Global.advance_level()
+		#SaveManager.mark_level_completed(3, 1)  
+		#SaveManager.advance_to_level(3, 2)      
+		#Global.advance_level()
 		#Global.advance_floor()
 		unlock_attack()
 		body.touch_controls.disable_all_controls() 

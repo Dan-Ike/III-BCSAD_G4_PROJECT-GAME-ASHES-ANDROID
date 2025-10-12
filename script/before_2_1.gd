@@ -67,8 +67,9 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "bat ka nag skip"
+	"text": "In the stillness of limbo, silence was heavier than death itself. Running became survival, not escape. Each sin—lust, gluttony, regret—devoured what remained of the path ahead. Breath faded, but will endured. When it was over, there was no peace waiting at the end—only truth. The tower never saves; it shows who you’ve become."
 }
+
 
 # State variables
 var current_scene_index = 0

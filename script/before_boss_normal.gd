@@ -75,8 +75,9 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "bat ka nag skip"
+	"text": "The descent was not a fall, but a return. Violence, Fraud, and Treachery were not enemies—they were memories carved into the walls of who I once was. Each step down stripped away the lies I built to survive. At the end, the final foe was not a monster, but my reflection. This was never a battle for victory, but for understanding. The door ahead no longer leads out—it leads through."
 }
+
 
 # State variables
 var current_scene_index = 0

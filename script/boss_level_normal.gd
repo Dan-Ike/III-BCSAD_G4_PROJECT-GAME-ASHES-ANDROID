@@ -15,7 +15,10 @@ var ending_playing: bool = false
 
 func _ready() -> void:
 	Global.set_floor_level(3, 1)
-	
+	unlock_attack()
+	unlock_dash()
+	unlock_double_jump()
+	unlock_shine()
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 	scene_transition_animation.play("fade_out")
 	
@@ -57,6 +60,28 @@ func _ready() -> void:
 	
 	Global.set_retrying(false)
 
+func unlock_double_jump():
+	Global.can_double_jump = true
+	SaveManager.unlock_ability("double_jump")
+
+func unlock_attack():
+	Global.touchatk = true
+	SaveManager.unlock_ability("attack")
+	var controls = get_tree().root.get_node("TouchControls")
+	if controls:
+		controls.show_attack_button()
+
+func unlock_shine():
+	Global.unlock_shine()
+	print("[Floor 2-1] Shine ability unlocked!")
+
+func unlock_dash():
+	Global.touchdash = true
+	SaveManager.unlock_ability("dash")
+	var controls = get_tree().root.get_node("TouchControls")
+	if controls:
+		controls.show_dash_button()
+
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""
 	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
@@ -96,7 +121,8 @@ func _on_boss_defeated() -> void:
 	
 	# Mark level as completed
 	SaveManager.mark_level_completed(3, 1)  
-	SaveManager.advance_to_level(3, 2)
+	#SaveManager.advance_to_level(3, 2)
+	#Global.advance_level()
 	
 	# Wait a moment for dramatic effect
 	#await get_tree().create_timer(1.0).timeout

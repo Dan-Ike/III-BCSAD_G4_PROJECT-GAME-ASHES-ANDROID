@@ -61,8 +61,9 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "bat ka nag skip"
+	"text": "Greed promised everything yet left nothing to claim. Anger forged strength from pain, and heresy whispered the truths I tried to forget. Each step was not redemption, but remembrance. The tower never offered mercy—it offered clarity. Now, before the final door, I understand: this journey was never about escape. It was about completion."
 }
+
 
 # State variables
 var current_scene_index = 0

@@ -68,8 +68,9 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "bat ka nag skip"
+	"text": "The tower did not crumble—it rested. The journey was never about erasing what was lost, but learning to carry it. No cheers, no sorrow, only remembrance. He left no monument, only proof that he endured. The boy survived, not as a hero, but as a witness. And as the echoes faded, the story did not end—it made room for another to begin."
 }
+
 
 # State variables
 var current_scene_index = 0

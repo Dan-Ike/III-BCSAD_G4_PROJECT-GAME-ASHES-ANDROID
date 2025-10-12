@@ -68,8 +68,9 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "bat ka nag skip"
+	"text": "The world moved on while I remained still—buried beneath memory and ash. The tower did not summon the worthy; it called the forgotten. Each echo, each step, was a reminder of what I had lost and what still lingered within me. When the door closed, the world faded, and only silence answered. That was where it began."
 }
+
 
 # State variables
 var current_scene_index = 0

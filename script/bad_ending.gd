@@ -49,8 +49,9 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "bat ka nag skip"
+	"text": "At the edge of everything, silence became the only answer. Forgiveness was never asked, and guilt was buried beneath the weight of forgetting. In the end, there was no judgment—only repetition. The tower did not condemn; it simply watched as the cycle began again."
 }
+
 
 # State variables
 var current_scene_index = 0

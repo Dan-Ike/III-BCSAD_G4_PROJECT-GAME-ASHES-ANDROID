@@ -8,7 +8,7 @@ extends CanvasLayer
 @onready var main_menu: Button = $CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/MainMenu
 
 # Quotes organized by floor/level
-var quotes: Dictionary = {
+var quotes = {
 	"1_1": [
 		"Failure is the first step to success.",
 		"Even the light must flicker before it burns bright again."
@@ -18,30 +18,30 @@ var quotes: Dictionary = {
 		"Only by losing everything do we learn what matters most."
 	],
 	"1_3": [
-		"git gud",
-		"ah nahulog"
+		"Every fall carves the path for your next climb.",
+		"You may stumble today, but the summit still waits for you tomorrow."
 	],
 	"2_1": [
-		"dilim ba",
-		"sakit"
+		"Patience is not waiting — it is enduring without losing focus.",
+		"The calm mind sees victory long before it arrives."
 	],
 	"2_2": [
-		"ubos ba pasensya",
-		"inner peace"
+		"The wise warrior studies the map before stepping into the field.",
+		"Awareness turns chaos into opportunity."
 	],
 	"3_1": [
-		"weeak",
-		"hina."
+		"Slow steps still conquer great distances.",
+		"Steady hands build what haste will only break."
 	],
 	"3_2": [
-		"paayos",
-		"fsdfds"
+		"The greatest battle is the one fought within yourself.",
+		"Master your heart, and the world will follow."
 	],
 	"default": [
 		"Sometimes falling is the only way to rise.",
 		"Darkness is not the end — it's where stars are born."
 	]
-}
+};
 
 func _ready() -> void:
 	# CRITICAL: Process even when paused

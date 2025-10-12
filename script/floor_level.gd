@@ -10,6 +10,8 @@ extends Control
 var levels: Array = []
 var current_index: int = 0
 const LEVELS_PER_FLOOR := 3
+const flrsec := 2
+const flrlast := 2
 
 func _ready() -> void:
 	var floor = Global.selected_floor
