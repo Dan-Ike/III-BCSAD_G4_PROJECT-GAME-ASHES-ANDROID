@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ctdvnvbag70nh"]
 
-[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="1_6itnm"]
 [ext_resource type="Script" uid="uid://bo1a8khod1fqo" path="res://script/splash.gd" id="1_70cgf"]
+[ext_resource type="Texture2D" uid="uid://ou3m2a0nfsoc" path="res://art/565515614_1355760659347191_5275799860096787221_n.png" id="2_70cgf"]
 
 [node name="splash" type="Control"]
 layout_mode = 3
@@ -23,15 +23,16 @@ color = Color(0, 0, 0, 1)
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.494
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -287.0
-offset_top = -214.5
-offset_right = 287.0
-offset_bottom = 214.5
+anchor_bottom = 0.494
+offset_left = -274.0
+offset_top = -216.68
+offset_right = 283.0
+offset_bottom = 216.32
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_6itnm")
+texture = ExtResource("2_70cgf")
+expand_mode = 1

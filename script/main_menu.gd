@@ -8,6 +8,10 @@ extends Control
 @onready var cutscene_choice: OptionButton = $Options/CutsceneChoice
 @onready var start_button: Button = $MainBtns/start
 @onready var loading: CanvasLayer = $loading
+@onready var newgame: Button = $newgame
+@onready var main_menu_4: Sprite2D = $MainMenu4
+@onready var unlockall: Button = $unlockall
+
 
 const SUPABASE_URL = "https://fsntwndbknzhmotgphtj.supabase.co"
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbnR3bmRia256aG1vdGdwaHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NjUwMjAsImV4cCI6MjA3NTE0MTAyMH0.ZJESWD5jcH2rmFodnwHpI_cSsQWqnk1Fk-mmcrjP5mE"
@@ -27,6 +31,9 @@ func _ready() -> void:
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
+	
+	newgame.pressed.connect(_on_newgame_pressed)
+	unlockall.pressed.connect(_on_unlockall_pressed)
 	
 	var saved_cutscene_pref = SaveManager.get_setting("cutscene_preference")
 	if saved_cutscene_pref == null:
@@ -86,6 +93,121 @@ void fragment() {
 		intent_timer.start(0.5)
 	
 	_update_start_button_text()
+	_update_newgame_button_visibility()
+
+func _on_unlockall_pressed() -> void:
+	# Check if user is logged in
+	if Global.get_current_user().size() > 0:
+		_show_error("❌ Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
+		return
+	
+	# Show confirmation dialog
+	var dlg := ConfirmationDialog.new()
+	dlg.dialog_text = "Unlock all levels and abilities?\n\nThis is for testing only and will not sync to cloud."
+	dlg.confirmed.connect(func():
+		_unlock_all_content()
+		_show_info("✅ All levels and abilities unlocked!")
+	)
+	add_child(dlg)
+	dlg.popup_centered()
+
+
+# Add this function to unlock all content locally
+func _unlock_all_content() -> void:
+	# Unlock all abilities
+	var all_abilities = ["double_jump", "attack", "dash", "shine"]
+	for ability in all_abilities:
+		SaveManager.data["progress"]["abilities"][ability] = true
+	
+	# Unlock all levels (3 floors, 3 levels each)
+	for floor in range(1, 4):
+		for level in range(1, 4):
+			var level_key = "%d_%d" % [floor, level]
+			SaveManager.data["progress"]["completed_levels"][level_key] = true
+	
+	# Set progress to the highest level
+	SaveManager.data["progress"]["current_floor"] = 3
+	SaveManager.data["progress"]["current_level"] = 3
+	
+	# Save locally only
+	SaveManager._save_local()
+	
+	# Apply abilities to Global
+	SaveManager._apply_abilities_to_global()
+	
+	# Update UI
+	_update_start_button_text()
+	_update_newgame_button_visibility()
+	
+	print("🔓 All content unlocked locally")
+
+func _update_newgame_button_visibility() -> void:
+	var has_progress = SaveManager.data["progress"]["completed_levels"].size() > 0
+	var current_floor = SaveManager.data["progress"]["current_floor"]
+	var current_level = SaveManager.data["progress"]["current_level"]
+	var is_past_first_level = (current_floor > 1) or (current_floor == 1 and current_level > 1)
+	
+	# Only show New Game button if there's actual progress
+	var should_show = has_progress or is_past_first_level
+	newgame.visible = should_show
+	newgame.mouse_filter = Control.MOUSE_FILTER_STOP if should_show else Control.MOUSE_FILTER_IGNORE
+	main_menu_4.visible = should_show
+
+func _on_newgame_pressed() -> void:
+	# Check if user is logged in
+	if Global.get_current_user().size() > 0:
+		_show_error("❌ Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
+		return
+	
+	# Show confirmation dialog for local save
+	var dlg := ConfirmationDialog.new()
+	dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
+	dlg.confirmed.connect(func():
+		_reset_local_save()
+		_show_info("✅ Save progress erased. Starting new game...")
+		# Optional: Load into game after delay
+		await get_tree().create_timer(1.0).timeout
+		_on_start_pressed()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
+
+
+func _reset_local_save() -> void:
+	# Reset SaveManager data to defaults
+	SaveManager.data = {
+		"progress": {
+			"current_floor": 1,
+			"current_level": 1,
+			"completed_levels": {},
+			"abilities": {
+				"double_jump": false,
+				"attack": false,
+				"dash": false,
+				"shine": false
+			}
+		},
+		"collectables": [],
+		"settings": {},
+		"watched_cutscenes": []
+	}
+	
+	# Clear the save file
+	if FileAccess.file_exists(SaveManager.SAVE_FILE):
+		DirAccess.remove_absolute(SaveManager.SAVE_FILE)
+	
+	# Save the reset data locally
+	SaveManager._save_local()
+	
+	# Apply defaults to Global
+	SaveManager._apply_abilities_to_global()
+	
+	# Update UI
+	_update_start_button_text()
+	_update_newgame_button_visibility()
+	
+	print("🔄 Local save completely reset")
+
 
 func _load_session() -> void:
 	"""Load saved session and auto-login if valid"""
@@ -242,6 +364,8 @@ func _update_start_button_text() -> void:
 			start_button.text = "Continue"
 		else:
 			start_button.text = "Start Game"
+		
+		_update_newgame_button_visibility()
 
 func _exit_tree():
 	_stop_local_server()

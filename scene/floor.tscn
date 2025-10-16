@@ -71,9 +71,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -201.0
+offset_left = -258.0
 offset_top = -191.0
-offset_right = 207.0
+offset_right = 246.0
 offset_bottom = 191.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -143,26 +143,26 @@ flat = true
 
 [node name="MainMenu" type="Sprite2D" parent="."]
 z_index = -1
-position = Vector2(638, 216)
-scale = Vector2(0.16003, 0.125615)
+position = Vector2(633.5, 216)
+scale = Vector2(0.193584, 0.125615)
 texture = ExtResource("4_iefsv")
 
 [node name="MainMenu2" type="Sprite2D" parent="."]
 z_index = -1
-position = Vector2(638, 317)
-scale = Vector2(0.16003, 0.125615)
+position = Vector2(633.5, 313)
+scale = Vector2(0.193584, 0.125615)
 texture = ExtResource("4_iefsv")
 
 [node name="MainMenu3" type="Sprite2D" parent="."]
 z_index = -1
-position = Vector2(638, 416)
-scale = Vector2(0.16003, 0.125615)
+position = Vector2(633.5, 419)
+scale = Vector2(0.193584, 0.125615)
 texture = ExtResource("4_iefsv")
 
 [node name="MainMenu4" type="Sprite2D" parent="."]
 z_index = -1
-position = Vector2(638, 521)
-scale = Vector2(0.16003, 0.125615)
+position = Vector2(633.5, 520)
+scale = Vector2(0.193584, 0.125615)
 texture = ExtResource("4_iefsv")
 
 [connection signal="pressed" from="FloorBtns/floor1" to="." method="_on_floor_1_pressed"]

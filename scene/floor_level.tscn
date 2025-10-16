@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://q1fhwdc0e7vv"]
+[gd_scene load_steps=11 format=3 uid="uid://q1fhwdc0e7vv"]
 
 [ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_tm3bt"]
 [ext_resource type="Script" uid="uid://bw4776do5sff3" path="res://script/floor_level.gd" id="1_x40ej"]
@@ -9,6 +9,14 @@
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7sqjk"]
 texture = ExtResource("1_tm3bt")
 modulate_color = Color(0.09, 0.09, 0.09, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2y7ik"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bq4xh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xqo66"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mr317"]
 
 [node name="FloorLevel" type="Control"]
 layout_mode = 3
@@ -69,6 +77,7 @@ offset_right = 40.96
 offset_bottom = 26.72
 theme_override_fonts/font = ExtResource("4_x42lc")
 theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_2y7ik")
 text = "Next"
 
 [node name="prev" type="Button" parent="."]
@@ -84,6 +93,7 @@ offset_right = 41.6
 offset_bottom = 26.72
 theme_override_fonts/font = ExtResource("4_x42lc")
 theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_bq4xh")
 text = "Prev
 "
 
@@ -100,6 +110,7 @@ offset_right = 38.0
 offset_bottom = 26.52
 theme_override_fonts/font = ExtResource("4_x42lc")
 theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_xqo66")
 text = "Play
 "
 
@@ -116,6 +127,7 @@ offset_right = 40.48
 offset_bottom = 26.32
 theme_override_fonts/font = ExtResource("4_x42lc")
 theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_mr317")
 text = "Back"
 
 [connection signal="pressed" from="next" to="." method="_on_next_pressed"]

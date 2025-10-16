@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=22 format=3 uid="uid://bjg21ygjiqxou"]
 
 [ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="1_8ywga"]
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
@@ -10,6 +10,13 @@
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="8_nr1lh"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="9_fqcvx"]
+[ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="10_kfhhv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_genjj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8eo88"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kfhhv"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nito4"]
 
@@ -211,6 +218,7 @@ offset_right = 295.12
 offset_bottom = 220.32
 
 [node name="Panel" type="Panel" parent="PauseMenu"]
+z_index = -1
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -235,6 +243,7 @@ vertical_alignment = 1
 
 [node name="option" type="Button" parent="PauseMenu/Panel"]
 process_mode = 3
+z_index = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -245,12 +254,18 @@ offset_left = -186.5
 offset_top = -37.487
 offset_right = 192.61
 offset_bottom = 37.513
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
 theme_override_fonts/font = ExtResource("9_fqcvx")
 theme_override_font_sizes/font_size = 28
+theme_override_styles/focus = SubResource("StyleBoxEmpty_genjj")
 text = "Option"
+flat = true
 
 [node name="resume" type="Button" parent="PauseMenu/Panel"]
 process_mode = 3
+z_index = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.507
@@ -261,12 +276,18 @@ offset_left = -192.623
 offset_top = -37.451
 offset_right = 192.377
 offset_bottom = 37.549
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
 theme_override_fonts/font = ExtResource("9_fqcvx")
 theme_override_font_sizes/font_size = 28
+theme_override_styles/focus = SubResource("StyleBoxEmpty_8eo88")
 text = "Resume"
+flat = true
 
 [node name="exit" type="Button" parent="PauseMenu/Panel"]
 process_mode = 3
+z_index = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.51
@@ -277,13 +298,37 @@ offset_left = -192.39
 offset_top = -37.297
 offset_right = 192.61
 offset_bottom = 37.703
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
 theme_override_fonts/font = ExtResource("9_fqcvx")
 theme_override_font_sizes/font_size = 28
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kfhhv")
 text = "Exit
 "
+flat = true
+
+[node name="MainMenu" type="Sprite2D" parent="PauseMenu"]
+z_index = -1
+position = Vector2(295.5, 188)
+scale = Vector2(0.0955015, 0.125615)
+texture = ExtResource("10_kfhhv")
+
+[node name="MainMenu2" type="Sprite2D" parent="PauseMenu"]
+z_index = -1
+position = Vector2(295.5, 278)
+scale = Vector2(0.0955015, 0.125615)
+texture = ExtResource("10_kfhhv")
+
+[node name="MainMenu3" type="Sprite2D" parent="PauseMenu"]
+z_index = -1
+position = Vector2(297, 365)
+scale = Vector2(0.0626844, 0.125615)
+texture = ExtResource("10_kfhhv")
 
 [node name="Options" type="Panel" parent="."]
 visible = false
+z_index = -1
 anchors_preset = -1
 anchor_left = 0.506
 anchor_top = 0.5
@@ -307,18 +352,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="back" type="Button" parent="Options"]
+z_index = 1
 layout_mode = 2
 anchor_left = 0.494
 anchor_top = 0.855
 anchor_right = 0.494
 anchor_bottom = 0.855
-offset_left = -203.506
+offset_left = -100.506
 offset_top = -31.91
-offset_right = 203.494
+offset_right = 90.494
 offset_bottom = 32.09
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
 theme_override_fonts/font = ExtResource("9_fqcvx")
 theme_override_font_sizes/font_size = 24
@@ -327,6 +373,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_pl8x0")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nr1lh")
 theme_override_styles/normal = SubResource("StyleBoxFlat_fqcvx")
 text = "Back"
+flat = true
 
 [node name="Label2" type="Label" parent="Options"]
 layout_mode = 1
@@ -436,7 +483,13 @@ popup/item_0/id = 0
 popup/item_1/text = "Joystick"
 popup/item_1/id = 1
 
+[node name="MainMenu4" type="Sprite2D" parent="Options"]
+position = Vector2(242.5, 384)
+scale = Vector2(0.0726401, 0.125615)
+texture = ExtResource("10_kfhhv")
+
 [connection signal="pressed" from="PauseMenu/Panel/option" to="." method="_on_option_pressed"]
+[connection signal="pressed" from="PauseMenu/Panel/resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/exit" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="Options/back" to="." method="_on_back_pressed"]
 [connection signal="value_changed" from="Options/AudioControl" to="Options/AudioControl" method="_on_value_changed"]
