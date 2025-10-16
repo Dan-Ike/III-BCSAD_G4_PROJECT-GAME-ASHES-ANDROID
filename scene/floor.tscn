@@ -1,7 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://yaeq7flcmtiq"]
+[gd_scene load_steps=12 format=3 uid="uid://yaeq7flcmtiq"]
 
 [ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_54icn"]
 [ext_resource type="Script" uid="uid://bhtjmndrdcrqu" path="res://script/floor.gd" id="1_bha7m"]
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_3mjqk"]
+[ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="4_iefsv"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bha7m"]
 texture = ExtResource("1_54icn")
@@ -53,6 +55,7 @@ grow_vertical = 2
 script = ExtResource("1_bha7m")
 
 [node name="Background" type="Panel" parent="."]
+z_index = -2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -68,9 +71,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -335.5
+offset_left = -201.0
 offset_top = -191.0
-offset_right = 335.5
+offset_right = 207.0
 offset_bottom = 191.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -80,55 +83,87 @@ theme_override_constants/separation = 29
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_3mjqk")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_54icn")
 theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
 theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
 text = "Floor 1
 "
+flat = true
 
 [node name="floor2" type="Button" parent="FloorBtns"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_3mjqk")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_jcebo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
 theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
 text = "Floor 2"
+flat = true
 
 [node name="floor3" type="Button" parent="FloorBtns"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_3mjqk")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_wmetd")
 theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
 theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
 text = "Floor 3"
+flat = true
 
 [node name="mainmenu" type="Button" parent="FloorBtns"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_3mjqk")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_wmetd")
 theme_override_styles/hover = SubResource("StyleBoxFlat_bha7m")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3mjqk")
 theme_override_styles/normal = SubResource("StyleBoxFlat_iefsv")
 text = "Main Menu
 "
+flat = true
+
+[node name="MainMenu" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(638, 216)
+scale = Vector2(0.16003, 0.125615)
+texture = ExtResource("4_iefsv")
+
+[node name="MainMenu2" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(638, 317)
+scale = Vector2(0.16003, 0.125615)
+texture = ExtResource("4_iefsv")
+
+[node name="MainMenu3" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(638, 416)
+scale = Vector2(0.16003, 0.125615)
+texture = ExtResource("4_iefsv")
+
+[node name="MainMenu4" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(638, 521)
+scale = Vector2(0.16003, 0.125615)
+texture = ExtResource("4_iefsv")
 
 [connection signal="pressed" from="FloorBtns/floor1" to="." method="_on_floor_1_pressed"]
 [connection signal="pressed" from="FloorBtns/floor2" to="." method="_on_floor_2_pressed"]

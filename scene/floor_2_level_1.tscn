@@ -1461,10 +1461,8 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("5_w1861")]
-visible = false
 
 [node name="before_2_1" parent="." instance=ExtResource("6_7fund")]
-visible = false
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor2lvl2" to="." method="_on_floor_2_lvl_2_body_entered"]

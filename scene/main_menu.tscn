@@ -1,8 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=18 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
 [ext_resource type="Texture2D" uid="uid://cnq08b1w83cji" path="res://art/3.png" id="2_sepwh"]
-[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="5_14wem"]
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_sepwh"]
+[ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="4_2atga"]
+[ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="4_by01r"]
+[ext_resource type="Texture2D" uid="uid://cx3ict23q5pjj" path="res://art/7123025_logo_google_g_icon.png" id="5_2atga"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="5_sepwh"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hxu56"]
@@ -67,6 +70,7 @@ grow_vertical = 2
 script = ExtResource("1_2fwvj")
 
 [node name="Background" type="Panel" parent="."]
+z_index = -2
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 15
@@ -94,56 +98,80 @@ theme_override_constants/separation = 20
 [node name="start" type="Button" parent="MainBtns"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_hxu56")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
 text = "Start Game"
+flat = true
 
 [node name="options" type="Button" parent="MainBtns"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_2fwvj")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
 text = "Settings
 "
+flat = true
 
 [node name="exit" type="Button" parent="MainBtns"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_0iwki")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
 text = "Exit
 "
+flat = true
+
+[node name="MainMenu" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(199.5, 54)
+scale = Vector2(0.138274, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="MainMenu2" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(199.5, 164)
+scale = Vector2(0.138274, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="MainMenu3" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(202.5, 275)
+scale = Vector2(0.12205, 0.125615)
+texture = ExtResource("4_by01r")
 
 [node name="Options" type="Panel" parent="."]
 visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.509
-anchor_top = 0.606
-anchor_right = 0.509
-anchor_bottom = 0.606
-offset_left = -500.52
-offset_top = -174.32
-offset_right = -1.52002
-offset_bottom = 267.68
+anchor_left = 0.309
+anchor_top = 0.671
+anchor_right = 0.309
+anchor_bottom = 0.671
+offset_left = -249.52
+offset_top = -221.12
+offset_right = 249.48
+offset_bottom = 220.88
 
 [node name="Label" type="Label" parent="Options"]
 layout_mode = 1
@@ -151,27 +179,35 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 78.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 32
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 42
 text = "Settings"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="back" type="Button" parent="Options"]
+z_index = 1
 layout_mode = 2
-offset_left = 43.0
-offset_top = 346.0
-offset_right = 450.0
-offset_bottom = 410.0
+anchor_left = 0.494
+anchor_top = 0.855
+anchor_right = 0.494
+anchor_bottom = 0.855
+offset_left = -203.506
+offset_top = -31.91
+offset_right = 203.494
+offset_bottom = 32.09
 size_flags_vertical = 3
-theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
-theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
 theme_override_styles/focus = SubResource("StyleBoxEmpty_0iwki")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
 text = "Back"
+flat = true
 
 [node name="Label2" type="Label" parent="Options"]
 layout_mode = 1
@@ -184,7 +220,8 @@ offset_left = 0.179993
 offset_top = 0.0979958
 offset_right = 0.0549927
 offset_bottom = -0.102005
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 28
 text = "Music Volume"
 vertical_alignment = 1
 
@@ -199,7 +236,8 @@ offset_left = 0.18399
 offset_top = 0.167999
 offset_right = 7.04498
 offset_bottom = -0.0320129
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 28
 text = "SFX Volume"
 vertical_alignment = 1
 
@@ -214,7 +252,8 @@ offset_left = 0.0759888
 offset_top = 0.0220032
 offset_right = -0.165009
 offset_bottom = -0.178009
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 26
 text = "Control"
 vertical_alignment = 1
 
@@ -229,7 +268,8 @@ offset_left = 0.0189819
 offset_top = 0.0220032
 offset_right = -0.222015
 offset_bottom = -0.178009
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 26
 text = "Cutscene"
 vertical_alignment = 1
 
@@ -284,7 +324,8 @@ offset_left = -71.774
 offset_top = -23.466
 offset_right = 72.226
 offset_bottom = 23.534
-theme_override_font_sizes/font_size = 28
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 19
 selected = 0
 item_count = 2
 popup/item_0/text = "Button"
@@ -303,7 +344,8 @@ offset_left = -71.823
 offset_top = -23.466
 offset_right = 72.177
 offset_bottom = 23.534
-theme_override_font_sizes/font_size = 28
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 19
 selected = 0
 item_count = 2
 popup/item_0/text = "Play Once"
@@ -311,37 +353,41 @@ popup/item_0/id = 0
 popup/item_1/text = "Always"
 popup/item_1/id = 1
 
+[node name="MainMenu4" type="Sprite2D" parent="Options"]
+position = Vector2(242, 386)
+scale = Vector2(0.105088, 0.125615)
+texture = ExtResource("4_by01r")
+
 [node name="GoogleLogin" type="TextureRect" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.922
-anchor_top = 0.115
-anchor_right = 0.922
-anchor_bottom = 0.115
-offset_left = -64.16
-offset_top = -63.8
-offset_right = 63.84
-offset_bottom = 64.2
+anchor_left = 0.941
+anchor_top = 0.104
+anchor_right = 0.941
+anchor_bottom = 0.104
+offset_left = -54.4801
+offset_top = -53.88
+offset_right = 55.5199
+offset_bottom = 54.12
 mouse_filter = 0
 mouse_default_cursor_shape = 2
-texture = ExtResource("5_14wem")
+texture = ExtResource("5_2atga")
+expand_mode = 1
 
 [node name="ProfilePic" type="TextureRect" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.098
-anchor_top = 0.135
-anchor_right = 0.098
-anchor_bottom = 0.135
-offset_left = -63.44
-offset_top = -64.2
-offset_right = 64.56
-offset_bottom = 63.8
+anchor_left = 0.944
+anchor_top = 0.106
+anchor_right = 0.944
+anchor_bottom = 0.106
+offset_left = -48.3201
+offset_top = -46.32
+offset_right = 47.6799
+offset_bottom = 46.68
 mouse_filter = 0
 mouse_default_cursor_shape = 2
-texture = ExtResource("5_14wem")
+expand_mode = 1
 
 [connection signal="pressed" from="MainBtns/start" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="MainBtns/options" to="." method="_on_options_pressed"]

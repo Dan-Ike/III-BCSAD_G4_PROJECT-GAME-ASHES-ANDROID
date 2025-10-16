@@ -69,6 +69,10 @@ func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
 		SaveManager.mark_level_completed(1, 1) 
 		SaveManager.advance_to_level(1, 2)
 		
+		var user_id = Global.get_current_user().get("id", "")
+		if user_id != "":
+			await SaveManager.sync_from_supabase(user_id)
+		
 		# Update Global to next level
 		Global.advance_level()
 		

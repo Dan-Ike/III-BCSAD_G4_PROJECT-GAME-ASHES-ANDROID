@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=18 format=3 uid="uid://bjg21ygjiqxou"]
 
 [ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="1_8ywga"]
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="6_nito4"]
 [ext_resource type="Texture2D" uid="uid://brj1q1al7gv8k" path="res://art/brightness.png" id="6_pl8x0"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
+[ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="8_nr1lh"]
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="9_fqcvx"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nito4"]
 
@@ -225,7 +227,8 @@ anchor_bottom = 0.101
 offset_top = -44.541
 offset_bottom = 44.459
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 42
+theme_override_fonts/font = ExtResource("8_nr1lh")
+theme_override_font_sizes/font_size = 60
 text = "Pause"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -242,10 +245,11 @@ offset_left = -186.5
 offset_top = -37.487
 offset_right = 192.61
 offset_bottom = 37.513
-theme_override_font_sizes/font_size = 32
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 28
 text = "Option"
 
-[node name="synch" type="Button" parent="PauseMenu/Panel"]
+[node name="resume" type="Button" parent="PauseMenu/Panel"]
 process_mode = 3
 layout_mode = 1
 anchors_preset = -1
@@ -257,9 +261,9 @@ offset_left = -192.623
 offset_top = -37.451
 offset_right = 192.377
 offset_bottom = 37.549
-theme_override_font_sizes/font_size = 32
-text = "synch online
-"
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 28
+text = "Resume"
 
 [node name="exit" type="Button" parent="PauseMenu/Panel"]
 process_mode = 3
@@ -273,20 +277,22 @@ offset_left = -192.39
 offset_top = -37.297
 offset_right = 192.61
 offset_bottom = 37.703
-theme_override_font_sizes/font_size = 32
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 28
 text = "Exit
 "
 
 [node name="Options" type="Panel" parent="."]
+visible = false
 anchors_preset = -1
-anchor_left = 0.509
-anchor_top = 0.606
-anchor_right = 0.509
-anchor_bottom = 0.606
-offset_left = -253.52
-offset_top = -297.32
-offset_right = 245.48
-offset_bottom = 144.68
+anchor_left = 0.506
+anchor_top = 0.5
+anchor_right = 0.506
+anchor_bottom = 0.5
+offset_left = -249.68
+offset_top = -221.0
+offset_right = 249.32
+offset_bottom = 221.0
 
 [node name="Label" type="Label" parent="Options"]
 layout_mode = 1
@@ -294,22 +300,28 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 78.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 32
+theme_override_fonts/font = ExtResource("8_nr1lh")
+theme_override_font_sizes/font_size = 52
 text = "Options"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="back" type="Button" parent="Options"]
 layout_mode = 2
-offset_left = 43.0
-offset_top = 346.0
-offset_right = 450.0
-offset_bottom = 410.0
+anchor_left = 0.494
+anchor_top = 0.855
+anchor_right = 0.494
+anchor_bottom = 0.855
+offset_left = -203.506
+offset_top = -31.91
+offset_right = 203.494
+offset_bottom = 32.09
 size_flags_vertical = 3
 theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
 theme_override_colors/font_color = Color(0.196078, 0, 0.00392157, 1)
 theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 24
 theme_override_styles/focus = SubResource("StyleBoxEmpty_nito4")
 theme_override_styles/hover = SubResource("StyleBoxFlat_pl8x0")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nr1lh")
@@ -319,15 +331,16 @@ text = "Back"
 [node name="Label2" type="Label" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.18
-anchor_top = 0.131
+anchor_left = 0.184
+anchor_top = 0.158
 anchor_right = 0.555
-anchor_bottom = 0.231
-offset_left = 0.179993
-offset_top = 0.0979958
-offset_right = 0.0549927
-offset_bottom = -0.102005
-theme_override_font_sizes/font_size = 24
+anchor_bottom = 0.258
+offset_left = 0.18399
+offset_top = 0.163994
+offset_right = 2.05499
+offset_bottom = -0.0360107
+theme_override_fonts/font = ExtResource("8_nr1lh")
+theme_override_font_sizes/font_size = 26
 text = "Music Volume"
 vertical_alignment = 1
 
@@ -335,14 +348,15 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.184
-anchor_top = 0.296
-anchor_right = 0.545
-anchor_bottom = 0.396
-offset_left = 0.18399
-offset_top = 0.167999
-offset_right = 7.04498
-offset_bottom = -0.0320129
-theme_override_font_sizes/font_size = 24
+anchor_top = 0.339
+anchor_right = 0.559
+anchor_bottom = 0.439
+offset_left = 0.183983
+offset_top = 0.161987
+offset_right = 0.0589905
+offset_bottom = -0.0380249
+theme_override_fonts/font = ExtResource("8_nr1lh")
+theme_override_font_sizes/font_size = 26
 text = "SFX Volume"
 vertical_alignment = 1
 
@@ -357,7 +371,8 @@ offset_left = 0.19799
 offset_top = 0.0220032
 offset_right = 7.05899
 offset_bottom = -0.178009
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("8_nr1lh")
+theme_override_font_sizes/font_size = 26
 text = "Control"
 vertical_alignment = 1
 
@@ -365,13 +380,13 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.484
-anchor_top = 0.253
+anchor_top = 0.31
 anchor_right = 0.484
-anchor_bottom = 0.253
+anchor_bottom = 0.31
 offset_left = -153.516
-offset_top = -7.82601
+offset_top = -8.02
 offset_right = 153.484
-offset_bottom = 8.17399
+offset_bottom = 7.98
 theme_override_styles/slider = SubResource("StyleBoxLine_kfhhv")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_genjj")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_8eo88")
@@ -385,13 +400,13 @@ audio_bus_name = "Music"
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.484
-anchor_top = 0.45
+anchor_top = 0.482
 anchor_right = 0.484
-anchor_bottom = 0.45
+anchor_bottom = 0.482
 offset_left = -153.516
-offset_top = -7.90001
+offset_top = -8.04402
 offset_right = 153.484
-offset_bottom = 8.09999
+offset_bottom = 7.95598
 theme_override_styles/slider = SubResource("StyleBoxLine_kfhhv")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_genjj")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_8eo88")
@@ -404,15 +419,16 @@ audio_bus_name = "SFX"
 [node name="ControlChoice" type="OptionButton" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.503
+anchor_left = 0.5
 anchor_top = 0.678
 anchor_right = 0.503
 anchor_bottom = 0.678
-offset_left = -158.997
+offset_left = -157.5
 offset_top = -23.676
 offset_right = 159.003
 offset_bottom = 23.324
-theme_override_font_sizes/font_size = 28
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 22
 selected = 0
 item_count = 2
 popup/item_0/text = "Button"

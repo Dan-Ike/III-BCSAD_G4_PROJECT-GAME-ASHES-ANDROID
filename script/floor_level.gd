@@ -56,7 +56,8 @@ func _update_ui() -> void:
 	var is_completed = SaveManager.is_level_completed(floor_number, level_number)
 	var completion_text = " ✓" if is_completed else ""
 	level_label.text = level_name.capitalize() + completion_text
-	var tex_path = "res://assets/preview_images/%s.png" % level_name
+	#var tex_path = "res://assets/preview_images/%s.png" % level_name
+	var tex_path =  "res://art/hellimg.jpg"
 	if ResourceLoader.exists(tex_path):
 		preview_image.texture = load(tex_path)
 	else:

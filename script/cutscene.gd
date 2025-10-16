@@ -121,17 +121,26 @@ func _ready() -> void:
 	text_container.hide()
 	text_container.modulate.a = 0.0
 	
-	# Connect text container input instead of full screen
-	text_container.gui_input.connect(_on_text_container_input)
-	summary_container.gui_input.connect(_on_summary_container_input)
-	
 	skip_button.pressed.connect(_on_skip_pressed)
 	continue_button.pressed.connect(_on_continue_pressed)
-	
-	# Make text container clickable
-	text_container.mouse_filter = Control.MOUSE_FILTER_STOP
-	summary_container.mouse_filter = Control.MOUSE_FILTER_STOP
 
+func _input(event: InputEvent) -> void:
+	"""Handle screen clicks anywhere"""
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			# Check if clicking on buttons - let them handle their own input
+			if skip_button.visible and skip_button.get_global_rect().has_point(event.position):
+				return
+			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
+				return
+			
+			# Anywhere else on screen advances text
+			if not in_summary and not is_transitioning and not waiting_for_text_delay:
+				complete_current_text()
+			elif in_summary and continue_button.visible:
+				proceed_to_game()
+			
+			get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
 	# Handle fade transitions for background

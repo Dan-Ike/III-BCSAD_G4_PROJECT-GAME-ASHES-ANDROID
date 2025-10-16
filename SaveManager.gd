@@ -55,7 +55,7 @@ func _save_local() -> void:
 	print("SaveManager: Local save updated - Current: Floor %d Level %d, Completed levels: %s" % [
 		data["progress"]["current_floor"], 
 		data["progress"]["current_level"],
-		data["progress"]["completed_levels"]
+		str(data["progress"]["completed_levels"])
 	])
 
 func _load_local() -> void:
@@ -188,17 +188,15 @@ func is_level_unlocked(floor_name: String, level_name: String) -> bool:
 
 #cutscene tracking
 func mark_cutscene_watched(cutscene_id: String) -> void:
-	"""Mark a cutscene as watched"""
+	"""Mark a cutscene as watched (LOCAL ONLY - not synced to cloud)"""
 	if not data.has("watched_cutscenes"):
 		data["watched_cutscenes"] = []
 	
 	if cutscene_id not in data["watched_cutscenes"]:
 		data["watched_cutscenes"].append(cutscene_id)
 		_save_local()
-		print("SaveManager: Cutscene '%s' marked as watched" % cutscene_id)
-		
-		if current_user_id != "":
-			push_all_to_supabase()
+		print("SaveManager: Cutscene '%s' marked as watched (local only)" % cutscene_id)
+		# Note: Not pushing to Supabase - this is a local preference
 
 func has_watched_cutscene(cutscene_id: String) -> bool:
 	"""Check if a cutscene has been watched"""
@@ -209,19 +207,24 @@ func has_watched_cutscene(cutscene_id: String) -> bool:
 	return cutscene_id in data["watched_cutscenes"]
 
 func reset_cutscene_history() -> void:
-	"""Reset all watched cutscenes (useful for debugging or new game+)"""
+	"""Reset all watched cutscenes (LOCAL ONLY - useful for debugging)"""
 	data["watched_cutscenes"] = []
 	_save_local()
-	print("SaveManager: All cutscene history reset")
-	
-	if current_user_id != "":
-		push_all_to_supabase()
+	print("SaveManager: All cutscene history reset (local only)")
+	# Note: Not pushing to Supabase - this is a local preference
 
 #supabase sync
 func sync_from_supabase(user_id: String) -> void:
 	if user_id == "":
 		print("SaveManager: sync_from_supabase called with empty user_id")
 		return
+	
+	print("\n🔄 ========== STARTING SUPABASE SYNC ==========")
+	print("📱 Local Progress BEFORE sync:")
+	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
+	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
+	print("   Abilities: " + str(data["progress"]["abilities"]))
+	
 	current_user_id = user_id
 	_pending_request = "fetch_progress"
 	var url = "%s/rest/v1/progress?user_id=eq.%s&select=*" % [SUPABASE_URL, user_id]
@@ -248,6 +251,11 @@ func push_all_to_supabase() -> void:
 	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
 		print("SaveManager: HTTP busy, skipping push")
 		return
+	
+	print("\n📤 Pushing to Supabase:")
+	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
+	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
+	
 	_pending_request = "update_progress"
 	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
 	var headers = [
@@ -256,20 +264,19 @@ func push_all_to_supabase() -> void:
 		"Content-Type: application/json",
 		"Prefer: return=minimal"
 	]
+	
+	# Don't sync watched_cutscenes - it's local-only preference
 	var payload = {
 		"floor_number": int(data["progress"]["current_floor"]),
 		"level_number": int(data["progress"]["current_level"]),
 		"is_completed": false,  
 		"abilities": data["progress"].get("abilities", {}),
 		"completed_levels": data["progress"].get("completed_levels", {}),
-		"watched_cutscenes": data.get("watched_cutscenes", []),
 		"last_played_at": "now()"
 	}
 	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
 	if err != OK:
 		print("SaveManager: HTTP request failed to start (update_progress):", err)
-	else:
-		print("SaveManager: Updating progress to Supabase:", payload)
 
 func _merge_completed_levels(local_completed: Dictionary, cloud_completed: Dictionary) -> Dictionary:
 	var merged = {}
@@ -279,6 +286,25 @@ func _merge_completed_levels(local_completed: Dictionary, cloud_completed: Dicti
 	for key in cloud_completed:
 		if cloud_completed[key]:
 			merged[key] = true
+	return merged
+
+func _merge_abilities(local_abilities: Dictionary, cloud_abilities: Dictionary) -> Dictionary:
+	"""Merge abilities - if either local or cloud has it unlocked, keep it unlocked"""
+	var merged = {}
+	var all_keys = {}
+	
+	# Collect all ability keys from both sources
+	for key in local_abilities:
+		all_keys[key] = true
+	for key in cloud_abilities:
+		all_keys[key] = true
+	
+	# Merge: if either is true, result is true
+	for key in all_keys:
+		var local_val = local_abilities.get(key, false)
+		var cloud_val = cloud_abilities.get(key, false)
+		merged[key] = local_val or cloud_val
+	
 	return merged
 
 func _merge_watched_cutscenes(local_watched: Array, cloud_watched: Array) -> Array:
@@ -311,63 +337,128 @@ func _get_highest_completed_level(completed_levels: Dictionary) -> Dictionary:
 					highest["level"] = l
 	return highest
 
+func _compare_progress(floor1: int, level1: int, floor2: int, level2: int) -> int:
+	"""Compare two progress positions. Returns: 1 if first is ahead, -1 if second is ahead, 0 if equal"""
+	if floor1 > floor2:
+		return 1
+	elif floor1 < floor2:
+		return -1
+	else:  # Same floor
+		if level1 > level2:
+			return 1
+		elif level1 < level2:
+			return -1
+		else:
+			return 0
+
 func _on_http_request_completed(result, response_code, headers, body) -> void:
 	var body_text := ""
 	if body:
 		body_text = body.get_string_from_utf8()
+	
 	if _pending_request == "fetch_progress":
 		_pending_request = ""
+		
 		if response_code == 200:
 			var res = JSON.parse_string(body_text)
+			
 			if typeof(res) == TYPE_ARRAY and res.size() > 0:
 				var row = res[0]
+				
+				# Get cloud data
 				var cloud_floor = int(row.get("floor_number", 1))
 				var cloud_level = int(row.get("level_number", 1))
 				var cloud_completed = row.get("completed_levels", {})
 				var cloud_abilities = row.get("abilities", {})
 				var cloud_watched = row.get("watched_cutscenes", [])
 				
+				print("\n☁️  Cloud Progress:")
+				print("   Floor: %d, Level: %d" % [cloud_floor, cloud_level])
+				print("   Completed Levels: " + str(cloud_completed))
+				print("   Abilities: " + str(cloud_abilities))
+				
+				# Get local data
 				var local_floor = data["progress"]["current_floor"]
 				var local_level = data["progress"]["current_level"]
 				var local_completed = data["progress"].get("completed_levels", {})
+				var local_abilities = data["progress"].get("abilities", {})
 				var local_watched = data.get("watched_cutscenes", [])
 				
-				# Merge completed levels
+				# STEP 1: Merge completed levels (union of both)
 				var merged_completed = _merge_completed_levels(local_completed, cloud_completed)
 				data["progress"]["completed_levels"] = merged_completed
+				print("\n🔀 Merged completed levels: " + str(merged_completed))
 				
-				# Merge watched cutscenes
+				# STEP 2: Merge abilities (union of both)
+				var merged_abilities = _merge_abilities(local_abilities, cloud_abilities)
+				data["progress"]["abilities"] = merged_abilities
+				print("🔀 Merged abilities: " + str(merged_abilities))
+				
+				# STEP 3: Merge watched cutscenes (union of both)
 				var merged_watched = _merge_watched_cutscenes(local_watched, cloud_watched)
 				data["watched_cutscenes"] = merged_watched
+				#print("🔀 Merged watched cutscenes: %s" % merged_watched)
 				
+				# STEP 3: Determine current position based on completed levels
 				var local_highest = _get_highest_completed_level(local_completed)
 				var cloud_highest = _get_highest_completed_level(cloud_completed)
-				var use_cloud_position = false
-				if cloud_highest["floor"] > local_highest["floor"]:
-					use_cloud_position = true
-				elif cloud_highest["floor"] == local_highest["floor"] and cloud_highest["level"] > local_highest["level"]:
-					use_cloud_position = true
-				if use_cloud_position:
-					print("SaveManager: Cloud progress is ahead - using cloud position F%d L%d" % [cloud_floor, cloud_level])
-					data["progress"]["current_floor"] = cloud_floor
-					data["progress"]["current_level"] = cloud_level
+				
+				print("\n📊 Highest Completed Levels:")
+				print("   Local: Floor %d Level %d" % [local_highest["floor"], local_highest["level"]])
+				print("   Cloud: Floor %d Level %d" % [cloud_highest["floor"], cloud_highest["level"]])
+				
+				# Use the higher of: highest completed level OR current position
+				var final_floor = local_floor
+				var final_level = local_level
+				
+				# Check which completed level is higher
+				var completed_comparison = _compare_progress(
+					local_highest["floor"], local_highest["level"],
+					cloud_highest["floor"], cloud_highest["level"]
+				)
+				
+				if completed_comparison >= 0:
+					# Local completed levels are higher or equal
+					# But check if cloud's current position is even higher
+					if _compare_progress(cloud_floor, cloud_level, local_floor, local_level) > 0:
+						final_floor = cloud_floor
+						final_level = cloud_level
+						print("✅ Using cloud's current position (ahead of local)")
+					else:
+						print("✅ Using local's current position (ahead or equal)")
 				else:
-					print("SaveManager: Local progress is ahead/equal - keeping local position F%d L%d" % [local_floor, local_level])
-				for ability in cloud_abilities:
-					if cloud_abilities[ability]:
-						data["progress"]["abilities"][ability] = true
+					# Cloud completed levels are higher
+					# Use cloud's position as it's more advanced
+					final_floor = cloud_floor
+					final_level = cloud_level
+					print("✅ Using cloud's position (more progress)")
+				
+				data["progress"]["current_floor"] = final_floor
+				data["progress"]["current_level"] = final_level
+				
+				print("\n🎯 Final Progress:")
+				print("   Floor: %d, Level: %d" % [final_floor, final_level])
+				print("   Completed Levels: " + str(merged_completed))
+				print("   Abilities: " + str(merged_abilities))
+				print("========== SYNC COMPLETE ==========\n")
+				
+				# Save locally and push back to cloud
 				_save_local()
 				_apply_abilities_to_global()
-				print("SaveManager: Sync complete - Completed levels: %s, Watched cutscenes: %s" % [data["progress"]["completed_levels"], data["watched_cutscenes"]])
+				
+				# Push merged data back to Supabase
+				await get_tree().create_timer(0.5).timeout  # Small delay to avoid race condition
 				push_all_to_supabase()
+				
 			else:
-				print("SaveManager: No cloud progress found, pushing local to cloud")
+				print("\n☁️  No cloud progress found - Creating initial cloud save")
 				push_all_to_supabase()
 		else:
 			print("SaveManager: fetch_progress failed:", response_code, body_text)
+	
 	elif _pending_request == "update_progress":
 		_pending_request = ""
 		if response_code in [200, 201, 204]:
-			print("SaveManager: update_progress OK - Cloud progress updated")
+			print("✅ Cloud save updated successfully")
 		else:
-			print("SaveManager: update_progress failed:", response_code, body_text)
+			print("❌ Cloud save failed:", response_code, body_text)

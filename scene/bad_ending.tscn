@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://djq3870fxykiy"]
+[gd_scene load_steps=6 format=3 uid="uid://djq3870fxykiy"]
 
 [ext_resource type="Script" uid="uid://saf3yj4tsnmr" path="res://script/bad_ending.gd" id="1_1bybb"]
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="2_783cr"]
+[ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="2_jir8d"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jxu8i"]
 bg_color = Color(0, 0, 0, 1)
@@ -60,6 +62,7 @@ theme_override_constants/margin_bottom = 20
 [node name="TextLabel" type="Label" parent="TextContainer/TextMargin"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_jir8d")
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -90,14 +93,16 @@ theme_override_constants/separation = 20
 
 [node name="SummaryTitle" type="Label" parent="SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_fonts/font = ExtResource("2_jir8d")
+theme_override_font_sizes/font_size = 26
 text = "Story So Far"
 horizontal_alignment = 1
 
 [node name="SummaryText" type="Label" parent="SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox"]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_fonts/font = ExtResource("2_jir8d")
+theme_override_font_sizes/font_size = 20
 text = "\"Summary here woohoo\""
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -112,6 +117,8 @@ anchor_bottom = 0.107
 offset_top = 0.119999
 offset_right = -0.200073
 offset_bottom = -0.0400085
+theme_override_fonts/font = ExtResource("2_783cr")
+theme_override_font_sizes/font_size = 16
 text = "Skip"
 
 [node name="ContinueButton" type="Button" parent="."]
@@ -122,4 +129,6 @@ anchor_right = 0.6
 anchor_bottom = 0.95
 offset_right = 8.0
 offset_bottom = 8.0
+theme_override_fonts/font = ExtResource("2_783cr")
+theme_override_font_sizes/font_size = 18
 text = "Continue"

@@ -125,7 +125,7 @@ func _on_main_menu_pressed() -> void:
 	print("[GameOver] Main menu pressed")
 	
 	# STOP game over music
-	MusicManager.stop_music()
+	MusicManager.stop_song()
 	
 	# Hide the UI
 	visible = false
