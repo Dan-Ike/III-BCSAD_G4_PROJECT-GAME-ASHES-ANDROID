@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Login...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            margin: 0 0 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            background: #f44336;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .success {
+            background: #4caf50;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Processing your login...</h1>
+        <div class="spinner"></div>
+        <p>Please wait while we authenticate you.</p>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Get the hash from the URL (contains the tokens)
+        const hash = window.location.hash.substring(1);
+        const status = document.getElementById('status');
+
+        console.log('OAuth Callback received');
+        console.log('Hash:', hash);
+
+        if (!hash) {
+            status.innerHTML = '<div class="error"><strong>Error:</strong> No authentication data received. Please try again.</div>';
+            console.error('No hash found in URL');
+            setTimeout(() => {
+                window.location.href = './webashes.html';
+            }, 3000);
+        } else {
+            // Parse the hash to extract tokens
+            const params = new URLSearchParams(hash);
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+
+            if (accessToken) {
+                console.log('Access token found:', accessToken.substring(0, 20) + '...');
+                
+                // Store tokens in sessionStorage so they persist across the page reload
+                sessionStorage.setItem('oauth_access_token', accessToken);
+                sessionStorage.setItem('oauth_refresh_token', refreshToken || '');
+                sessionStorage.setItem('oauth_callback_received', 'true');
+                
+                status.innerHTML = '<div class="success"><strong>Success!</strong> Redirecting to game...</div>';
+                console.log('Tokens stored, redirecting to game');
+                
+                // Redirect back to the game
+                setTimeout(() => {
+                    window.location.href = './webashes.html';
+                }, 1500);
+            } else {
+                status.innerHTML = '<div class="error"><strong>Error:</strong> No access token in response. Authentication may have failed.</div>';
+                console.error('No access token found in hash');
+                setTimeout(() => {
+                    window.location.href = './webashes.html';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

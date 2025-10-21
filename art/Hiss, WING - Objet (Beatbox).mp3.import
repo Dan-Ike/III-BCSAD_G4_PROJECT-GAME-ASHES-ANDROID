@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c5nbk6prwjqnd"
+path="res://.godot/imported/Hiss, WING - Objet (Beatbox).mp3-836104171257805a2689d2485a959019.mp3str"
+
+[deps]
+
+source_file="res://art/Hiss, WING - Objet (Beatbox).mp3"
+dest_files=["res://.godot/imported/Hiss, WING - Objet (Beatbox).mp3-836104171257805a2689d2485a959019.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4

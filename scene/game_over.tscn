@@ -1,0 +1,90 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmadrl6pxxblc"]
+
+[ext_resource type="Script" uid="uid://t2enims6ecpk" path="res://script/game_over.gd" id="1_8uq5u"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8uq5u"]
+
+[node name="GameOver" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_8uq5u")
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.431373)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(1100, 600)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8uq5u")
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="CenterContainer/Panel/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.80358, 0, 0.152693, 1)
+theme_override_font_sizes/font_size = 48
+text = "YOU DIED"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="FloorLevel" type="Label" parent="CenterContainer/Panel/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Floor 1 - Level 1"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="Quote" type="Label" parent="CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "\"Git Gud\""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ButtonContainer" type="HBoxContainer" parent="CenterContainer/Panel/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Retry" type="Button" parent="CenterContainer/Panel/MarginContainer/VBox/ButtonContainer"]
+process_mode = 3
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+text = "Retry
+"
+
+[node name="MainMenu" type="Button" parent="CenterContainer/Panel/MarginContainer/VBox/ButtonContainer"]
+process_mode = 3
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+text = "Main Menu"
+
+[connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/Retry" to="." method="_on_retry_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/MainMenu" to="." method="_on_main_menu_pressed"]
