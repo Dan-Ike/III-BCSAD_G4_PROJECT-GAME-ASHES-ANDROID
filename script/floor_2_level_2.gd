@@ -29,7 +29,6 @@ var exit_blocked: bool = true
 const COLOR_UNLIT = Color(1.0, 1.0, 1.0, 1.0)  
 const COLOR_LIT = Color(1.0, 0.9, 0.0, 1.0)
 
-# NEW: Sequence tracking variables
 var correct_sequence: Array[int] = [0, 1, 2, 3, 4]  # Indices for torch, torch_2, torch_3, torch_5, torch_6
 var current_sequence: Array[int] = []
 var is_checking_sequence: bool = false
@@ -49,7 +48,6 @@ func _ready() -> void:
 	_setup_torch_system()
 	_update_soul_light_state()
 	
-	# NEW: Setup extinguish timer
 	extinguish_timer = Timer.new()
 	extinguish_timer.one_shot = true
 	extinguish_timer.wait_time = 2.0
@@ -135,7 +133,7 @@ func _check_torch_states() -> void:
 			if _count_lit_torches() == torch_list.size():
 				_validate_complete_sequence()
 		
-		# Torch got extinguished (manual or by player)
+		# Torch got extinguished 
 		elif was_lit and not is_lit_now:
 			torches_lit[t] = false
 			if indicator_list[i]:
@@ -190,7 +188,7 @@ func _on_extinguish_timeout() -> void:
 	for i in range(torch_list.size()):
 		var t = torch_list[i]
 		if t and t.is_lit:
-			t.extinguish()  # You may need to implement this method in your Torch script
+			t.extinguish()
 			torches_lit[t] = false
 			if indicator_list[i]:
 				indicator_list[i].color = COLOR_UNLIT

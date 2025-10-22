@@ -44,7 +44,6 @@ var quotes = {
 };
 
 func _ready() -> void:
-	# CRITICAL: Process even when paused
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	# Hide initially
@@ -54,7 +53,6 @@ func _ready() -> void:
 	retry.pressed.connect(_on_retry_pressed)
 	main_menu.pressed.connect(_on_main_menu_pressed)
 	
-	# DON'T play music here - wait until show_game_over is called
 
 func show_game_over(floor_num: int, level_num: int) -> void:
 	# Seed RNG for varied quotes

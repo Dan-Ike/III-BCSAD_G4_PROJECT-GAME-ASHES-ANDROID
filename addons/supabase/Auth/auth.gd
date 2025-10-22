@@ -65,7 +65,6 @@ func _check_auth() -> AuthTask:
 	auth_task.completed.emit()
 	return auth_task
 
-# Allow your users to sign up and create a new account.
 func sign_up(email : String, password : String) -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {"email":email, "password":password}
@@ -79,8 +78,6 @@ func sign_up(email : String, password : String) -> AuthTask:
 	return auth_task
 
 
-# Allow your users to sign up and create a new account using phone/password combination.
-# NOTE: the OTP sent to the user must be verified.
 func sign_up_phone(phone : String, password : String) -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {"phone":phone, "password":password}
@@ -93,7 +90,6 @@ func sign_up_phone(phone : String, password : String) -> AuthTask:
 	return auth_task
 
 
-# If an account is created, users can login to your app.
 func sign_in(email : String, password : String = "") -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {"email":email, "password":password}
@@ -107,8 +103,6 @@ func sign_in(email : String, password : String = "") -> AuthTask:
 	return auth_task
 
 
-# If an account is created, users can login to your app using phone/password combination.
-# NOTE: this requires sign_up_phone() and verify_otp() to work
 func sign_in_phone(phone : String, password : String = "") -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {"phone":phone, "password":password}
@@ -121,8 +115,6 @@ func sign_in_phone(phone : String, password : String = "") -> AuthTask:
 	return auth_task
 
 
-# Sign in using OTP - the user won't need to use a password but the token must be validated.
-# This method always requires to use OTP verification, unlike sign_in_phone()
 func sign_in_otp(phone : String) -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {"phone":phone}
@@ -135,7 +127,6 @@ func sign_in_otp(phone : String) -> AuthTask:
 	return auth_task
 
 
-# Verify the OTP token sent to a user as an SMS
 func verify_otp(phone : String, token : String) -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {phone = phone, token = token, type = "sms"}
@@ -147,7 +138,6 @@ func verify_otp(phone : String, token : String) -> AuthTask:
 	_process_task(auth_task)
 	return auth_task
 
-# Verify the OTP token sent to a user as an email
 func verify_otp_email(email : String, token : String, type : String) -> AuthTask:
 	if _auth != "": return _check_auth()
 	var payload : Dictionary = {email = email, token = token, type = type}
@@ -159,7 +149,6 @@ func verify_otp_email(email : String, token : String, type : String) -> AuthTask
 	_process_task(auth_task)
 	return auth_task
 
-# Sign in as an anonymous user
 func sign_in_anonymous() -> AuthTask:
 	if _auth != "": return _check_auth()
 	var auth_task : AuthTask = AuthTask.new()._setup(AuthTask.Task.SIGNINANONYM, "", [])
@@ -168,16 +157,10 @@ func sign_in_anonymous() -> AuthTask:
 	return auth_task
 
 
-# [     CURRENTLY UNSUPPORTED       ]
-# Sign in with a Provider
-# @provider = Providers.PROVIDER
 func sign_in_with_provider(provider : String, grab_from_browser : bool = true, port : int = 3000) -> void:
 	OS.shell_open(_config.supabaseUrl + _provider_endpoint + "?provider="+provider)
-	# ! to be implemented
 	pass
 
-
-# If a user is logged in, this will log it out
 func sign_out() -> AuthTask:
 	var auth_task : AuthTask = AuthTask.new()._setup(
 		AuthTask.Task.LOGOUT,
@@ -186,10 +169,6 @@ func sign_out() -> AuthTask:
 	_process_task(auth_task)
 	return auth_task
 
-
-# If an account is created, users can login to your app with a magic link sent via email.
-# NOTE: this method currently won't work unless the fragment (#) is *MANUALLY* replaced with a query (?) and the browser is reloaded
-# [https://github.com/supabase/supabase/issues/1698]
 func send_magic_link(email : String)  -> AuthTask:
 	var payload : Dictionary = {"email":email}
 	var auth_task : AuthTask = AuthTask.new()._setup(
@@ -210,8 +189,6 @@ func user(user_access_token : String = _auth) -> AuthTask:
 	_process_task(auth_task)
 	return auth_task
 
-
-# Update credentials of the authenticated user, together with optional metadata
 func update(email : String, password : String = "", data : Dictionary = {}) -> AuthTask:
 	var payload : Dictionary = {"email":email, "password":password, "data" : data}
 	var auth_task : AuthTask = AuthTask.new()._setup(
@@ -222,7 +199,6 @@ func update(email : String, password : String = "", data : Dictionary = {}) -> A
 	_process_task(auth_task)
 	return auth_task
 
-# Update email of the authenticated user
 func update_email(email : String) -> AuthTask:
 	var payload : Dictionary = {"email":email}
 	var auth_task : AuthTask = AuthTask.new()._setup(
@@ -233,7 +209,6 @@ func update_email(email : String) -> AuthTask:
 	_process_task(auth_task)
 	return auth_task
 
-# Request a reset password mail to the specified email
 func reset_password_for_email(email : String) -> AuthTask:
 	var payload : Dictionary = {"email":email}
 	var auth_task : AuthTask = AuthTask.new()._setup(
@@ -244,8 +219,6 @@ func reset_password_for_email(email : String) -> AuthTask:
 	_process_task(auth_task)
 	return auth_task
 
-
-# Invite another user by their email
 func invite_user_by_email(email : String) -> AuthTask:
 	var payload : Dictionary = {"email":email}
 	var auth_task : AuthTask = AuthTask.new()._setup(
@@ -256,9 +229,6 @@ func invite_user_by_email(email : String) -> AuthTask:
 	_process_task(auth_task)
 	return auth_task
 
-
-# Refresh the access_token of the authenticated client using the refresh_token
-# No need to call this manually except specific needs, since the process will be handled automatically
 func refresh_token(refresh_token : String = client.refresh_token, expires_in : float = client.expires_in) -> AuthTask:
 	await get_tree().create_timer(expires_in - 10).timeout
 	var payload : Dictionary = {refresh_token = refresh_token}
@@ -270,9 +240,6 @@ func refresh_token(refresh_token : String = client.refresh_token, expires_in : f
 	_process_task(auth_task)
 	return auth_task 
 
-
-
-# Retrieve the response from the server
 func _get_link_response(delta : float) -> String:
 	await get_tree().create_timer(delta).timeout
 	var peer : StreamPeer = tcp_server.take_connection()
@@ -283,8 +250,6 @@ func _get_link_response(delta : float) -> String:
 		_get_link_response(delta)
 		return ""
 
-
-# Process a specific task
 func _process_task(task : AuthTask, _fake : bool = false) -> void:
 	task.completed.connect(_on_task_completed)
 	if _fake:
@@ -337,8 +302,6 @@ func _on_task_completed(task : AuthTask) -> void:
 						_expires_in = 0
 						signed_out.emit()
 
-# A timer used to listen through TCP on the redirect uri of the request
 func _tcp_stream_timer() -> void:
 	var peer : StreamPeer = tcp_server.take_connection()
-	# ! to be implemented
 	pass

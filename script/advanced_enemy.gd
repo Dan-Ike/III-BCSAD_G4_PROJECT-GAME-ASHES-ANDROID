@@ -99,7 +99,6 @@ var is_recovering: bool = false
 # Pathfinding
 var navigation_agent: NavigationAgent2D
 
-# Visuals
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var detection_area: Area2D = $DetectionArea
 @onready var attack_area: Area2D = $AttackArea
@@ -110,7 +109,6 @@ var navigation_agent: NavigationAgent2D
 var GRAVITY: float = 980.0
 var was_on_floor: bool = false
 
-# Movement smoothing to prevent twitching
 var target_velocity_x: float = 0.0
 var velocity_smoothing: float = 10.0
 
@@ -120,21 +118,17 @@ func _ready() -> void:
 	_setup_detection_areas()
 	_setup_hitbox()
 	
-	# Register with Global
 	if has_node("DealDamageArea"):
 		Global.batDamageZone = $DealDamageArea
 	Global.batDamageAmount = damage_to_deal
 	
-	# Initialize health bar
 	if health_bar:
 		health_bar.max_value = health_max
 		health_bar.value = health
 	
-	# Randomize initial wander direction
 	wander_direction = 1 if randf() > 0.5 else -1
 	wander_duration = randf_range(2.0, 4.0)
 	
-	# Adaptive AI starts knowing player location
 	if enemy_type == EnemyType.ADAPTIVE_AI:
 		current_state = State.CHASE
 	else:
@@ -191,36 +185,29 @@ func _physics_process(delta: float) -> void:
 	
 	player = Global.playerBody
 	
-	# Update health bar
 	if health_bar:
 		health_bar.value = health
 	
-	# Check phase transitions
 	_check_phase_transition()
 	
-	# Always apply gravity when not on floor
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	else:
 		if velocity.y > 0:
 			velocity.y = 0
 	
-	# Update edge check cooldown
 	if edge_check_cooldown > 0:
 		edge_check_cooldown -= delta
 	
-	# Handle melee damage delay
 	if should_deal_melee_damage:
 		melee_damage_timer -= delta
 		if melee_damage_timer <= 0.0:
 			_apply_melee_damage()
 			should_deal_melee_damage = false
 	
-	# Update AI state
 	if not is_recovering and not taking_damage:
 		_update_state(delta)
 	
-	# Execute current state behavior
 	match current_state:
 		State.IDLE:
 			_state_idle(delta)
@@ -239,7 +226,6 @@ func _physics_process(delta: float) -> void:
 		State.RETURN_TO_PATROL:
 			_state_return_to_patrol(delta)
 	
-	# Smooth velocity to prevent twitching
 	velocity.x = lerp(velocity.x, target_velocity_x, velocity_smoothing * delta)
 	
 	was_on_floor = is_on_floor()
@@ -306,26 +292,23 @@ func _is_in_detection_range() -> bool:
 		EnemyType.PERSISTENT_HUNTER:
 			return distance < 600.0
 		EnemyType.ADAPTIVE_AI:
-			return true  # Always knows where player is
+			return true  
 	
 	return false
 
 func _update_patrol_guard_state(distance: float) -> void:
-	# If we're far from patrol center and should return
 	if return_to_patrol_when_far and _is_far_from_patrol_center():
 		if current_state != State.RETURN_TO_PATROL:
 			print("[Enemy] Too far from patrol zone, returning...")
 			current_state = State.RETURN_TO_PATROL
 		return
 	
-	# Check if player is in patrol zone
 	if not _is_player_in_patrol_zone() or not can_see_player:
 		if current_state != State.WANDER and current_state != State.RETURN_TO_PATROL:
 			print("[Enemy] Player left patrol zone, wandering")
 			current_state = State.WANDER
 		return
 	
-	# Player is in range, engage
 	if distance > 150.0 and can_charge:
 		current_state = State.CHARGE
 	elif distance < 60.0 and can_attack:
@@ -334,21 +317,17 @@ func _update_patrol_guard_state(distance: float) -> void:
 		current_state = State.CHASE
 
 func _update_persistent_hunter_state(distance: float) -> void:
-	# If no player detected and far away, wander
-	if not can_see_player and distance > 600.0:  # 600 is detection radius
-		# Check if far from patrol center, return if needed
+	if not can_see_player and distance > 600.0:  
 		if _is_far_from_patrol_center():
 			if current_state != State.RETURN_TO_PATROL:
 				print("[Enemy] Returning to patrol zone...")
 				current_state = State.RETURN_TO_PATROL
-			return  # Stay in return state
+			return 
 		else:
-			# Close to patrol center, wander
 			if current_state != State.WANDER:
 				current_state = State.WANDER
 			return
 	
-	# Once player is detected (can_see_player = true), chase forever until player or enemy dies
 	if not Global.playerAlive:
 		# Player is dead, return to patrol
 		if _is_far_from_patrol_center():
@@ -360,13 +339,12 @@ func _update_persistent_hunter_state(distance: float) -> void:
 				current_state = State.WANDER
 			return
 	
-	# Combat logic - will continue even if player leaves detection area after first detection
 	if distance > 200.0 and distance < ranged_attack_range and can_ranged:
 		current_state = State.RANGED_ATTACK
 	elif distance < 60.0 and can_attack:
 		current_state = State.ATTACK
 	else:
-		current_state = State.CHASE  # Always chase once detected
+		current_state = State.CHASE  
 
 func _update_adaptive_ai_state(distance: float) -> void:
 	if not player or not Global.playerAlive:
@@ -375,7 +353,6 @@ func _update_adaptive_ai_state(distance: float) -> void:
 	
 	var player_health = player.health if player else 100
 	
-	# Jump attack if conditions are right
 	if distance > 100.0 and distance < 300.0 and can_jump_attack and is_on_floor():
 		current_state = State.JUMP_ATTACK
 		return
@@ -403,25 +380,20 @@ func _state_return_to_patrol(delta: float) -> void:
 	var direction_to_center = (patrol_center - global_position).normalized()
 	var distance_to_center = global_position.distance_to(patrol_center)
 	
-	# If close enough to patrol center, resume wandering
 	if distance_to_center < 50.0:
 		print("[Enemy] Reached patrol center, resuming wander")
 		current_state = State.WANDER
 		return
 	
-	# Move toward patrol center
 	target_velocity_x = direction_to_center.x * base_speed
 	
-	# Update sprite direction (only when direction is significant)
 	if abs(direction_to_center.x) > 0.1:
 		animated_sprite.flip_h = direction_to_center.x < 0
 	
-	# Jump over obstacles if needed
 	if is_on_floor() and _should_jump_obstacle(direction_to_center):
 		_perform_jump()
 
 func _state_wander(delta: float) -> void:
-	# Check for walls or edges (with cooldown to prevent rapid changes)
 	if edge_check_cooldown <= 0.0:
 		if is_on_wall():
 			wander_direction *= -1
@@ -434,16 +406,12 @@ func _state_wander(delta: float) -> void:
 			edge_check_cooldown = 1.0
 			print("[Enemy] Edge detected, turning around")
 	
-	# Move in wander direction
 	target_velocity_x = wander_direction * base_speed
 	
-	# Only flip sprite if direction is meaningful
 	if abs(target_velocity_x) > 10.0:
 		animated_sprite.flip_h = wander_direction < 0
 
 func _check_edge_ahead() -> bool:
-	# Don't check edges - let them wander freely within navigation mesh
-	# They'll naturally stay in bounds or hit walls
 	return false
 
 func _state_chase(delta: float) -> void:
@@ -451,20 +419,17 @@ func _state_chase(delta: float) -> void:
 		current_state = State.WANDER
 		return
 	
-	# For Patrol Guard, check if still in patrol zone
 	if enemy_type == EnemyType.PATROL_GUARD and not _is_player_in_patrol_zone():
 		current_state = State.WANDER
 		return
 	
 	var direction = (player.global_position - global_position).normalized()
 	
-	# Check for obstacles and jump if needed
 	if is_on_floor() and _should_jump_obstacle(direction):
 		_perform_jump()
 	
 	target_velocity_x = direction.x * chase_speed
 	
-	# Only flip sprite if direction is meaningful
 	if abs(direction.x) > 0.1:
 		animated_sprite.flip_h = direction.x < 0
 
@@ -472,7 +437,6 @@ func _should_jump_obstacle(direction: Vector2) -> bool:
 	if not can_jump or not is_on_floor():
 		return false
 	
-	# Check if there's a wall ahead
 	var space_state = get_world_2d().direct_space_state
 	var check_pos = global_position + Vector2(direction.x * jump_check_distance, 0)
 	
@@ -504,7 +468,6 @@ func _state_charge(delta: float) -> void:
 	
 	target_velocity_x = charge_direction.x * charge_speed
 	
-	# Check for collision with player or wall
 	if is_on_wall() or _check_charge_hit_player():
 		_end_charge()
 		return
@@ -550,7 +513,6 @@ func _state_jump_attack(delta: float) -> void:
 			animated_sprite.flip_h = direction.x < 0
 			print("[Enemy] Jump attack!")
 	
-	# Check for landing
 	if was_on_floor == false and is_on_floor():
 		if player:
 			var distance = global_position.distance_to(player.global_position)

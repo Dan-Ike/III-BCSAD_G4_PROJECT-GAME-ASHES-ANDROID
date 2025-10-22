@@ -6,7 +6,7 @@ extends Node2D
 @onready var spike_collision = $spike_collision
 @onready var cutscene: CanvasLayer = $Cutscene
 @onready var player: Player = $player
-@onready var loading_screen: CanvasLayer = $loading  # Add this node to your scene
+@onready var loading_screen: CanvasLayer = $loading  
 
 func _ready() -> void:
 	# Set current floor and level in Global
@@ -23,7 +23,6 @@ func _ready() -> void:
 		# Start with cutscene - everything disabled
 		player_camera.enabled = false
 		camera_2d_2.enabled = true
-		# Don't stop or play music here - let cutscene handle it
 		
 		# Show and start cutscene with unique ID
 		cutscene.visible = true

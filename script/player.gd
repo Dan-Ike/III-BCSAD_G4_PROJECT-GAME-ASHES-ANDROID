@@ -3,7 +3,6 @@ class_name Player
 
 signal player_died
 
-# Nodes
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var deal_damage_zone: Area2D = $DealDamageZone
 @onready var damage_shape: CollisionShape2D = $DealDamageZone/CollisionShape2D
@@ -20,7 +19,7 @@ signal player_died
 @onready var sfx_atk_1: AudioStreamPlayer = $SFX_Atk1
 @onready var sfx_atk_2: AudioStreamPlayer = $SFX_Atk2
 
-# --- Soul Light Settings ---
+#Soul Light Settings 
 @export var enable_soul_light_in_scene: bool = true
 @export var soul_max: float = 100.0
 @export var soul_value: float = 100.0
@@ -104,7 +103,7 @@ var shine_heal_timer: float = 0.0
 const SHINE_COOLDOWN: float = 30.0
 const SHINE_SOUL_BOOST: float = 500.0
 const SHINE_HEAL_PER_SEC: int = 5
-const SHINE_DURATION: float = 10.0  # Maximum duration if not interrupted
+const SHINE_DURATION: float = 10.0  
 var shine_time_left: float = 0.0
 
 # Knockback system
@@ -159,7 +158,6 @@ func apply_knockback(force: Vector2) -> void:
 	if current_attack:
 		cancel_attack()
 	
-	# Show hurt reaction
 	if animated_sprite:
 		animated_sprite.play("idle")  # Use idle since no hurt animation
 
@@ -245,9 +243,8 @@ func restore_soul_light(amount: float) -> void:
 	soul_value = clamp(soul_value + amount, get_min_soul_value(), soul_max)
 	soul_damage_timer = 0.0
 	_update_soul_light_visual()
-	if int(prev_value / 10) != int(soul_value / 10):
-		print("[Player] Soul: %.1f -> %.1f" % [prev_value, soul_value])
-
+	#if int(prev_value / 10) != int(soul_value / 10):
+	#	print("[Player] Soul: %.1f -> %.1f" % [prev_value, soul_value])
 
 func _process(delta: float) -> void:
 	if dead:
@@ -260,7 +257,6 @@ func _process(delta: float) -> void:
 	
 	_update_shine_availability()
 	
-	# NEW: Handle active shine ability
 	if shine_active:
 		_handle_shine_active(delta)
 	
@@ -275,11 +271,9 @@ func _update_soul_light_visual() -> void:
 	if not soul_light:
 		return
 	
-	# If shine is active, keep it bright (handled in _handle_shine_active)
 	if shine_active:
 		return
 	
-	# Normal soul light behavior
 	var min_soul = get_min_soul_value()
 	var effective_max = soul_max - min_soul
 	var effective_value = soul_value - min_soul
@@ -308,27 +302,21 @@ func _physics_process(delta: float) -> void:
 	
 	var was_on_floor_before = is_on_floor()
 	
-	# Handle knockback (PRIORITY)
 	if is_being_knocked_back:
 		knockback_timer -= delta
 		
-		# Apply knockback velocity
 		velocity.x = knockback_velocity.x
 		
-		# Apply gravity during knockback
 		if not is_on_floor():
 			velocity.y += GRAVITY * delta
 		
-		# Reduce knockback over time
 		knockback_velocity *= knockback_friction
 		
-		# End knockback
 		if knockback_timer <= 0.0 or is_on_floor():
 			is_being_knocked_back = false
 			knockback_velocity = Vector2.ZERO
 			knockback_timer = 0.0
 	else:
-		# Normal physics (only when not being knocked back)
 		if not is_on_floor():
 			if not dashing: 
 				velocity.y += GRAVITY * delta
@@ -373,9 +361,8 @@ func _physics_process(delta: float) -> void:
 func _prevent_wall_stick() -> void:
 	# Prevent sticking to walls when moving
 	if is_on_wall() and not is_on_floor():
-		# Get the wall normal and push away slightly
 		var wall_normal = get_wall_normal()
-		velocity.x += wall_normal.x * 50.0  # Small push away from wall
+		velocity.x += wall_normal.x * 50.0  
 
 func _update_shine_availability() -> void:
 	if shine_on_cooldown or shine_active:
@@ -411,7 +398,7 @@ func handle_input(delta: float) -> void:
 		sfx_jump.play()
 		return
 	if Input.is_action_just_pressed("jump") and jumps_left > 0 and not current_attack:
-		print("[JUMP] Jump button pressed! Playing jump sound...")
+		#print("[JUMP] Jump button pressed! Playing jump sound...")
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
 		was_in_air = true
@@ -428,7 +415,7 @@ func handle_input(delta: float) -> void:
 			var dirf := Input.get_axis("left", "right")
 			if abs(dirf) > 0.01:
 				facing_dir = sign(dirf)
-				velocity.x = lerp(velocity.x, dirf * SPEED, 0.3)  # Smooth transition
+				velocity.x = lerp(velocity.x, dirf * SPEED, 0.3)  
 				toggle_split_sprite(facing_dir)
 			else:
 				velocity.x = move_toward(velocity.x, 0.0, SPEED * delta * 5.0)
@@ -547,10 +534,6 @@ func toggle_damage_collision(a_type: String) -> void:
 		damage_shape.disabled = true
 	current_attack = false
 
-# Replace your check_hitbox() function with this:
-
-# Replace your check_hitbox() function with this (Godot 4 compatible):
-
 func check_hitbox() -> void:
 	var damage: int = 0
 	if player_hitbox:
@@ -560,23 +543,18 @@ func check_hitbox() -> void:
 				if hitbox:
 					var parent = hitbox.get_parent()
 					
-					# Check if parent is BatEnemy (using is keyword if class exists)
 					if parent is BatEnemy:
 						damage = Global.batDamageAmount
 						break
 					
-					# Check if parent is Golem
 					elif parent is Golem:
 						damage = Global.golemDamageAmount
 						break
 					
-					# Check if it's an AdvancedEnemy (by checking properties - Godot 4 syntax)
 					elif "damage_to_deal" in parent and "enemy_type" in parent:
-						# This is likely an AdvancedEnemy
 						damage = parent.damage_to_deal
 						break
 					
-					# Fallback: check if parent has damage_to_deal property
 					elif "damage_to_deal" in parent:
 						damage = parent.damage_to_deal
 						break
@@ -595,14 +573,12 @@ func _activate_shine() -> void:
 	if canvas_mod:
 		canvas_mod.visible = false
 	
-	# Boost soul light energy temporarily
 	if soul_light:
-		soul_light.energy = SHINE_SOUL_BOOST / 100.0  # Scale for visual effect
+		soul_light.energy = SHINE_SOUL_BOOST / 100.0  
 		soul_light.scale = Vector2.ONE * 2.0
 	await get_tree().create_timer(SHINE_DURATION).timeout
 	if canvas_mod:
 		canvas_mod.visible = true
-	# Play activation sound (if you have one)
 	# play_sfx_once(sfx_shine)
 
 func _handle_shine_active(delta: float) -> void:
@@ -691,7 +667,6 @@ func die() -> void:
 	Input.action_release("z")
 	Input.action_release("dash")
 	handle_death_animation()
-
 
 func handle_death_animation() -> void:
 	player_died.emit()

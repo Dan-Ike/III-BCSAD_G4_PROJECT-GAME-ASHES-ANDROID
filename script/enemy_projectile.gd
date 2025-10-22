@@ -14,7 +14,6 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
 	
-	# Create a simple visual if no sprite exists
 	if not sprite:
 		sprite = Sprite2D.new()
 		sprite.texture = _create_simple_texture()
@@ -27,11 +26,9 @@ func _ready() -> void:
 		queue_free()
 
 func _create_simple_texture() -> ImageTexture:
-	# Create a simple circle texture
 	var img = Image.create(16, 16, false, Image.FORMAT_RGBA8)
 	img.fill(Color.TRANSPARENT)
 	
-	# Draw a red circle
 	for x in range(16):
 		for y in range(16):
 			var dist = Vector2(x - 8, y - 8).length()
@@ -44,7 +41,6 @@ func set_direction(dir: Vector2, dmg: int) -> void:
 	direction = dir.normalized()
 	damage = dmg
 	
-	# Rotate sprite to face direction
 	if sprite:
 		rotation = direction.angle()
 	

@@ -127,13 +127,11 @@ func _input(event: InputEvent) -> void:
 	"""Handle screen clicks anywhere"""
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			# Check if clicking on buttons - let them handle their own input
 			if skip_button.visible and skip_button.get_global_rect().has_point(event.position):
 				return
 			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
 				return
 			
-			# Anywhere else on screen advances text
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
 			elif in_summary and continue_button.visible:
@@ -142,7 +140,6 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
-	# Handle fade transitions for background
 	if fading_out or fading_in:
 		fade_timer += delta
 		var progress = clamp(fade_timer / fade_duration, 0.0, 1.0)
@@ -151,7 +148,6 @@ func _process(delta: float) -> void:
 			background.modulate.a = 1.0 - progress
 			if progress >= 1.0:
 				fading_out = false
-				# Load new background
 				if next_background_path != "":
 					var texture = load(next_background_path)
 					if texture:

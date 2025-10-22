@@ -1,7 +1,7 @@
 extends Control
 
 var pending_deep_link: String = ""
-var debug_label: Label = null  # For on-screen debugging
+var debug_label: Label = null  
 
 
 @onready var main_btns: VBoxContainer = $MainBtns
@@ -35,9 +35,9 @@ func _ready() -> void:
 	if OS.has_feature("web"):
 		var has_tokens = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received') === 'true'")
 		if has_tokens:
-			_log_debug("✅ OAuth tokens found in sessionStorage, deferring callback...")
-			add_child(http)  # Need http to be available
-			call_deferred("_check_web_oauth_callback")  # Process after current frame
+			_log_debug("OAuth tokens found in sessionStorage, deferring callback...")
+			add_child(http)  
+			call_deferred("_check_web_oauth_callback") 
 			return
 	
 	add_child(http)
@@ -65,7 +65,6 @@ func _ready() -> void:
 	google_login.gui_input.connect(_on_google_login_input)
 	profile_pic.gui_input.connect(_on_profile_click)
 	
-	# Make profile picture circular
 	var shader = Shader.new()
 	shader.code = """
 shader_type canvas_item;
@@ -90,11 +89,9 @@ void fragment() {
 # Check internet connectivity first
 	_check_internet_connection()
 	
-	# Only load session if not already authenticated
 	if Global.session_token == "":
 		_load_session()
 	else:
-		# Already have valid session, just show UI
 		google_login.visible = false
 		profile_pic.visible = true
 		_load_cached_profile_image()  # Load from cache first
@@ -102,13 +99,10 @@ void fragment() {
 	if OS.has_feature("Android"):
 		_create_debug_label()
 	
-	# For Android: Set up deep link detection
 	if OS.has_feature("Android"):
-		_log_debug("🤖 Android detected - Setting up deep link handlers")
-		# Check immediately on startup
+		_log_debug("Android detected - Setting up deep link handlers")
 		call_deferred("_check_for_deep_link")
 		
-		# Also check when app resumes
 		get_tree().root.connect("focus_entered", _on_app_focus_gained)
 	
 	_update_start_button_text()
@@ -134,27 +128,27 @@ func _check_for_deep_link():
 	if not OS.has_feature("Android"):
 		return
 	
-	_log_debug("🔍 Checking for deep link...")
+	_log_debug("checking for deep link...")
 	
 	# Method 1: Check command line args
 	var args = OS.get_cmdline_args()
-	_log_debug("📋 cmdline_args count: " + str(args.size()))
+	_log_debug("cmdline_args count: " + str(args.size()))
 	for i in range(args.size()):
 		var arg = args[i]
 		_log_debug("  [" + str(i) + "]: " + str(arg))
 		if typeof(arg) == TYPE_STRING and arg.begins_with("io.supabase.godot://"):
-			_log_debug("✅ Deep link found in cmdline_args: " + arg)
+			_log_debug("Deep link found in cmdline_args: " + arg)
 			_parse_oauth_callback(arg)
 			return
 	
 	# Method 2: Check user args
 	var user_args = OS.get_cmdline_user_args()
-	_log_debug("📋 user_args count: " + str(user_args.size()))
+	_log_debug("user_args count: " + str(user_args.size()))
 	for i in range(user_args.size()):
 		var arg = user_args[i]
 		_log_debug("  [" + str(i) + "]: " + str(arg))
 		if typeof(arg) == TYPE_STRING and arg.begins_with("io.supabase.godot://"):
-			_log_debug("✅ Deep link found in user_args: " + arg)
+			_log_debug("Deep link found in user_args: " + arg)
 			_parse_oauth_callback(arg)
 			return
 	
@@ -167,12 +161,12 @@ func _check_for_deep_link():
 			f.close()
 			
 			if intent_data.begins_with("io.supabase.godot://"):
-				_log_debug("✅ Deep link found in file: " + intent_data)
+				_log_debug("Deep link found in file: " + intent_data)
 				DirAccess.remove_absolute(intent_file)
 				_parse_oauth_callback(intent_data)
 				return
 	
-	_log_debug("⚠️ No deep link found yet")
+	_log_debug("No deep link found yet")
 
 func _check_internet_connection() -> void:
 	if checking_internet:
@@ -188,27 +182,25 @@ func _check_internet_connection() -> void:
 		checking_internet = false
 		
 		if internet_connected:
-			print("✅ Internet connection detected")
+			print("Internet connection detected")
 			# If online and logged in, check if profile image needs updating
 			if Global.get_current_user().size() > 0:
 				var avatar_url = Global.get_current_user().get("user_metadata", {}).get("avatar_url", "")
 				if avatar_url != "":
 					_update_google_profile_image(avatar_url)
 		else:
-			print("⚠️ No internet connection")
+			print("⚠No internet connection")
 	)
 	
-	# Simple connectivity test
 	test_http.request("https://www.google.com", [], HTTPClient.METHOD_HEAD)
 	
-	# Timeout after 3 seconds
 	await get_tree().create_timer(3.0).timeout
 	if test_http and is_instance_valid(test_http):
 		test_http.queue_free()
 		checking_internet = false
 
 func _parse_oauth_callback(url: String):
-	_log_debug("🔍 Parsing Android OAuth callback URL")
+	_log_debug("Parsing Android OAuth callback URL")
 	_log_debug("URL: " + url)
 	auth_in_progress = false
 	
@@ -232,15 +224,15 @@ func _parse_oauth_callback(url: String):
 		_log_debug("Found ? in URL, fragment: " + fragment)
 	
 	if fragment == "":
-		_log_debug("❌ No tokens found in OAuth callback URL")
-		_show_error("❌ No tokens found in OAuth callback URL")
+		_log_debug("No tokens found in OAuth callback URL")
+		_show_error("No tokens found in OAuth callback URL")
 		return
 	
-	_log_debug("📦 Fragment data: " + fragment)
+	_log_debug("Fragment data: " + fragment)
 	
 	# Parse parameters
 	var params = fragment.split("&")
-	_log_debug("📦 Parameters count: " + str(params.size()))
+	_log_debug("Parameters count: " + str(params.size()))
 	
 	var access_token = ""
 	var refresh_token = ""
@@ -258,29 +250,24 @@ func _parse_oauth_callback(url: String):
 				refresh_token = value
 	
 	if access_token != "":
-		_log_debug("✅ Tokens extracted successfully!")
+		_log_debug("Tokens extracted successfully!")
 		_perform_login(access_token, refresh_token)
 	else:
-		_log_debug("❌ No access token found in callback")
-		_show_error("❌ No access token found in callback")
+		_log_debug("No access token found in callback")
+		_show_error("No access token found in callback")
 
 func _exit_tree():
 	_stop_local_server()
 	
-	# Disconnect focus signal
 	if get_tree() and get_tree().root.is_connected("focus_entered", _on_app_focus_gained):
 		get_tree().root.disconnect("focus_entered", _on_app_focus_gained)
 	
-	# Clean up timer
 	if has_node("IntentCheckTimer"):
 		var timer = get_node("IntentCheckTimer")
 		if timer.timeout.is_connected(_periodic_intent_check):
 			timer.timeout.disconnect(_periodic_intent_check)
 		timer.queue_free()
 
-# ============================================================================
-# ON-SCREEN DEBUG LOGGING (for Android testing)
-# ============================================================================
 func _create_debug_label() -> void:
 	"""Create a debug label that shows logs on screen for Android"""
 	debug_label = Label.new()
@@ -292,9 +279,8 @@ func _create_debug_label() -> void:
 	debug_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	debug_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	debug_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	debug_label.z_index = 1000  # Draw on top
+	debug_label.z_index = 1000  
 	
-	# Add semi-transparent background
 	var panel = Panel.new()
 	panel.name = "DebugPanel"
 	panel.position = Vector2(5, 5)
@@ -308,7 +294,7 @@ func _create_debug_label() -> void:
 	add_child(panel)
 	add_child(debug_label)
 	
-	_log_debug("📱 Debug logging initialized")
+	_log_debug("Debug logging initialized")
 	_log_debug("OS: " + OS.get_name())
 	_log_debug("Distribution: " + OS.get_distribution_name())
 
@@ -331,38 +317,38 @@ func _on_google_login_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		# Check internet first
 		if not internet_connected:
-			_show_error("⚠️ No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
+			_show_error("No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
 			return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_log_debug("🔐 Google Login clicked")
-		_log_debug("📱 OS: " + OS.get_name())
+		_log_debug("Google Login clicked")
+		_log_debug("OS: " + OS.get_name())
 		
 		if OS.has_feature("Android"):
 			auth_in_progress = true
-			_log_debug("🌐 Starting OAuth flow...")
+			_log_debug("Starting OAuth flow...")
 			_start_google_oauth_flow()
-			_show_info("🌐 Opening browser for Google login...\n\n✅ After selecting your account, you'll be automatically redirected back to the game.")
+			_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically redirected back to the game.")
 		elif OS.has_feature("web"):
 			auth_in_progress = true
-			_log_debug("🌐 Starting Web OAuth flow...")
+			_log_debug("Starting Web OAuth flow...")
 			_start_web_oauth_flow()
 		else:
 			if _start_local_server():
 				auth_in_progress = true
 				_start_google_oauth_flow()
-				_show_info("🌐 Opening browser for Google login...\n\n✅ After selecting your account, you'll be automatically logged in!")
+				_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically logged in!")
 			else:
-				_show_error("❌ Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
+				_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
 
 func _start_web_oauth_flow():
-	_log_debug("🔍 Starting web OAuth flow...")
+	_log_debug("Starting web OAuth flow...")
 	
 	var origin = JavaScriptBridge.eval("window.location.origin")
 	_log_debug("Origin: " + str(origin))
 	
 	if origin == null or origin == "":
-		_log_debug("❌ Origin is null or empty")
-		_show_error("❌ Could not get page origin")
+		_log_debug("Origin is null or empty")
+		_show_error("Could not get page origin")
 		return
 	
 	var redirect_url = origin + "/callback.html"
@@ -374,29 +360,27 @@ func _start_web_oauth_flow():
 	JavaScriptBridge.eval("window.location.href = '" + oauth_url + "';")
 	_log_debug("Redirect sent")
 
-
-
 func _start_google_oauth_flow():
 	var redirect_url = ""
 	
 	if OS.has_feature("Android"):
 		redirect_url = "io.supabase.godot://login-callback/"
-		_log_debug("📍 Android redirect: " + redirect_url)
+		_log_debug("Android redirect: " + redirect_url)
 	else:
 		redirect_url = "http://127.0.0.1:%d/callback" % DESKTOP_CALLBACK_PORT
 	
 	var oauth_url = SUPABASE_URL + "/auth/v1/authorize?provider=google&prompt=select_account&redirect_to=" + redirect_url.uri_encode()
 	
-	_log_debug("🌐 OAuth URL: " + oauth_url)
-	_log_debug("📍 Redirect URL: " + redirect_url)
-	_log_debug("🚀 Opening browser...")
+	_log_debug("OAuth URL: " + oauth_url)
+	_log_debug("Redirect URL: " + redirect_url)
+	_log_debug("Opening browser...")
 	
 	OS.shell_open(oauth_url)
 
 func _on_unlockall_pressed() -> void:
 	# Check if user is logged in
 	if Global.get_current_user().size() > 0:
-		_show_error("❌ Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
+		_show_error("Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
 		return
 	
 	# Show confirmation dialog
@@ -404,13 +388,11 @@ func _on_unlockall_pressed() -> void:
 	dlg.dialog_text = "Unlock all levels and abilities?\n\nThis is for testing only and will not sync to cloud."
 	dlg.confirmed.connect(func():
 		_unlock_all_content()
-		_show_info("✅ All levels and abilities unlocked!")
+		_show_info("All levels and abilities unlocked!")
 	)
 	add_child(dlg)
 	dlg.popup_centered()
 
-
-# Add this function to unlock all content locally
 func _unlock_all_content() -> void:
 	# Unlock all abilities
 	var all_abilities = ["double_jump", "attack", "dash", "shine"]
@@ -437,7 +419,7 @@ func _unlock_all_content() -> void:
 	_update_start_button_text()
 	_update_newgame_button_visibility()
 	
-	print("🔓 All content unlocked locally")
+	print("All content unlocked locally")
 
 func _update_newgame_button_visibility() -> void:
 	var has_progress = SaveManager.data["progress"]["completed_levels"].size() > 0
@@ -455,22 +437,19 @@ func _update_newgame_button_visibility() -> void:
 func _on_newgame_pressed() -> void:
 	# Check if user is logged in
 	if Global.get_current_user().size() > 0:
-		_show_error("❌ Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
+		_show_error("Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
 		return
 	
-	# Show confirmation dialog for local save
 	var dlg := ConfirmationDialog.new()
 	dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
 	dlg.confirmed.connect(func():
 		_reset_local_save()
-		_show_info("✅ Save progress erased. Starting new game...")
-		# Optional: Load into game after delay
+		_show_info("Save progress erased. Starting new game...")
 		await get_tree().create_timer(1.0).timeout
 		_on_start_pressed()
 	)
 	add_child(dlg)
 	dlg.popup_centered()
-
 
 func _reset_local_save() -> void:
 	# Reset SaveManager data to defaults
@@ -505,8 +484,7 @@ func _reset_local_save() -> void:
 	_update_start_button_text()
 	_update_newgame_button_visibility()
 	
-	print("🔄 Local save completely reset")
-
+	print("Local save completely reset")
 
 func _load_session() -> void:
 	"""Load saved session and auto-login if valid"""
@@ -559,7 +537,7 @@ func _on_verify_session_completed(result, response_code, headers, body, access, 
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY:
-			print("✅ Session restored:", res.get("email", ""))
+			print("Session restored:", res.get("email", ""))
 			# Restore session without showing the welcome dialog again
 			Global.set_session(res, access, refresh)
 			
@@ -571,12 +549,12 @@ func _on_verify_session_completed(result, response_code, headers, body, access, 
 			if res.has("id"):
 				var user_id = str(res["id"])
 				await SaveManager.sync_from_supabase(user_id)
-				print("✅ Save data synced with Supabase")
+				print("Save data synced with Supabase")
 		else:
 			_session_invalid()
 	else:
 		if response_code == 401 or response_code == 403:
-			print("🔄 Token expired, attempting refresh...")
+			print("Token expired, attempting refresh...")
 			_refresh_stored_token(refresh)
 		else:
 			_session_invalid()
@@ -595,7 +573,7 @@ func _refresh_stored_token(refresh: String) -> void:
 	var headers = ["apikey: " + SUPABASE_KEY, "Content-Type: application/json"]
 	var body = JSON.stringify({"refresh_token": refresh})
 	
-	print("🔄 Refreshing stored token...")
+	print("Refreshing stored token...")
 	http.request(url, headers, HTTPClient.METHOD_POST, body)
 
 func _on_refresh_stored_token_response(result, response_code, headers, body):
@@ -607,7 +585,7 @@ func _on_refresh_stored_token_response(result, response_code, headers, body):
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY and res.has("access_token"):
-			print("✅ Token refreshed successfully")
+			print("Token refreshed successfully")
 			var new_access = res["access_token"]
 			var new_refresh = res.get("refresh_token", Global.refresh_token)
 			var current_user = Global.get_current_user()
@@ -623,7 +601,7 @@ func _on_refresh_stored_token_response(result, response_code, headers, body):
 
 func _session_invalid() -> void:
 	"""Session is no longer valid, clear and show login"""
-	print("❌ Session invalid, clearing...")
+	print("Session invalid, clearing...")
 	_clear_session_file()
 	Global.clear_session()
 	google_login.visible = true
@@ -644,7 +622,7 @@ func _process(_delta: float) -> void:
 		if local_server != null and local_server.is_connection_available():
 			auth_connection = local_server.take_connection()
 			if auth_connection:
-				print("🔔 OAuth callback connection received!")
+				print("OAuth callback connection received!")
 
 		if auth_connection != null and auth_connection.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 			var available = auth_connection.get_available_bytes()
@@ -658,11 +636,10 @@ func _process(_delta: float) -> void:
 		_check_web_oauth_callback()
 
 func _check_web_oauth_callback():
-	# EDITED: Use eval instead of get_interface to avoid .get() errors
 	var callback_received = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received')")
 	
 	if callback_received == "true":
-		_log_debug("✅ Web OAuth callback detected")
+		_log_debug("Web OAuth callback detected")
 		
 		# Get the tokens from sessionStorage using eval
 		var access_token = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_access_token')")
@@ -675,7 +652,7 @@ func _check_web_oauth_callback():
 				token_preview = access_token.substr(0, 20)
 			else:
 				token_preview = access_token
-		_log_debug("📦 Retrieved access token: " + token_preview + "...")
+		_log_debug("Retrieved access token: " + token_preview + "...")
 		
 		# Clear the sessionStorage using eval
 		JavaScriptBridge.eval("window.sessionStorage.removeItem('oauth_callback_received')")
@@ -689,7 +666,7 @@ func _check_web_oauth_callback():
 			else:
 				_perform_login(access_token, "")
 		else:
-			_show_error("❌ No access token found in callback")
+			_show_error("No access token found in callback")
 
 func _periodic_intent_check() -> void:
 	if auth_in_progress and OS.has_feature("Android"):
@@ -709,11 +686,6 @@ func _update_start_button_text() -> void:
 		
 		_update_newgame_button_visibility()
 
-
-
-# ============================================================================
-# DESKTOP LOCAL SERVER
-# ============================================================================
 func _start_local_server() -> bool:
 	if local_server != null:
 		return true
@@ -726,17 +698,17 @@ func _start_local_server() -> bool:
 		local_server = null
 		return false
 	
-	print("✅ Local OAuth server started on http://127.0.0.1:%d" % DESKTOP_CALLBACK_PORT)
+	print("Local OAuth server started on http://127.0.0.1:%d" % DESKTOP_CALLBACK_PORT)
 	return true
 
 func _stop_local_server() -> void:
 	if local_server:
 		local_server.stop()
 		local_server = null
-		print("🛑 Local OAuth server stopped")
+		print("Local OAuth server stopped")
 
 func _handle_oauth_callback_request(request_data: String) -> void:
-	print("📨 Received OAuth callback request")
+	print("Received OAuth callback request")
 	
 	var lines = request_data.split("\n")
 	if lines.size() == 0:
@@ -757,7 +729,7 @@ func _handle_oauth_callback_request(request_data: String) -> void:
 		response += """<html>
 <head><title>Login Success</title></head>
 <body>
-<h1>🔐 Processing login...</h1>
+<h1>Processing login...</h1>
 <p>Please wait while we complete your authentication.</p>
 <script>
 const fragment = window.location.hash.substring(1);
@@ -766,15 +738,15 @@ console.log('Fragment:', fragment);
 if (fragment) {
 	fetch('/auth?' + fragment)
 		.then(() => {
-			document.body.innerHTML = '<h1>✅ Login Successful!</h1><p>You can close this window and return to the game.</p>';
+			document.body.innerHTML = '<h1>Login Successful!</h1><p>You can close this window and return to the game.</p>';
 			setTimeout(() => window.close(), 2000);
 		})
 		.catch(err => {
-			document.body.innerHTML = '<h1>❌ Error</h1><p>Failed to send auth data to game.</p>';
+			document.body.innerHTML = '<h1>Error</h1><p>Failed to send auth data to game.</p>';
 			console.error(err);
 		});
 } else {
-	document.body.innerHTML = '<h1>❌ Error</h1><p>No authentication data found in URL.</p>';
+	document.body.innerHTML = '<h1>Error</h1><p>No authentication data found in URL.</p>';
 }
 </script>
 </body>
@@ -787,7 +759,7 @@ if (fragment) {
 		auth_connection = null
 	
 	elif url_path.begins_with("/auth"):
-		print("✅ Received tokens from browser JavaScript")
+		print("Received tokens from browser JavaScript")
 		_parse_oauth_callback_from_url(url_path)
 		
 		var response = "HTTP/1.1 200 OK\r\n"
@@ -803,7 +775,7 @@ if (fragment) {
 		_stop_local_server()
 
 func _parse_oauth_callback_from_url(url_path: String) -> void:
-	print("🔍 Parsing OAuth URL:", url_path)
+	print("Parsing OAuth URL:", url_path)
 	auth_in_progress = false
 	
 	var fragment = ""
@@ -816,7 +788,7 @@ func _parse_oauth_callback_from_url(url_path: String) -> void:
 		fragment = parts[1] if parts.size() > 1 else ""
 	
 	if fragment == "":
-		_show_error("❌ No tokens found in OAuth callback")
+		_show_error("No tokens found in OAuth callback")
 		return
 	
 	var params = fragment.split("&")
@@ -835,16 +807,10 @@ func _parse_oauth_callback_from_url(url_path: String) -> void:
 				refresh_token = value
 	
 	if access_token != "":
-		print("✅ Tokens extracted successfully!")
+		print("Tokens extracted successfully!")
 		_perform_login(access_token, refresh_token)
 	else:
-		_show_error("❌ No access token found in callback")
-
-# ============================================================================
-# ANDROID DEEP LINK HANDLER
-# ============================================================================
-
-
+		_show_error("No access token found in callback")
 
 func _check_android_intent():
 	if not Engine.has_singleton("JavaClassWrapper"):
@@ -858,22 +824,11 @@ func _check_android_intent():
 	if intent_data:
 		var data_string = intent_data.call("getDataString")
 		if data_string and data_string.begins_with("io.supabase.godot://"):
-			print("✅ Deep link found via JNI:", data_string)
+			print("Deep link found via JNI:", data_string)
 			_parse_oauth_callback(data_string)
 
-
-
-
-# ============================================================================
-# GOOGLE LOGIN
-# ============================================================================
-
-
-# ============================================================================
-# LOGIN EXECUTION
-# ============================================================================
 func _perform_login(access_token: String, refresh_tok: String = ""):
-	print("🔑 Attempting login with access token...")
+	print("Attempting login with access token...")
 	
 	if http.request_completed.is_connected(_on_user_info_request_completed):
 		http.request_completed.disconnect(_on_user_info_request_completed)
@@ -897,7 +852,7 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY:
-			print("✅ Logged in as:", res.get("email", ""))
+			print("Logged in as:", res.get("email", ""))
 			Global.set_session(res, access_token, refresh_tok)
 			_save_session(access_token, refresh_tok, res)
 			
@@ -909,22 +864,19 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 			if res.has("id"):
 				var user_id = str(res["id"])
 				await SaveManager.sync_from_supabase(user_id)
-				print("✅ Save data synced with Supabase")
-				_show_info("✅ Login successful!\nWelcome, " + res.get("email", "User"))
+				print("Save data synced with Supabase")
+				_show_info("Login successful!\nWelcome, " + res.get("email", "User"))
 		else:
-			_show_error("❌ Invalid user data received")
+			_show_error("Invalid user data received")
 	else:
 		if response_code == 403 or (response_code == 401 and text.find("expired") != -1):
-			print("🔄 Token expired, attempting refresh...")
+			print("Token expired, attempting refresh...")
 			_refresh_access_token()
 		else:
-			_show_error("❌ Login failed (" + str(response_code) + ")")
+			_show_error("Login failed (" + str(response_code) + ")")
 			google_login.visible = true
 			profile_pic.visible = false
 
-# ============================================================================
-# TOKEN REFRESH
-# ============================================================================
 func _refresh_access_token():
 	var stored_refresh = Global.refresh_token
 	if stored_refresh == "":
@@ -940,7 +892,7 @@ func _refresh_access_token():
 	var headers = ["apikey: " + SUPABASE_KEY, "Content-Type: application/json"]
 	var body = JSON.stringify({"refresh_token": stored_refresh})
 	
-	print("🔄 Refreshing access token...")
+	print("Refreshing access token...")
 	http.request(url, headers, HTTPClient.METHOD_POST, body)
 
 func _on_refresh_token_response(result, response_code, headers, body):
@@ -952,17 +904,17 @@ func _on_refresh_token_response(result, response_code, headers, body):
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY and res.has("access_token"):
-			print("✅ Access token refreshed")
+			print("Access token refreshed")
 			var new_access = res["access_token"]
 			var new_refresh = res.get("refresh_token", Global.refresh_token)
 			var current_user = Global.get_current_user()
 			Global.set_session(current_user, new_access, new_refresh)
 			_save_session(new_access, new_refresh, current_user)
 		else:
-			_show_error("⚠️ Token refresh failed")
+			_show_error("Token refresh failed")
 			_handle_refresh_failure()
 	else:
-		_show_error("❌ Token refresh failed (" + str(response_code) + ")")
+		_show_error("Token refresh failed (" + str(response_code) + ")")
 		_handle_refresh_failure()
 
 func _handle_refresh_failure():
@@ -971,9 +923,6 @@ func _handle_refresh_failure():
 	_clear_session_file()
 	Global.clear_session()
 
-# ============================================================================
-# SESSION PERSISTENCE
-# ============================================================================
 func _save_session(token: String, refresh: String, user_data: Dictionary) -> void:
 	var session = {
 		"access_token": token,
@@ -984,18 +933,15 @@ func _save_session(token: String, refresh: String, user_data: Dictionary) -> voi
 	if f:
 		f.store_string(JSON.stringify(session, "\t"))
 		f.close()
-		print("💾 Session saved")
+		print("Session saved")
 	else:
 		push_error("Failed to save session file")
 
 func _clear_session_file() -> void:
 	if FileAccess.file_exists("user://session.json"):
 		DirAccess.remove_absolute("user://session.json")
-		print("🗑️ Session deleted")
+		print("Session deleted")
 
-# ============================================================================
-# PROFILE IMAGE
-# ============================================================================
 func _update_google_profile_image(avatar_url: String):
 	if avatar_url == "":
 		_load_cached_profile_image()  # Try to load from cache first
@@ -1004,7 +950,7 @@ func _update_google_profile_image(avatar_url: String):
 		return
 	
 	if not internet_connected:
-		print("⚠️ No internet - using cached profile image")
+		print("No internet - using cached profile image")
 		_load_cached_profile_image()
 		if profile_pic.texture == null:
 			_update_profile_placeholder()
@@ -1019,13 +965,13 @@ func _update_google_profile_image(avatar_url: String):
 			if img.load_jpg_from_buffer(body) == OK or img.load_png_from_buffer(body) == OK:
 				profile_pic.texture = ImageTexture.create_from_image(img)
 				_save_profile_image_locally(img)  # Save to cache
-				print("🖼️ Profile picture loaded and cached")
+				print("Profile picture loaded and cached")
 			else:
 				_load_cached_profile_image()  # Fallback to cache
 				if profile_pic.texture == null:
 					_update_profile_placeholder()
 		else:
-			print("⚠️ Failed to download profile image, using cache")
+			print("Failed to download profile image, using cache")
 			_load_cached_profile_image()
 			if profile_pic.texture == null:
 				_update_profile_placeholder()
@@ -1037,9 +983,9 @@ func _update_google_profile_image(avatar_url: String):
 func _save_profile_image_locally(img: Image) -> void:
 	var err = img.save_png(PROFILE_IMAGE_PATH)
 	if err == OK:
-		print("💾 Profile image saved locally")
+		print("Profile image saved locally")
 	else:
-		print("❌ Failed to save profile image locally:", err)
+		print("Failed to save profile image locally:", err)
 
 func _load_cached_profile_image() -> void:
 	if FileAccess.file_exists(PROFILE_IMAGE_PATH):
@@ -1047,11 +993,11 @@ func _load_cached_profile_image() -> void:
 		var err = img.load(PROFILE_IMAGE_PATH)
 		if err == OK:
 			profile_pic.texture = ImageTexture.create_from_image(img)
-			print("✅ Loaded cached profile image")
+			print("Loaded cached profile image")
 		else:
-			print("❌ Failed to load cached profile image:", err)
+			print("Failed to load cached profile image:", err)
 	else:
-		print("⚠️ No cached profile image found")
+		print("No cached profile image found")
 
 func _update_profile_placeholder():
 	var img = Image.create(64, 64, false, Image.FORMAT_RGB8)
@@ -1064,29 +1010,23 @@ func _on_profile_click(event: InputEvent) -> void:
 			var dlg := ConfirmationDialog.new()
 			dlg.dialog_text = "Do you want to log out?"
 			dlg.confirmed.connect(func():
-				# Clear session
 				Global.clear_session()
 				_clear_session_file()
 				
-				# Clear cached profile image
 				if FileAccess.file_exists(PROFILE_IMAGE_PATH):
 					DirAccess.remove_absolute(PROFILE_IMAGE_PATH)
-					print("🗑️ Cached profile image deleted")
+					print("Cached profile image deleted")
 				
-				# Update UI
 				google_login.visible = true
 				profile_pic.visible = false
 				_update_profile_placeholder()
 				
-				print("🔴 User logged out successfully")
-				_show_info("✅ Logged out successfully!")
+				print("User logged out successfully")
+				_show_info("Logged out successfully!")
 			)
 			add_child(dlg)
 			dlg.popup_centered()
 
-# ============================================================================
-# UI HANDLERS
-# ============================================================================
 func _on_control_choice_selected(index: int) -> void:
 	Global.control_type = index
 
@@ -1108,14 +1048,18 @@ func _on_options_pressed() -> void:
 	options.visible = true
 
 func _on_exit_pressed() -> void:
-	get_tree().quit()
+	var dlg := ConfirmationDialog.new()
+	dlg.dialog_text = "Are you sure you want to exit the game?"
+	dlg.title = "Exit Game"
+	dlg.confirmed.connect(func():
+		get_tree().quit()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
 
 func _on_back_pressed() -> void:
 	_ready()
 
-# ============================================================================
-# ERROR/INFO DIALOGS
-# ============================================================================
 func _show_error(msg: String) -> void:
 	var dlg := AcceptDialog.new()
 	dlg.dialog_text = msg

@@ -32,7 +32,6 @@ func _ready() -> void:
 	if advanced_enemy:
 		advanced_enemy.tree_exited.connect(_on_boss_defeated)
 	
-	# Connect to player death - override the player's death behavior for this level
 	if player:
 		player.player_died.connect(_on_player_died)
 	
@@ -162,7 +161,6 @@ func _on_player_died() -> void:
 			bad_ending.start_cutscene("floor_3_level_2_bad_ending")
 	else:
 		# Let the normal game over screen play
-		# The player's handle_death_animation will continue normally
 		ending_playing = false
 
 func _should_show_ending_cutscene(ending_type: String) -> bool:

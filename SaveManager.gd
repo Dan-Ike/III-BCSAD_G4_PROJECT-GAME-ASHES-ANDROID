@@ -33,7 +33,6 @@ func _ready() -> void:
 	add_child(http)
 	http.request_completed.connect(Callable(self, "_on_http_request_completed"))
 	
-	# CRITICAL FIX: Disable automatic decompression on web to avoid GZIP errors
 	if OS.has_feature("web"):
 		http.accept_gzip = false
 	
@@ -74,7 +73,6 @@ func _load_local() -> void:
 			var parsed = JSON.parse_string(text)
 			if typeof(parsed) == TYPE_DICTIONARY:
 				data = parsed
-				# Migrate old save format to new format
 				if not data["progress"].has("completed_levels"):
 					data["progress"]["completed_levels"] = {}
 				if not data["progress"].has("current_floor"):
@@ -222,7 +220,7 @@ func sync_from_supabase(user_id: String) -> void:
 		print("SaveManager: sync_from_supabase called with empty user_id")
 		return
 	
-	print("\n🔄 ========== STARTING SUPABASE SYNC ==========")
+	print("\n========== STARTING SUPABASE SYNC ==========")
 	print("📱 Local Progress BEFORE sync:")
 	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
 	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
@@ -232,7 +230,6 @@ func sync_from_supabase(user_id: String) -> void:
 	_pending_request = "fetch_progress"
 	var url = "%s/rest/v1/progress?user_id=eq.%s&select=*" % [SUPABASE_URL, user_id]
 	
-	# FIX: Add Accept-Encoding header to prevent GZIP on web
 	var headers = [
 		"apikey: %s" % SUPABASE_KEY,
 		"Authorization: Bearer %s" % Global.session_token,
@@ -276,7 +273,6 @@ func push_all_to_supabase() -> void:
 		"Prefer: return=minimal"
 	]
 	
-	# On web, explicitly request no compression
 	if OS.has_feature("web"):
 		headers.append("Accept-Encoding: identity")
 	
@@ -361,34 +357,32 @@ func _compare_progress(floor1: int, level1: int, floor2: int, level2: int) -> in
 			return 0
 
 func _on_http_request_completed(result, response_code, headers, body) -> void:
-	# FIX: Better error handling for web
 	var body_text := ""
 	if body and body.size() > 0:
 		body_text = body.get_string_from_utf8()
 		
 		# Additional check for empty/invalid response on web
 		if body_text == "" or body_text == "null":
-			print("⚠️ Empty response received from Supabase")
+			print("Empty response received from Supabase")
 			if _pending_request == "fetch_progress":
 				_pending_request = ""
-				print("\n☁️  No cloud progress found - Creating initial cloud save")
+				print("\nNo cloud progress found - Creating initial cloud save")
 				push_all_to_supabase()
 			return
 	
-	print("📦 Response Code: %d" % response_code)
-	print("📦 Response Body Length: %d" % body_text.length())
+	print("Response Code: %d" % response_code)
+	print("Response Body Length: %d" % body_text.length())
 	
 	if _pending_request == "fetch_progress":
 		_pending_request = ""
 		
 		if response_code == 200:
-			# FIX: Add better JSON parsing with error handling
 			var res = JSON.parse_string(body_text)
 			
 			if res == null:
-				print("❌ Failed to parse JSON response")
+				print("Failed to parse JSON response")
 				print("Raw response: " + body_text.substr(0, min(200, body_text.length())))
-				print("\n☁️  No valid cloud progress - Creating initial cloud save")
+				print("\nNo valid cloud progress - Creating initial cloud save")
 				push_all_to_supabase()
 				return
 			
@@ -402,7 +396,7 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				var cloud_abilities = row.get("abilities", {})
 				var cloud_watched = row.get("watched_cutscenes", [])
 				
-				print("\n☁️  Cloud Progress:")
+				print("\nCloud Progress:")
 				print("   Floor: %d, Level: %d" % [cloud_floor, cloud_level])
 				print("   Completed Levels: " + str(cloud_completed))
 				print("   Abilities: " + str(cloud_abilities))
@@ -414,25 +408,25 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				var local_abilities = data["progress"].get("abilities", {})
 				var local_watched = data.get("watched_cutscenes", [])
 				
-				# STEP 1: Merge completed levels
+				#Merge completed levels
 				var merged_completed = _merge_completed_levels(local_completed, cloud_completed)
 				data["progress"]["completed_levels"] = merged_completed
-				print("\n🔀 Merged completed levels: " + str(merged_completed))
+				print("\nMerged completed levels: " + str(merged_completed))
 				
-				# STEP 2: Merge abilities
+				#Merge abilities
 				var merged_abilities = _merge_abilities(local_abilities, cloud_abilities)
 				data["progress"]["abilities"] = merged_abilities
-				print("🔀 Merged abilities: " + str(merged_abilities))
+				print("Merged abilities: " + str(merged_abilities))
 				
-				# STEP 3: Merge watched cutscenes
+				#Merge watched cutscenes
 				var merged_watched = _merge_watched_cutscenes(local_watched, cloud_watched)
 				data["watched_cutscenes"] = merged_watched
 				
-				# STEP 4: Determine current position
+				# Determine current position
 				var local_highest = _get_highest_completed_level(local_completed)
 				var cloud_highest = _get_highest_completed_level(cloud_completed)
 				
-				print("\n📊 Highest Completed Levels:")
+				print("\nHighest Completed Levels:")
 				print("   Local: Floor %d Level %d" % [local_highest["floor"], local_highest["level"]])
 				print("   Cloud: Floor %d Level %d" % [cloud_highest["floor"], cloud_highest["level"]])
 				
@@ -448,18 +442,18 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 					if _compare_progress(cloud_floor, cloud_level, local_floor, local_level) > 0:
 						final_floor = cloud_floor
 						final_level = cloud_level
-						print("✅ Using cloud's current position (ahead of local)")
+						print("Using cloud's current position (ahead of local)")
 					else:
-						print("✅ Using local's current position (ahead or equal)")
+						print("Using local's current position (ahead or equal)")
 				else:
 					final_floor = cloud_floor
 					final_level = cloud_level
-					print("✅ Using cloud's position (more progress)")
+					print("Using cloud's position (more progress)")
 				
 				data["progress"]["current_floor"] = final_floor
 				data["progress"]["current_level"] = final_level
 				
-				print("\n🎯 Final Progress:")
+				print("\nFinal Progress:")
 				print("   Floor: %d, Level: %d" % [final_floor, final_level])
 				print("   Completed Levels: " + str(merged_completed))
 				print("   Abilities: " + str(merged_abilities))
@@ -472,18 +466,18 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				push_all_to_supabase()
 				
 			else:
-				print("\n☁️  No cloud progress found - Creating initial cloud save")
+				print("\nNo cloud progress found - Creating initial cloud save")
 				push_all_to_supabase()
 		else:
 			print("SaveManager: fetch_progress failed:", response_code, body_text.substr(0, min(200, body_text.length())))
 			
 			# If cloud fetch fails, just use local data
 			if response_code == 406:  # Not Acceptable - might be no data
-				print("☁️  No cloud data exists yet - will create on first save")
+				print("No cloud data exists yet - will create on first save")
 	
 	elif _pending_request == "update_progress":
 		_pending_request = ""
 		if response_code in [200, 201, 204]:
-			print("✅ Cloud save updated successfully")
+			print("Cloud save updated successfully")
 		else:
-			print("❌ Cloud save failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+			print("Cloud save failed:", response_code, body_text.substr(0, min(200, body_text.length())))

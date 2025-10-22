@@ -13,7 +13,6 @@ extends CanvasLayer
 @onready var skip_button: Button = $SkipButton
 @onready var continue_button: Button = $ContinueButton
 
-# Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f01 - new.png",
@@ -90,7 +89,6 @@ var player: Player = null
 var cutscene_id: String = ""
 
 func _ready() -> void:
-	# Find player reference
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var level_node = get_parent()
 	if level_node.has_node("player"):
@@ -109,13 +107,11 @@ func _input(event: InputEvent) -> void:
 	"""Handle screen clicks anywhere"""
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			# Check if clicking on buttons - let them handle their own input
 			if skip_button.visible and skip_button.get_global_rect().has_point(event.position):
 				return
 			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
 				return
 			
-			# Anywhere else on screen advances text
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
 			elif in_summary and continue_button.visible:
@@ -124,7 +120,6 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
-	# Handle fade transitions for background
 	if fading_out or fading_in:
 		fade_timer += delta
 		var progress = clamp(fade_timer / fade_duration, 0.0, 1.0)
@@ -133,13 +128,11 @@ func _process(delta: float) -> void:
 			background.modulate.a = 1.0 - progress
 			if progress >= 1.0:
 				fading_out = false
-				# Load new background
 				if next_background_path != "":
 					var texture = load(next_background_path)
 					if texture:
 						background.texture = texture
 						current_background_path = next_background_path
-				# Start fading in
 				fading_in = true
 				fade_timer = 0.0
 		
@@ -150,17 +143,13 @@ func _process(delta: float) -> void:
 				is_transitioning = false
 				background.modulate.a = 1.0
 	
-	# Handle text delay before showing
 	if waiting_for_text_delay:
 		text_delay_timer += delta
 		if text_delay_timer >= text_delay_duration:
 			waiting_for_text_delay = false
 			text_delay_timer = 0.0
-			# Start showing text container with fade in
-			# Make sure to use current_text which was set in show_scene
 			_start_text_fade_in()
 	
-	# Handle fade transitions for text container
 	if text_fading_out or text_fading_in:
 		text_fade_timer += delta
 		var progress = clamp(text_fade_timer / text_fade_duration, 0.0, 1.0)
@@ -428,14 +417,12 @@ func proceed_to_game() -> void:
 		Global.is_retrying_level = true
 		get_tree().reload_current_scene()
 
-
 func _on_text_container_input(event: InputEvent) -> void:
 	"""Handle clicks on text container"""
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
-
 
 func _on_summary_container_input(event: InputEvent) -> void:
 	"""Handle clicks on summary container"""
@@ -444,11 +431,9 @@ func _on_summary_container_input(event: InputEvent) -> void:
 			if in_summary and continue_button.visible:
 				proceed_to_game()
 
-
 func _on_skip_pressed() -> void:
 	background.visible = false
 	show_summary()
-
 
 func _on_continue_pressed() -> void:
 	proceed_to_game()
