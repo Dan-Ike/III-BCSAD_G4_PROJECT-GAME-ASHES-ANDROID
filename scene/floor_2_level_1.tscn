@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://bxryvbb5d6pj3"]
+[gd_scene load_steps=55 format=3 uid="uid://bxryvbb5d6pj3"]
 
 [ext_resource type="Script" uid="uid://bkxj4rm42sjs1" path="res://script/testflr_2_lvl_1.gd" id="1_w1861"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_7fund"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://dogiokehlidko" path="res://scene/torch.tscn" id="4_oakjt"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="5_w1861"]
 [ext_resource type="PackedScene" uid="uid://cqeev4lpf6ncp" path="res://scene/before_2_1.tscn" id="6_7fund"]
+[ext_resource type="PackedScene" uid="uid://dahqa8hisafx" path="res://scene/falling_trap.tscn" id="7_pqfmk"]
+[ext_resource type="PackedScene" uid="uid://byqhvp41krxue" path="res://scene/extend_trap.tscn" id="8_oakjt"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_7fund")
@@ -1463,6 +1465,14 @@ offset_bottom = 40.0
 [node name="TouchControls" parent="Control" instance=ExtResource("5_w1861")]
 
 [node name="before_2_1" parent="." instance=ExtResource("6_7fund")]
+
+[node name="FallingTrap2" parent="." instance=ExtResource("7_pqfmk")]
+position = Vector2(1369, -187)
+rotation = -6.28319
+trap_type = 1
+
+[node name="extend_trap" parent="." instance=ExtResource("8_oakjt")]
+position = Vector2(1261, 15)
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor2lvl2" to="." method="_on_floor_2_lvl_2_body_entered"]

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Slash"
-run/main_scene="uid://ctdvnvbag70nh"
+run/main_scene="uid://bxryvbb5d6pj3"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="uid://ou3m2a0nfsoc"
 
