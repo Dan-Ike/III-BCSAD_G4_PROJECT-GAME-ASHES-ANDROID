@@ -13,6 +13,7 @@ extends CanvasLayer
 @onready var options: Panel = $Options
 @onready var virtual_joystick: VirtualJoystick = $"Control/Virtual Joystick"
 @onready var control_choice: OptionButton = $Options/ControlChoice
+@onready var edit: Button = $Options/edit
 
 @onready var shine: TouchScreenButton = $Control/Control7/shine
 
@@ -21,16 +22,22 @@ var pause_enabled: bool = true
 
 func _ready() -> void:
 	enable_pause()
+	_load_custom_layout()
 	_update_controls_visibility()
 	Global.control_type_changed.connect(_on_control_type_changed)
+	
 	for node in [pause, pause_menu, option, exit, options]:
 		node.process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	pause.pressed.connect(_on_pause_pressed)
 	option.pressed.connect(_on_option_pressed)
 	exit.pressed.connect(_on_exit_pressed)
 	resume.pressed.connect(_on_resume_pressed)
+	edit.pressed.connect(_on_edit_pressed)
+	
 	pause_menu.visible = false
 	options.visible = false
+	
 	control_choice.clear()
 	control_choice.add_item("Button", 0)
 	control_choice.add_item("Joystick", 1)
@@ -38,8 +45,53 @@ func _ready() -> void:
 	control_choice.item_selected.connect(_on_control_mode_selected)
 	Global.control_type_changed.connect(_sync_with_global)
 
+func _load_custom_layout() -> void:
+	var layout = SaveManager.get_control_layout()
+	if layout.size() == 0:
+		print("[TouchControls] No custom layout found, using defaults")
+		return
+	
+	print("[TouchControls] Loading custom layout")
+	
+	# Apply layout to the PARENT Control nodes, not the buttons themselves
+	if layout.has("left"):
+		_apply_layout_to_control(left.get_parent(), layout.get("left", {}))
+	if layout.has("right"):
+		_apply_layout_to_control(right.get_parent(), layout.get("right", {}))
+	if layout.has("jump"):
+		_apply_layout_to_control(jump.get_parent(), layout.get("jump", {}))
+	if layout.has("atk"):
+		_apply_layout_to_control(atk.get_parent(), layout.get("atk", {}))
+	if layout.has("dash"):
+		_apply_layout_to_control(dash.get_parent(), layout.get("dash", {}))
+	if layout.has("shine"):
+		_apply_layout_to_control(shine.get_parent(), layout.get("shine", {}))
+	if layout.has("joystick"):
+		_apply_layout_to_control(virtual_joystick, layout.get("joystick", {}))
+
+# Fixed: Removed strict type hint - accepts any Node that has position and scale
+func _apply_layout_to_control(control, layout_data: Dictionary) -> void:
+	if not control or layout_data.size() == 0:
+		return
+	
+	if layout_data.has("x") and layout_data.has("y"):
+		control.position = Vector2(layout_data["x"], layout_data["y"])
+	
+	if layout_data.has("rotation"):
+		control.rotation_degrees = layout_data["rotation"]
+	
+	if layout_data.has("scale"):
+		var scale_val = layout_data["scale"]
+		control.scale = Vector2(scale_val, scale_val)
+	
+	print("[TouchControls] Applied layout to %s: pos=%s, rotation=%s, scale=%s" % [
+		control.name, 
+		control.position,
+		control.rotation_degrees,
+		control.scale
+	])
+
 func _process(_delta: float) -> void:
-	# Check for pause toggle with pause button or ESC key
 	if Input.is_action_just_pressed("ui_cancel") and pause_enabled:
 		_on_pause_pressed()
 
@@ -146,3 +198,6 @@ func disable_all_controls() -> void:
 	virtual_joystick.hide()
 	virtual_joystick.set_process(false)
 	virtual_joystick.set_block_signals(true)
+
+func _on_edit_pressed() -> void:
+	get_tree().change_scene_to_file("res://scene/controls_editor.tscn")

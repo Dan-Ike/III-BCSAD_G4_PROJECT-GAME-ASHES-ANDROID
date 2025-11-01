@@ -103,6 +103,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
 text = "Unlock All"
 
 [node name="MainBtns" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.3
@@ -204,7 +205,6 @@ scale = Vector2(0.12205, 0.125615)
 texture = ExtResource("4_by01r")
 
 [node name="Options" type="Panel" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.309

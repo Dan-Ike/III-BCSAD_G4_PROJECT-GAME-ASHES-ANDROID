@@ -1,0 +1,221 @@
+[gd_scene load_steps=7 format=3 uid="uid://e1xxbe7h2h17"]
+
+[ext_resource type="Script" uid="uid://c0d1n5pfwwj5y" path="res://script/controls_editor.gd" id="1_pglvk"]
+[ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="2_02yaw"]
+[ext_resource type="Texture2D" uid="uid://bqr7e7tjqxf40" path="res://art/sword.png" id="3_0amn8"]
+[ext_resource type="Texture2D" uid="uid://h8o3yxkpgn82" path="res://art/speed.png" id="4_hfh0r"]
+[ext_resource type="Texture2D" uid="uid://brj1q1al7gv8k" path="res://art/brightness.png" id="6_jiktk"]
+[ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="7_ulkxl"]
+
+[node name="ControlsEditor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pglvk")
+
+[node name="PreviewContainer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="ConfirmDialog" type="ConfirmationDialog" parent="."]
+title = "Confirm Save"
+size = Vector2i(400, 200)
+ok_button_text = "Save"
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.092
+anchor_top = 0.808
+anchor_right = 0.092
+anchor_bottom = 0.808
+offset_left = -65.76
+offset_top = -65.76
+offset_right = 65.24
+offset_bottom = 65.24
+
+[node name="left" type="TouchScreenButton" parent="Control/Control"]
+scale = Vector2(0.242187, 0.238281)
+texture_normal = ExtResource("2_02yaw")
+action = "left"
+
+[node name="Control2" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.225
+anchor_top = 0.792
+anchor_right = 0.225
+anchor_bottom = 0.792
+offset_left = -70.0
+offset_top = -63.2401
+offset_right = 69.0
+offset_bottom = 63.7599
+
+[node name="right" type="TouchScreenButton" parent="Control/Control2"]
+position = Vector2(129, 125)
+rotation = 3.14159
+scale = Vector2(0.245703, 0.235322)
+texture_normal = ExtResource("2_02yaw")
+action = "right"
+
+[node name="Control3" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.732
+anchor_top = 0.801
+anchor_right = 0.732
+anchor_bottom = 0.801
+offset_left = -63.9601
+offset_top = -62.72
+offset_right = 65.0399
+offset_bottom = 62.28
+
+[node name="jump" type="TouchScreenButton" parent="Control/Control3"]
+position = Vector2(125, -0.142029)
+rotation = 1.5708
+scale = Vector2(0.242242, 0.245702)
+texture_normal = ExtResource("2_02yaw")
+action = "jump"
+
+[node name="Control4" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.88
+anchor_top = 0.698
+anchor_right = 0.88
+anchor_bottom = 0.698
+offset_left = -67.4
+offset_top = -67.56
+offset_right = 67.6
+offset_bottom = 67.44
+
+[node name="atk" type="TouchScreenButton" parent="Control/Control4"]
+position = Vector2(4, 0)
+scale = Vector2(0.244141, 0.251953)
+texture_normal = ExtResource("3_0amn8")
+action = "z"
+
+[node name="Control5" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.739
+anchor_top = 0.567
+anchor_right = 0.739
+anchor_bottom = 0.567
+offset_left = -72.92
+offset_top = -65.24
+offset_right = 73.08
+offset_bottom = 65.76
+
+[node name="dash" type="TouchScreenButton" parent="Control/Control5"]
+scale = Vector2(0.244141, 0.251953)
+texture_normal = ExtResource("4_hfh0r")
+action = "dash"
+
+[node name="Control7" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.878
+anchor_top = 0.445
+anchor_right = 0.878
+anchor_bottom = 0.445
+offset_left = -91.8401
+offset_top = -20.4
+offset_right = 42.1599
+offset_bottom = 84.6
+
+[node name="shine" type="TouchScreenButton" parent="Control/Control7"]
+process_mode = 3
+position = Vector2(13.9999, 6)
+scale = Vector2(0.1875, 0.1875)
+texture_normal = ExtResource("6_jiktk")
+action = "shine"
+
+[node name="Control6" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.13
+anchor_top = 0.781
+anchor_right = 0.13
+anchor_bottom = 0.781
+offset_left = -134.4
+offset_top = -123.32
+offset_right = 128.6
+offset_bottom = 121.68
+
+[node name="Virtual Joystick" parent="Control/Control6" instance=ExtResource("7_ulkxl")]
+layout_mode = 1
+anchor_left = -21.925
+anchor_top = 6.425
+anchor_right = -21.925
+anchor_bottom = 6.425
+offset_left = 5800.28
+offset_top = -1558.13
+offset_right = 6001.28
+offset_bottom = -1345.13
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.505
+anchor_top = 0.06
+anchor_right = 0.505
+anchor_bottom = 0.06
+offset_left = -355.4
+offset_top = -30.2
+offset_right = 354.6
+offset_bottom = 29.8
+theme_override_constants/separation = 10
+
+[node name="ZoomIn" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+text = "+"
+
+[node name="ZoomOut" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+text = "-"
+
+[node name="RotateLeft" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(100, 60)
+layout_mode = 2
+text = "Roate Left"
+
+[node name="RotateRight" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(120, 60)
+layout_mode = 2
+text = "Rotate Right"
+
+[node name="Reset" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+text = "Reset
+"
+
+[node name="Undo" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "Undo"
+
+[node name="Save" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "Save"
+
+[node name="Back" type="Button" parent="TopBar"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="TopBar/Save" to="." method="_on_save_pressed"]

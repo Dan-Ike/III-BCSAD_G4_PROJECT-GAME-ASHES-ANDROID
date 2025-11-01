@@ -283,12 +283,12 @@ position = Vector2(139, 58)
 rotation = 3.14098
 scale = Vector2(0.435243, 0.481921)
 sprite_frames = SubResource("SpriteFrames_0pnog")
-animation = &"extend"
+animation = &"back"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 visible = false
 position = Vector2(139.122, 35.9135)
-rotation = -3.14159
+rotation = 3.14159
 scale = Vector2(0.447512, 0.508836)
 texture = ExtResource("3_4nxqy")
 

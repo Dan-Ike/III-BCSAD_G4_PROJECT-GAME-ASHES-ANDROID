@@ -667,6 +667,8 @@ func die() -> void:
 	Input.action_release("z")
 	Input.action_release("dash")
 	handle_death_animation()
+	MlEnemyData.record_player_death()
+	
 
 func handle_death_animation() -> void:
 	player_died.emit()

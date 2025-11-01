@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://bxryvbb5d6pj3"]
+[gd_scene load_steps=57 format=3 uid="uid://bxryvbb5d6pj3"]
 
 [ext_resource type="Script" uid="uid://bkxj4rm42sjs1" path="res://script/testflr_2_lvl_1.gd" id="1_w1861"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_7fund"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://cqeev4lpf6ncp" path="res://scene/before_2_1.tscn" id="6_7fund"]
 [ext_resource type="PackedScene" uid="uid://dahqa8hisafx" path="res://scene/falling_trap.tscn" id="7_pqfmk"]
 [ext_resource type="PackedScene" uid="uid://byqhvp41krxue" path="res://scene/extend_trap.tscn" id="8_oakjt"]
+[ext_resource type="PackedScene" uid="uid://dhffepretghdl" path="res://scene/worm.tscn" id="9_lgtmp"]
+[ext_resource type="PackedScene" uid="uid://1c4gthjt7apr" path="res://scene/saw.tscn" id="10_j5b6t"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_7fund")
@@ -940,6 +942,7 @@ occluder = SubResource("OccluderPolygon2D_6toq2")
 occluder = SubResource("OccluderPolygon2D_ur3eq")
 
 [node name="spike_collision" type="Area2D" parent="."]
+visible = false
 collision_mask = 2
 
 [node name="CollisionShape2D15" type="CollisionShape2D" parent="spike_collision"]
@@ -1465,14 +1468,64 @@ offset_bottom = 40.0
 [node name="TouchControls" parent="Control" instance=ExtResource("5_w1861")]
 
 [node name="before_2_1" parent="." instance=ExtResource("6_7fund")]
+visible = false
 
 [node name="FallingTrap2" parent="." instance=ExtResource("7_pqfmk")]
-position = Vector2(1369, -187)
-rotation = -6.28319
+position = Vector2(2095, -88)
+rotation = 1.57705
+direction = 2
 trap_type = 1
 
 [node name="extend_trap" parent="." instance=ExtResource("8_oakjt")]
-position = Vector2(1261, 15)
+position = Vector2(1351, 191)
+rotation = -1.57001
+direction = 2
+trap_type = 4
+extend_hitbox_delay = 0.0
+
+[node name="extend_trap2" parent="." instance=ExtResource("8_oakjt")]
+position = Vector2(1286, 15)
+direction = 0
+trap_type = 4
+cycle_fall_duration = 1.5
+
+[node name="extend_trap3" parent="." instance=ExtResource("8_oakjt")]
+position = Vector2(1311, 15)
+direction = 0
+trap_type = 4
+cycle_fall_duration = 2.0
+
+[node name="extend_trap4" parent="." instance=ExtResource("8_oakjt")]
+position = Vector2(1335, 15)
+direction = 0
+trap_type = 4
+
+[node name="extend_trap5" parent="." instance=ExtResource("8_oakjt")]
+position = Vector2(1360, 15)
+direction = 0
+trap_type = 4
+
+[node name="worm" parent="." instance=ExtResource("9_lgtmp")]
+position = Vector2(1486, -209)
+direction = 0
+
+[node name="saw2" parent="." instance=ExtResource("10_j5b6t")]
+position = Vector2(556, -185)
+
+[node name="saw3" parent="." instance=ExtResource("10_j5b6t")]
+position = Vector2(298, 186)
+rotation = -1.56593
+direction = 2
+
+[node name="saw4" parent="." instance=ExtResource("10_j5b6t")]
+position = Vector2(234, -93)
+rotation = 1.5672
+direction = 3
+
+[node name="saw5" parent="." instance=ExtResource("10_j5b6t")]
+position = Vector2(666, 110)
+rotation = -3.14207
+direction = 1
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor2lvl2" to="." method="_on_floor_2_lvl_2_body_entered"]

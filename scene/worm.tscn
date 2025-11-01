@@ -1,0 +1,145 @@
+[gd_scene load_steps=15 format=3 uid="uid://dhffepretghdl"]
+
+[ext_resource type="Script" uid="uid://dp3u8cocupduo" path="res://script/falling_trap.gd" id="1_6xg3e"]
+[ext_resource type="Texture2D" uid="uid://b811vohe03el8" path="res://art/Foozle_2DS0007_Pixel_Trap_Pack/Foozle_2DTR0001_Pixel_Trap_Pack/Sandworm Trap/PNGs/Sandworm trap - Level 1.png" id="1_mh37p"]
+[ext_resource type="Texture2D" uid="uid://dc1flnatu135w" path="res://art/free_trapassets/free_trapassets/Trap_Spike_solo.png" id="2_6xg3e"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mh37p"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6xg3e"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(256, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wnika"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(288, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xyu8k"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(320, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h7ghm"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kqbwf"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8wafk"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8cvx6"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x1y44"]
+atlas = ExtResource("1_mh37p")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jujcu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mh37p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6xg3e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wnika")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xyu8k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h7ghm")
+}],
+"loop": false,
+"name": &"back",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kqbwf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8wafk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8cvx6")
+}],
+"loop": false,
+"name": &"extend",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x1y44")
+}],
+"loop": false,
+"name": &"shake",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r6618"]
+size = Vector2(17, 249)
+
+[node name="worm" type="Node2D"]
+script = ExtResource("1_6xg3e")
+trap_type = 3
+speed = 200.0
+recover_time = 1.0
+cycle_fall_duration = 0.5
+cycle_delay = 1.0
+extend_duration = 0.5
+extend_hitbox_delay = 0.0
+fall_despawn_time = 1.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(140, 260)
+scale = Vector2(0.715244, 0.921921)
+sprite_frames = SubResource("SpriteFrames_jujcu")
+animation = &"shake"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(139.122, 35.9135)
+rotation = 3.14159
+scale = Vector2(0.447512, 0.508836)
+texture = ExtResource("2_6xg3e")
+
+[node name="hitboxfall" type="Area2D" parent="."]
+position = Vector2(139, 264)
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="hitboxfall"]
+scale = Vector2(9.63492, 6.875)
+build_mode = 1
+polygon = PackedVector2Array(1.03789, 1.6, 1.03789, -0.727273, 1.03789, -0.727273, -0.934102, -0.727273, -0.934102, 1.6)
+
+[node name="hitboxextend" type="Area2D" parent="."]
+position = Vector2(139, 245)
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="hitboxextend"]
+scale = Vector2(9.63492, 6.875)
+build_mode = 1
+polygon = PackedVector2Array(1.03789, 4.36364, 1.03789, -0.727273, 1.03789, -0.727273, -0.934102, -0.727273, -0.934102, 4.36364)
+
+[node name="playerdeetct" type="Area2D" parent="."]
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="playerdeetct"]
+position = Vector2(139.5, 150.5)
+shape = SubResource("RectangleShape2D_r6618")
+
+[connection signal="area_entered" from="hitboxfall" to="." method="_on_hitboxfall_area_entered"]
+[connection signal="area_entered" from="hitboxextend" to="." method="_on_hitboxextend_area_entered"]
+[connection signal="area_entered" from="playerdeetct" to="." method="_on_playerdeetct_area_entered"]

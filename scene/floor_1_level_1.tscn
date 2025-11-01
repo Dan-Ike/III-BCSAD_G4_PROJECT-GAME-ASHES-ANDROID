@@ -9715,6 +9715,7 @@ offset_bottom = 40.0
 [node name="TouchControls" parent="Control" instance=ExtResource("5_1qulk")]
 
 [node name="Cutscene" parent="." instance=ExtResource("58_2hjmi")]
+visible = false
 
 [connection signal="body_entered" from="floor1lvl2" to="." method="_on_floor_1_lvl_2_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

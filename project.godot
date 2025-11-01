@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Slash"
-run/main_scene="uid://bxryvbb5d6pj3"
+run/main_scene="uid://bf4newmxxlnv"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="uid://ou3m2a0nfsoc"
 
@@ -21,6 +21,7 @@ SaveManager="*res://SaveManager.gd"
 Global="*res://global.gd"
 MusicManager="*res://MusicManager.gd"
 Supabase="*res://addons/supabase/Supabase/supabase.gd"
+MlEnemyData="*res://ml_enemy_data.gd"
 
 [display]
 

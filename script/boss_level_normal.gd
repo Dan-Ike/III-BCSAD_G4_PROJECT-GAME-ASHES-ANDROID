@@ -36,7 +36,7 @@ func _ready() -> void:
 		player.player_died.connect(_on_player_died)
 	
 	# Check if cutscene should play
-	var should_play_cutscene = _should_show_cutscene()
+	var should_play_cutscene = false #_should_show_cutscene()
 	
 	if should_play_cutscene:
 		# Start with cutscene - cameras for cutscene mode

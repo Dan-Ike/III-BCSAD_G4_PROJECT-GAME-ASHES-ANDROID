@@ -1,6 +1,7 @@
-[gd_scene load_steps=40 format=3 uid="uid://byqhvp41krxue"]
+[gd_scene load_steps=41 format=3 uid="uid://byqhvp41krxue"]
 
 [ext_resource type="Texture2D" uid="uid://d1awqm76m7ver" path="res://art/free_trapassets/free_trapassets/Trap_Spike.png" id="1_ckrq7"]
+[ext_resource type="Script" uid="uid://dp3u8cocupduo" path="res://script/falling_trap.gd" id="1_dknjc"]
 [ext_resource type="Texture2D" uid="uid://dc1flnatu135w" path="res://art/free_trapassets/free_trapassets/Trap_Spike_solo.png" id="2_dknjc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bp50c"]
@@ -275,6 +276,7 @@ animations = [{
 size = Vector2(23, 36)
 
 [node name="extend_trap" type="Node2D"]
+script = ExtResource("1_dknjc")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(139, 36)
@@ -318,3 +320,7 @@ monitorable = false
 position = Vector2(139.5, 44)
 rotation = -3.14159
 shape = SubResource("RectangleShape2D_tdde3")
+
+[connection signal="area_entered" from="hitboxfall" to="." method="_on_hitboxfall_area_entered"]
+[connection signal="area_entered" from="hitboxextend" to="." method="_on_hitboxextend_area_entered"]
+[connection signal="area_entered" from="playerdeetct" to="." method="_on_playerdeetct_area_entered"]

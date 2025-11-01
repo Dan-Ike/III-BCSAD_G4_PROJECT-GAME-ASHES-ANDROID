@@ -364,7 +364,7 @@ visible = false
 
 [node name="AdvancedEnemy" parent="." instance=ExtResource("14_2sehb")]
 position = Vector2(2279, 60)
-enemy_type = 2
+enemy_type = 3
 health = 50
 health_max = 50
 chase_speed = 100.0

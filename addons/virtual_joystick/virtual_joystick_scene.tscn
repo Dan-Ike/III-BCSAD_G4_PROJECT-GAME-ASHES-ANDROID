@@ -6,14 +6,14 @@
 
 [node name="Virtual Joystick" type="Control"]
 layout_mode = 3
-anchor_left = 0.122
-anchor_top = 0.214
-anchor_right = 0.122
-anchor_bottom = 0.214
-offset_left = -150.16
-offset_top = -150.08
-offset_right = 149.84
-offset_bottom = 149.92
+anchor_left = 0.114
+anchor_top = 0.23
+anchor_right = 0.114
+anchor_bottom = 0.23
+offset_left = -101.92
+offset_top = -104.6
+offset_right = 102.08
+offset_bottom = 104.4
 grow_vertical = 0
 script = ExtResource("1_8x4dy")
 

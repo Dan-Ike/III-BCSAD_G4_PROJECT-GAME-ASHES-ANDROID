@@ -4,7 +4,7 @@ class_name AdvancedEnemy
 @export var navigation_region: NavigationRegion2D
 
 # Enemy Type Configuration
-enum EnemyType { PATROL_GUARD, PERSISTENT_HUNTER, ADAPTIVE_AI }
+enum EnemyType { PATROL_GUARD, PERSISTENT_HUNTER, ADAPTIVE_AI, MACHINE_LEARNING }
 @export var enemy_type: EnemyType = EnemyType.PATROL_GUARD
 
 # Stats
@@ -22,18 +22,18 @@ const RANGED_KNOCKBACK: float = 150.0
 
 # Patrol Configuration for PATROL_GUARD
 @export var patrol_radius: float = 300.0
-@export var return_to_patrol_when_far: bool = true  # Return to patrol zone if player leaves
+@export var return_to_patrol_when_far: bool = true
 var patrol_center: Vector2
 var is_returning_to_patrol: bool = false
 
 # Wandering (for when idle)
-var wander_direction: int = 1  # 1 = right, -1 = left
+var wander_direction: int = 1
 var wander_time: float = 0.0
-var wander_duration: float = 3.0  # Change direction every 3 seconds
-var edge_check_cooldown: float = 0.0  # Prevent rapid edge detection
+var wander_duration: float = 3.0
+var edge_check_cooldown: float = 0.0
 
 # AI State
-enum State { IDLE, WANDER, CHASE, ATTACK, CHARGE, RANGED_ATTACK, JUMP_ATTACK, RETURN_TO_PATROL }
+enum State { IDLE, WANDER, CHASE, ATTACK, CHARGE, RANGED_ATTACK, JUMP_ATTACK, RETURN_TO_PATROL, SPIN_ATTACK }
 var current_state: State = State.WANDER
 var player: CharacterBody2D
 var can_see_player: bool = false
@@ -65,13 +65,23 @@ var can_jump: bool = true
 var jump_cooldown: float = 0.5
 var jump_check_distance: float = 50.0
 
-# Jump Attack System (Adaptive AI only)
-var jump_attack_velocity: float = -350.0
-var jump_attack_predict_time: float = 0.4
+# Jump Attack System
+var jump_attack_speed: float = 400.0
+var jump_attack_height: float = -500.0
+var jump_attack_duration: float = 2.0
+var jump_attack_range: float = 300.0
 var is_jump_attacking: bool = false
-var jump_attack_target: Vector2
+var jump_attack_timer: float = 0.0
+var jump_attack_direction: Vector2 = Vector2.ZERO
 var jump_attack_cooldown: float = 4.0
 var can_jump_attack: bool = true
+
+# Jump Attack Shockwave
+var shockwave_radius: float = 100.0
+var shockwave_damage: int = 15
+var shockwave_duration: float = 0.3
+var is_shockwave_active: bool = false
+var shockwave_timer: float = 0.0
 
 # Ranged Attack System
 var ranged_attack_range: float = 400.0
@@ -112,6 +122,28 @@ var was_on_floor: bool = false
 var target_velocity_x: float = 0.0
 var velocity_smoothing: float = 10.0
 
+# Spin Attack System
+var spin_attack_duration: float = 1.0
+var spin_attack_speed: float = 6.0
+var spin_attack_move_speed: float = 100.0
+var spin_attack_cooldown: float = 3.0
+var is_spin_attacking: bool = false
+var can_spin_attack: bool = true
+var spin_attack_damage: int = 10
+var spin_attack_tick_rate: float = 0.3
+var spin_attack_timer: float = 0.0
+var spin_damage_timer: float = 0.0
+var spin_rotation: float = 0.0
+
+# Machine Learning System
+var ml_attack_preference: Dictionary = {}
+var ml_observation_timer: float = 0.0
+var ml_observation_interval: float = 1.0
+var player_last_position: Vector2 = Vector2.ZERO
+var player_was_aggressive: bool = false
+var player_dodged_recently: bool = false
+var ml_difficulty_multiplier: float = 1.0
+
 func _ready() -> void:
 	patrol_center = global_position
 	_setup_navigation()
@@ -129,13 +161,51 @@ func _ready() -> void:
 	wander_direction = 1 if randf() > 0.5 else -1
 	wander_duration = randf_range(2.0, 4.0)
 	
-	if enemy_type == EnemyType.ADAPTIVE_AI:
+	if enemy_type == EnemyType.ADAPTIVE_AI or enemy_type == EnemyType.MACHINE_LEARNING:
 		current_state = State.CHASE
 	else:
 		current_state = State.WANDER
 	
+	if enemy_type == EnemyType.MACHINE_LEARNING:
+		_initialize_ml_system()
+	
 	print("[Enemy] Initialized as ", _get_type_name(), " at ", global_position)
 	print("[Enemy] Patrol center: ", patrol_center)
+
+func _initialize_ml_system() -> void:
+	MlEnemyData.record_encounter()
+	ml_difficulty_multiplier = MlEnemyData.get_adaptation_multiplier()
+	
+	health_max = int(health_max * ml_difficulty_multiplier)
+	health = health_max
+	base_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
+	chase_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
+	damage_to_deal = int(damage_to_deal * ml_difficulty_multiplier)
+	
+	ml_attack_preference = MlEnemyData.learning_data.attack_success_rates.duplicate()
+	
+	print("[ML Enemy] Initialized with difficulty: ", ml_difficulty_multiplier)
+	print("[ML Enemy] Attack preferences: ", ml_attack_preference)
+	print("[ML Enemy] Player behavior data: ", MlEnemyData.learning_data.player_behavior_patterns)
+
+func _observe_player_behavior(delta: float) -> void:
+	if not player or not Global.playerAlive:
+		return
+	
+	ml_observation_timer += delta
+	if ml_observation_timer >= ml_observation_interval:
+		ml_observation_timer = 0.0
+		
+		var distance = global_position.distance_to(player.global_position)
+		var player_moved = player.global_position.distance_to(player_last_position) > 100.0
+		var player_jumped = not player.is_on_floor() if player.has_method("is_on_floor") else false
+		
+		var direction_to_player = (player.global_position - global_position).normalized()
+		var player_velocity_dir = player.velocity.normalized() if player.velocity.length() > 10 else Vector2.ZERO
+		player_was_aggressive = player_velocity_dir.dot(-direction_to_player) > 0.5
+		
+		MlEnemyData.record_player_behavior(distance, player_moved, player_was_aggressive, player_jumped)
+		player_last_position = player.global_position
 
 func _setup_hitbox() -> void:
 	if hitbox:
@@ -163,6 +233,8 @@ func _setup_detection_areas() -> void:
 				circle.radius = 600.0
 			EnemyType.ADAPTIVE_AI:
 				circle.radius = 500.0
+			EnemyType.MACHINE_LEARNING:
+				circle.radius = 500.0
 		
 		detection_shape.shape = circle
 		detection_area.add_child(detection_shape)
@@ -176,6 +248,7 @@ func _get_type_name() -> String:
 		EnemyType.PATROL_GUARD: return "Patrol Guard"
 		EnemyType.PERSISTENT_HUNTER: return "Persistent Hunter"
 		EnemyType.ADAPTIVE_AI: return "Adaptive AI"
+		EnemyType.MACHINE_LEARNING: return "Machine Learning AI"
 		_: return "Unknown"
 
 func _physics_process(delta: float) -> void:
@@ -189,6 +262,9 @@ func _physics_process(delta: float) -> void:
 		health_bar.value = health
 	
 	_check_phase_transition()
+	
+	if enemy_type == EnemyType.MACHINE_LEARNING:
+		_observe_player_behavior(delta)
 	
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
@@ -225,12 +301,82 @@ func _physics_process(delta: float) -> void:
 			_state_jump_attack(delta)
 		State.RETURN_TO_PATROL:
 			_state_return_to_patrol(delta)
+		State.SPIN_ATTACK:
+			_state_spin_attack(delta)
 	
 	velocity.x = lerp(velocity.x, target_velocity_x, velocity_smoothing * delta)
 	
 	was_on_floor = is_on_floor()
 	move_and_slide()
 	_handle_animation()
+
+func _state_spin_attack(delta: float) -> void:
+	if not is_spin_attacking:
+		is_spin_attacking = true
+		can_spin_attack = false
+		spin_attack_timer = spin_attack_duration
+		spin_damage_timer = spin_attack_tick_rate
+		spin_rotation = 0.0
+		
+		print("[Enemy] SPIN ATTACK!")
+	
+	if player and Global.playerAlive:
+		var distance_to_player = global_position.distance_to(player.global_position)
+		
+		if distance_to_player > 50.0:
+			var direction = (player.global_position - global_position).normalized()
+			target_velocity_x = direction.x * spin_attack_move_speed
+		else:
+			target_velocity_x = lerp(target_velocity_x, 0.0, 10.0 * delta)
+	else:
+		target_velocity_x = 0.0
+	
+	spin_rotation += spin_attack_speed * TAU * delta
+	var normalized_rotation = fmod(spin_rotation, TAU)
+	
+	if normalized_rotation > PI:
+		animated_sprite.flip_h = true
+	else:
+		animated_sprite.flip_h = false
+	
+	animated_sprite.rotation = sin(normalized_rotation * 2.0) * 0.4
+	
+	spin_damage_timer -= delta
+	if spin_damage_timer <= 0.0:
+		_apply_spin_damage()
+		spin_damage_timer = spin_attack_tick_rate
+	
+	spin_attack_timer -= delta
+	if spin_attack_timer <= 0.0:
+		is_spin_attacking = false
+		animated_sprite.rotation = 0.0
+		target_velocity_x = 0.0
+		
+		if player:
+			var final_dir = (player.global_position - global_position).normalized()
+			animated_sprite.flip_h = final_dir.x < 0
+		
+		_start_attack_recovery()
+		
+		await get_tree().create_timer(spin_attack_cooldown).timeout
+		can_spin_attack = true
+
+func _apply_spin_damage() -> void:
+	if not player or not Global.playerAlive:
+		return
+	
+	var distance = global_position.distance_to(player.global_position)
+	if distance < 90.0:
+		if player.has_method("take_damage"):
+			player.take_damage(spin_attack_damage)
+			print("[Enemy] Spin hit player for ", spin_attack_damage, " damage")
+			
+			if enemy_type == EnemyType.MACHINE_LEARNING:
+				MlEnemyData.record_attack_result("spin_attack", true)
+			
+			if player.has_method("apply_knockback"):
+				var knockback_dir = (player.global_position - global_position).normalized()
+				player.apply_knockback(knockback_dir * (KNOCKBACK_FORCE * 0.4))
 
 func _check_phase_transition() -> void:
 	var health_percent = float(health) / float(health_max)
@@ -260,10 +406,10 @@ func _is_player_in_patrol_zone() -> bool:
 
 func _is_far_from_patrol_center() -> bool:
 	var distance_from_center = global_position.distance_to(patrol_center)
-	return distance_from_center > patrol_radius * 1.5  # 50% beyond patrol radius
+	return distance_from_center > patrol_radius * 1.5
 
 func _update_state(delta: float) -> void:
-	if is_attacking_melee or is_attacking_ranged or is_jump_attacking:
+	if is_attacking_melee or is_attacking_ranged or is_jump_attacking or is_spin_attacking:
 		return
 	
 	if is_charging:
@@ -279,6 +425,8 @@ func _update_state(delta: float) -> void:
 			_update_persistent_hunter_state(distance_to_player)
 		EnemyType.ADAPTIVE_AI:
 			_update_adaptive_ai_state(distance_to_player)
+		EnemyType.MACHINE_LEARNING:
+			_update_machine_learning_state(distance_to_player)
 
 func _is_in_detection_range() -> bool:
 	if not player:
@@ -292,7 +440,9 @@ func _is_in_detection_range() -> bool:
 		EnemyType.PERSISTENT_HUNTER:
 			return distance < 600.0
 		EnemyType.ADAPTIVE_AI:
-			return true  
+			return true
+		EnemyType.MACHINE_LEARNING:
+			return true
 	
 	return false
 
@@ -317,19 +467,18 @@ func _update_patrol_guard_state(distance: float) -> void:
 		current_state = State.CHASE
 
 func _update_persistent_hunter_state(distance: float) -> void:
-	if not can_see_player and distance > 600.0:  
+	if not can_see_player and distance > 600.0:
 		if _is_far_from_patrol_center():
 			if current_state != State.RETURN_TO_PATROL:
 				print("[Enemy] Returning to patrol zone...")
 				current_state = State.RETURN_TO_PATROL
-			return 
+			return
 		else:
 			if current_state != State.WANDER:
 				current_state = State.WANDER
 			return
 	
 	if not Global.playerAlive:
-		# Player is dead, return to patrol
 		if _is_far_from_patrol_center():
 			if current_state != State.RETURN_TO_PATROL:
 				current_state = State.RETURN_TO_PATROL
@@ -344,7 +493,7 @@ func _update_persistent_hunter_state(distance: float) -> void:
 	elif distance < 60.0 and can_attack:
 		current_state = State.ATTACK
 	else:
-		current_state = State.CHASE  
+		current_state = State.CHASE
 
 func _update_adaptive_ai_state(distance: float) -> void:
 	if not player or not Global.playerAlive:
@@ -353,7 +502,7 @@ func _update_adaptive_ai_state(distance: float) -> void:
 	
 	var player_health = player.health if player else 100
 	
-	if distance > 100.0 and distance < 300.0 and can_jump_attack and is_on_floor():
+	if distance > 80.0 and distance < 250.0 and can_jump_attack and is_on_floor():
 		current_state = State.JUMP_ATTACK
 		return
 	
@@ -368,11 +517,74 @@ func _update_adaptive_ai_state(distance: float) -> void:
 		current_state = State.CHARGE
 		return
 	
+	if distance < 60.0 and can_spin_attack and not can_attack:
+		current_state = State.SPIN_ATTACK
+		return
+	
 	if distance < 60.0 and can_attack:
 		current_state = State.ATTACK
 	else:
 		current_state = State.CHASE
 
+func _update_machine_learning_state(distance: float) -> void:
+	if not player or not Global.playerAlive:
+		current_state = State.WANDER
+		return
+	
+	var learned_distance = MlEnemyData.learning_data.player_behavior_patterns.avg_distance_kept
+	var player_is_dodger = MlEnemyData.learning_data.player_behavior_patterns.dodge_frequency > 0.6
+	var player_is_aggressive = MlEnemyData.learning_data.player_behavior_patterns.aggression_level > 0.6
+	
+	var best_attack = MlEnemyData.get_best_attack()
+	
+	# Priority 1: Counter dodging players with spin attack
+	if player_is_dodger and distance < 150.0 and can_spin_attack:
+		current_state = State.SPIN_ATTACK
+		return
+	
+	# Priority 2: Counter aggressive players with charge
+	if player_is_aggressive and distance > 100.0 and distance < 300.0 and can_charge:
+		current_state = State.CHARGE
+		return
+	
+	# Priority 3: Use best learned attack based on success rates
+	match best_attack:
+		"ranged":
+			if distance > 150.0 and distance < ranged_attack_range and can_ranged:
+				current_state = State.RANGED_ATTACK
+				return
+		"charge":
+			if distance > 150.0 and distance < 400.0 and can_charge:
+				current_state = State.CHARGE
+				return
+		"jump_attack":
+			if distance > 80.0 and distance < 250.0 and can_jump_attack and is_on_floor():
+				current_state = State.JUMP_ATTACK
+				return
+		"spin_attack":
+			if distance < 90.0 and can_spin_attack:
+				current_state = State.SPIN_ATTACK
+				return
+	
+	# Fallback 1: Try other available attacks even if not "best"
+	if distance > 200.0 and distance < ranged_attack_range and can_ranged:
+		current_state = State.RANGED_ATTACK
+		return
+	elif distance > 150.0 and distance < 400.0 and can_charge:
+		current_state = State.CHARGE
+		return
+	elif distance > 80.0 and distance < 250.0 and can_jump_attack and is_on_floor():
+		current_state = State.JUMP_ATTACK
+		return
+	elif distance < 90.0 and can_spin_attack:
+		current_state = State.SPIN_ATTACK
+		return
+	
+	# Fallback 2: Melee or chase
+	if distance < 60.0 and can_attack:
+		current_state = State.ATTACK
+	else:
+		current_state = State.CHASE
 func _state_idle(delta: float) -> void:
 	target_velocity_x = 0.0
 
@@ -494,6 +706,10 @@ func _check_charge_hit_player() -> bool:
 			var knockback_dir = (player.global_position - global_position).normalized()
 			player.apply_knockback(knockback_dir * CHARGE_KNOCKBACK)
 		_apply_melee_damage()
+		
+		if enemy_type == EnemyType.MACHINE_LEARNING:
+			MlEnemyData.record_attack_result("charge", true)
+		
 		return true
 	return false
 
@@ -501,32 +717,139 @@ func _state_jump_attack(delta: float) -> void:
 	if not is_jump_attacking:
 		is_jump_attacking = true
 		can_jump_attack = false
+		jump_attack_timer = jump_attack_duration
 		
 		if player and is_on_floor():
-			var player_vel = player.velocity if player else Vector2.ZERO
-			jump_attack_target = player.global_position + player_vel * jump_attack_predict_time
+			var distance_to_player = global_position.distance_to(player.global_position)
 			
-			var direction = (jump_attack_target - global_position).normalized()
-			velocity.y = jump_attack_velocity
-			target_velocity_x = direction.x * chase_speed
+			if distance_to_player > jump_attack_range:
+				print("[Enemy] Player too far for jump attack!")
+				is_jump_attacking = false
+				can_jump_attack = false
+				_start_attack_recovery()
+				await get_tree().create_timer(jump_attack_cooldown).timeout
+				can_jump_attack = true
+				return
 			
-			animated_sprite.flip_h = direction.x < 0
-			print("[Enemy] Jump attack!")
+			var target_position = player.global_position
+			var distance_x = target_position.x - global_position.x
+			var distance_y = target_position.y - global_position.y
+			
+			var time_to_peak = abs(jump_attack_height) / GRAVITY
+			var total_time = time_to_peak * 2.0
+			
+			if distance_y < 0:
+				total_time *= 0.9
+			elif distance_y > 0:
+				total_time *= 1.1
+			
+			var required_velocity_x = distance_x / total_time
+			required_velocity_x = clamp(required_velocity_x, -jump_attack_speed, jump_attack_speed)
+			
+			velocity.y = jump_attack_height
+			target_velocity_x = required_velocity_x
+			
+			animated_sprite.flip_h = distance_x < 0
+			print("[Enemy] Jump attack! Target distance: ", distance_to_player, " Velocity X: ", required_velocity_x)
 	
 	if was_on_floor == false and is_on_floor():
+		_create_ground_shockwave()
+		
 		if player:
 			var distance = global_position.distance_to(player.global_position)
+			print("[Enemy] Landed! Distance from player: ", distance)
+			
 			if distance < 80.0:
 				_apply_melee_damage()
 				if player.has_method("apply_knockback"):
 					var knockback_dir = (player.global_position - global_position).normalized()
-					player.apply_knockback(knockback_dir * KNOCKBACK_FORCE)
+					player.apply_knockback(knockback_dir * KNOCKBACK_FORCE * 1.5)
+				
+				if enemy_type == EnemyType.MACHINE_LEARNING:
+					if distance >= 80.0:
+						MlEnemyData.record_attack_result("jump_attack", true)
 		
 		is_jump_attacking = false
+		jump_attack_direction = Vector2.ZERO
+		target_velocity_x = 0.0
 		_start_attack_recovery()
 		
 		await get_tree().create_timer(jump_attack_cooldown).timeout
 		can_jump_attack = true
+		return
+	
+	jump_attack_timer -= delta
+	if jump_attack_timer <= 0.0:
+		is_jump_attacking = false
+		jump_attack_direction = Vector2.ZERO
+		target_velocity_x = 0.0
+		if is_on_floor():
+			_start_attack_recovery()
+		
+		await get_tree().create_timer(jump_attack_cooldown).timeout
+		can_jump_attack = true
+
+func _create_ground_shockwave() -> void:
+	is_shockwave_active = true
+	shockwave_timer = shockwave_duration
+	print("[Enemy] GROUND SHOCKWAVE!")
+	
+	_spawn_shockwave_visual()
+	
+	if player and Global.playerAlive:
+		var distance = global_position.distance_to(player.global_position)
+		var player_on_ground = player.is_on_floor() if player.has_method("is_on_floor") else true
+		
+		if distance <= shockwave_radius and player_on_ground:
+			if player.has_method("take_damage"):
+				player.take_damage(shockwave_damage)
+				print("[Enemy] Shockwave hit player for ", shockwave_damage, " damage")
+				
+				if enemy_type == EnemyType.MACHINE_LEARNING:
+					MlEnemyData.record_attack_result("jump_attack", true)
+				
+				if player.has_method("apply_knockback"):
+					var knockback_dir = (player.global_position - global_position).normalized()
+					player.apply_knockback(knockback_dir * KNOCKBACK_FORCE * 0.7)
+
+func _spawn_shockwave_visual() -> void:
+	var directions = [-1, 1]
+	
+	for dir in directions:
+		var shockwave_line = Node2D.new()
+		get_parent().add_child(shockwave_line)
+		shockwave_line.global_position = global_position
+		
+		for i in range(3):
+			var line = Line2D.new()
+			shockwave_line.add_child(line)
+			line.default_color = Color(1.0, 0.8, 0.2, 0.8 - i * 0.2)
+			line.width = 4.0 - i
+			
+			var points = []
+			var wave_length = 100.0
+			var segments = 20
+			for j in range(segments):
+				var x = (j / float(segments)) * wave_length * dir
+				var y = sin(j * 0.5) * 5.0 - (i * 3.0)
+				points.append(Vector2(x, y))
+			line.points = PackedVector2Array(points)
+		
+		var tween = create_tween()
+		tween.set_parallel(true)
+		
+		for child in shockwave_line.get_children():
+			if child is Line2D:
+				tween.tween_property(child, "width", 0.0, shockwave_duration)
+				tween.tween_property(child, "default_color:a", 0.0, shockwave_duration)
+				
+				var original_points = child.points
+				var extended_points = PackedVector2Array()
+				for point in original_points:
+					extended_points.append(Vector2(point.x * 2.0, point.y))
+				tween.tween_property(child, "points", extended_points, shockwave_duration)
+		
+		tween.tween_callback(shockwave_line.queue_free).set_delay(shockwave_duration)
 
 func _state_ranged_attack(delta: float) -> void:
 	if not is_attacking_ranged:
@@ -575,7 +898,6 @@ func _state_attack(delta: float) -> void:
 		
 		target_velocity_x = 0.0
 		
-		# Setup delayed damage
 		should_deal_melee_damage = true
 		melee_damage_timer = MELEE_DAMAGE_DELAY
 		
@@ -596,7 +918,7 @@ func _start_attack_recovery() -> void:
 	await get_tree().create_timer(attack_recovery_time).timeout
 	is_recovering = false
 	if not dead:
-		if enemy_type == EnemyType.ADAPTIVE_AI or (player and can_see_player):
+		if enemy_type == EnemyType.ADAPTIVE_AI or enemy_type == EnemyType.MACHINE_LEARNING or (player and can_see_player):
 			current_state = State.CHASE
 		else:
 			current_state = State.WANDER
@@ -610,6 +932,9 @@ func _apply_melee_damage() -> void:
 		if player.has_method("take_damage"):
 			player.take_damage(damage_to_deal)
 			print("[Enemy] Hit player for ", damage_to_deal, " damage")
+			
+			if enemy_type == EnemyType.MACHINE_LEARNING:
+				MlEnemyData.record_attack_result("melee", true)
 			
 			if player.has_method("apply_knockback"):
 				var knockback_dir = (player.global_position - global_position).normalized()
@@ -626,6 +951,9 @@ func _shoot_projectile(direction: Vector2) -> void:
 		if projectile.has_method("set_direction"):
 			projectile.set_direction(direction, damage_to_deal)
 			projectile.knockback_force = RANGED_KNOCKBACK
+		
+		if enemy_type == EnemyType.MACHINE_LEARNING:
+			MlEnemyData.record_attack_result("ranged", true)
 
 func _has_line_of_sight() -> bool:
 	if not player:
@@ -657,6 +985,8 @@ func _handle_animation() -> void:
 	elif is_attacking_ranged:
 		animated_sprite.play("ranged")
 	elif is_attacking_melee:
+		animated_sprite.play("attack")
+	elif is_spin_attacking:
 		animated_sprite.play("attack")
 	elif taking_damage:
 		animated_sprite.play("hurt")
@@ -701,7 +1031,7 @@ func _on_detection_area_entered(body: Node2D) -> void:
 	if body is Player:
 		print("[Enemy] Player detected!")
 		can_see_player = true
-		if enemy_type != EnemyType.ADAPTIVE_AI and current_state == State.WANDER:
+		if enemy_type != EnemyType.ADAPTIVE_AI and enemy_type != EnemyType.MACHINE_LEARNING and current_state == State.WANDER:
 			current_state = State.CHASE
 
 func _on_detection_area_exited(body: Node2D) -> void:

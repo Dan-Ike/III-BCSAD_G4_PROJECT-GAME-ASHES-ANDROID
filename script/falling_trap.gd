@@ -9,6 +9,13 @@ extends Node2D
 @onready var playerdeetct: Area2D = $playerdeetct
 @onready var collision_shape_2d: CollisionShape2D = $playerdeetct/CollisionShape2D
 
+enum Direction {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+}
+
 enum TrapType {
 	FALL_ONCE,
 	RECOVER_FALL,
@@ -17,6 +24,7 @@ enum TrapType {
 	AUTOMATIC_EXTEND_CYCLE
 }
 
+@export var direction: Direction = Direction.DOWN
 @export var trap_type: TrapType = TrapType.FALL_ONCE
 @export var speed = 160.0
 @export var recover_time = 5.0
@@ -31,9 +39,21 @@ var initial_position: Vector2
 var is_active = false
 var is_recovering = false
 var player_in_detect_area = false
+var movement_direction: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	initial_position = position
+	
+	# Set movement direction based on exported direction
+	match direction:
+		Direction.UP:
+			movement_direction = Vector2.UP
+		Direction.DOWN:
+			movement_direction = Vector2.DOWN
+		Direction.LEFT:
+			movement_direction = Vector2.LEFT
+		Direction.RIGHT:
+			movement_direction = Vector2.RIGHT
 	
 	if trap_type in [TrapType.EXTEND_SPIKE, TrapType.AUTOMATIC_EXTEND_CYCLE]:
 		sprite_2d.visible = false
@@ -65,7 +85,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if trap_type in [TrapType.FALL_ONCE, TrapType.RECOVER_FALL, TrapType.AUTOMATIC_FALL_CYCLE]:
-		position.y += current_speed * delta
+		# Move in the specified direction
+		position += movement_direction * current_speed * delta
 
 func _on_hitboxfall_area_entered(area: Area2D) -> void:
 	if area.get_parent() is Player:

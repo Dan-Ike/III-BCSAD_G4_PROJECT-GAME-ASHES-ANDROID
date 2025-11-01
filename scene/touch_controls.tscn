@@ -375,6 +375,30 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_fqcvx")
 text = "Back"
 flat = true
 
+[node name="edit" type="Button" parent="Options"]
+z_index = 1
+layout_mode = 2
+anchor_left = 0.494
+anchor_top = 0.855
+anchor_right = 0.494
+anchor_bottom = 0.855
+offset_left = 11.494
+offset_top = -112.91
+offset_right = 202.494
+offset_bottom = -48.91
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/focus = SubResource("StyleBoxEmpty_nito4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pl8x0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nr1lh")
+theme_override_styles/normal = SubResource("StyleBoxFlat_fqcvx")
+text = "Edit"
+flat = true
+
 [node name="Label2" type="Label" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
@@ -414,13 +438,29 @@ anchor_left = 0.198
 anchor_top = 0.509
 anchor_right = 0.559
 anchor_bottom = 0.609
-offset_left = 0.19799
+offset_left = -61.802
 offset_top = 0.0220032
-offset_right = 7.05899
+offset_right = -54.941
 offset_bottom = -0.178009
 theme_override_fonts/font = ExtResource("8_nr1lh")
 theme_override_font_sizes/font_size = 26
 text = "Control"
+vertical_alignment = 1
+
+[node name="Label5" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.543
+anchor_top = 0.509
+anchor_right = 0.918
+anchor_bottom = 0.618
+offset_left = 0.0429688
+offset_top = 4.022
+offset_right = -0.0820313
+offset_bottom = -0.156006
+theme_override_fonts/font = ExtResource("8_nr1lh")
+theme_override_font_sizes/font_size = 26
+text = "Customize"
 vertical_alignment = 1
 
 [node name="AudioControl" type="HSlider" parent="Options"]
@@ -466,13 +506,13 @@ audio_bus_name = "SFX"
 [node name="ControlChoice" type="OptionButton" parent="Options"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
+anchor_left = 0.277
 anchor_top = 0.678
-anchor_right = 0.503
+anchor_right = 0.277
 anchor_bottom = 0.678
-offset_left = -157.5
+offset_left = -104.223
 offset_top = -23.676
-offset_right = 159.003
+offset_right = 103.777
 offset_bottom = 23.324
 theme_override_fonts/font = ExtResource("9_fqcvx")
 theme_override_font_sizes/font_size = 22
@@ -488,9 +528,15 @@ position = Vector2(242.5, 384)
 scale = Vector2(0.0726401, 0.125615)
 texture = ExtResource("10_kfhhv")
 
+[node name="MainMenu5" type="Sprite2D" parent="Options"]
+position = Vector2(351, 303.5)
+scale = Vector2(0.0523599, 0.092623)
+texture = ExtResource("10_kfhhv")
+
 [connection signal="pressed" from="PauseMenu/Panel/option" to="." method="_on_option_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/exit" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="Options/back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Options/edit" to="." method="_on_edit_pressed"]
 [connection signal="value_changed" from="Options/AudioControl" to="Options/AudioControl" method="_on_value_changed"]
 [connection signal="value_changed" from="Options/AudioSoundControl2" to="Options/AudioSoundControl2" method="_on_value_changed"]
