@@ -23,13 +23,13 @@ var cutscene_data = [
 	{
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f02 - new.png",
 		"texts": [
-			"She didn’t ask for forgiveness. She waited. I gave her silence."
+			"She didn't ask for forgiveness. She waited. I gave her silence."
 		]
 	},
 	{
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f03 - new.png",
 		"texts": [
-			"I didn’t carry guilt. I buried it."
+			"I didn't carry guilt. I buried it."
 		]
 	},
 	{
@@ -41,7 +41,7 @@ var cutscene_data = [
 	{
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f05 - new.png",
 		"texts": [
-			"The tower didn’t punish me. It let me repeat."
+			"The tower didn't punish me. It let me repeat."
 		]
 	}
 ]
@@ -90,6 +90,11 @@ var cutscene_id: String = ""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	# IMPORTANT: Set buttons to process even when paused
+	skip_button.process_mode = Node.PROCESS_MODE_ALWAYS
+	continue_button.process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	var level_node = get_parent()
 	if level_node.has_node("player"):
 		player = level_node.get_node("player")
@@ -102,11 +107,21 @@ func _ready() -> void:
 	
 	skip_button.pressed.connect(_on_skip_pressed)
 	continue_button.pressed.connect(_on_continue_pressed)
+	
+	# Start hidden and inactive
+	visible = false
+	set_process(false)
+	set_process_input(false)
 
 func _input(event: InputEvent) -> void:
-	"""Handle screen clicks anywhere"""
+	"""Handle screen clicks anywhere - only when this cutscene is active"""
+	# Don't process input if this cutscene isn't visible/active
+	if not visible:
+		return
+		
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			# Check if clicking on buttons - let them handle it
 			if skip_button.visible and skip_button.get_global_rect().has_point(event.position):
 				return
 			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
@@ -114,10 +129,10 @@ func _input(event: InputEvent) -> void:
 			
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
+				get_tree().root.set_input_as_handled()
 			elif in_summary and continue_button.visible:
 				proceed_to_game()
-			
-			get_tree().root.set_input_as_handled()
+				get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
 	if fading_out or fading_in:
@@ -201,6 +216,11 @@ func _process(delta: float) -> void:
 func start_cutscene(id: String = "") -> void:
 	cutscene_id = id
 	
+	# Make this cutscene active
+	visible = true
+	set_process(true)
+	set_process_input(true)
+	
 	# Check cutscene preference
 	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
 	
@@ -214,7 +234,7 @@ func start_cutscene(id: String = "") -> void:
 	
 	# Only play cutscene music if we're actually showing the cutscene
 	MusicManager.play_song("gameover")
-	print("Cutscene music started: boss")
+	print("Cutscene music started: gameover")
 	# PAUSE THE GAME
 	_pause_player()
 	get_tree().paused = true  
@@ -255,6 +275,11 @@ func _unpause_player() -> void:
 
 
 func show_scene(scene_index: int, text_index: int) -> void:
+	# Don't show new scenes if we're already in summary
+	if in_summary:
+		print("Already in summary, ignoring show_scene call")
+		return
+		
 	if scene_index >= cutscene_data.size():
 		show_summary()
 		return
@@ -308,6 +333,10 @@ func show_scene(scene_index: int, text_index: int) -> void:
 			
 			# Wait for both transitions before showing text
 			await get_tree().create_timer(fade_duration * 2).timeout
+			
+			# Check again if we're still not in summary before continuing
+			if in_summary:
+				return
 			
 			# Delay before showing first text of new scene with fade
 			waiting_for_text_delay = true
@@ -381,39 +410,52 @@ func complete_current_text() -> void:
 
 
 func show_summary() -> void:
-	background.visible = false
-	in_summary = true
+	print("show_summary called!")
 	
-	# Fade out text container
-	_start_text_fade_out()
+	# Stop all cutscene playback
+	is_typing = false
+	is_transitioning = false
+	waiting_for_text_delay = false
+	
+	background.visible = false
+	text_container.hide()
+	in_summary = true
 	skip_button.hide()
 	
-	await get_tree().create_timer(text_fade_duration).timeout
-	
+	# Show summary immediately without waiting
 	summary_title.text = summary_data["title"]
 	summary_text.text = summary_data["text"]
 	summary_container.show()
+	summary_container.modulate.a = 1.0
 	
 	continue_timer = 0.0
+	print("Summary displayed, waiting for continue button...")
 
-
-# Modify the proceed_to_game function in your BAD ENDING cutscene script:
 
 func proceed_to_game() -> void:
+	print("proceed_to_game called - Continue button pressed!")
+	
 	# Mark cutscene as watched if ID is provided
 	if cutscene_id != "":
 		SaveManager.mark_cutscene_watched(cutscene_id)
 	
-	# UNPAUSE THE GAME
+	# Deactivate this cutscene
+	visible = false
+	set_process(false)
+	set_process_input(false)
+	
+	# UNPAUSE THE GAME FIRST
 	get_tree().paused = false
 	_unpause_player()
 	
-	# For bad ending, retry the boss fight
+	# Call the boss level's retry function
 	var level_node = get_parent()
 	if level_node and level_node.has_method("_retry_boss_fight"):
+		print("Calling _retry_boss_fight()...")
 		level_node._retry_boss_fight()
 	else:
-		# Fallback - just reload the scene
+		print("Warning: Level node doesn't have _retry_boss_fight method!")
+		# Fallback - reload scene
 		Global.is_retrying_level = true
 		get_tree().reload_current_scene()
 
@@ -432,8 +474,22 @@ func _on_summary_container_input(event: InputEvent) -> void:
 				proceed_to_game()
 
 func _on_skip_pressed() -> void:
+	print("Skip button pressed!")
+	# Stop any ongoing typing or transitions
+	is_typing = false
+	is_transitioning = false
+	waiting_for_text_delay = false
+	fading_out = false
+	fading_in = false
+	text_fading_out = false
+	text_fading_in = false
+	
+	# Hide current elements
 	background.visible = false
+	text_container.hide()
+	
 	show_summary()
 
 func _on_continue_pressed() -> void:
+	print("Continue button pressed!")
 	proceed_to_game()

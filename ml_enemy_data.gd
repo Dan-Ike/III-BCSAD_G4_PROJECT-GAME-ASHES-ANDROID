@@ -72,8 +72,14 @@ func set_godlike_mode():
 
 
 func _ready():
-	#load_data()
-	set_godlike_mode()
+	load_data()
+	#set_godlike_mode()
+
+func reset_adaptation():
+	learning_data.adaptation_level = 1.0
+	learning_data.player_deaths = 0
+	save_data()
+	print("[ML] Reset adaptation level to 1.0")
 
 func load_data():
 	if FileAccess.file_exists(SAVE_PATH):

@@ -26,7 +26,7 @@ const RANGED_KNOCKBACK: float = 150.0
 var patrol_center: Vector2
 var is_returning_to_patrol: bool = false
 
-# Wandering (for when idle)
+# Wandering (when idle)
 var wander_direction: int = 1
 var wander_time: float = 0.0
 var wander_duration: float = 3.0
@@ -59,7 +59,7 @@ var is_charging: bool = false
 var can_charge: bool = true
 var charge_direction: Vector2 = Vector2.ZERO
 
-# Jump System (for obstacle navigation)
+# Jump System
 var jump_velocity: float = -400.0
 var can_jump: bool = true
 var jump_cooldown: float = 0.5
@@ -145,6 +145,11 @@ var player_dodged_recently: bool = false
 var ml_difficulty_multiplier: float = 1.0
 
 func _ready() -> void:
+	#MlEnemyData.reset_adaptation()
+	dead = false
+	taking_damage = false
+	health = health_max
+	
 	patrol_center = global_position
 	_setup_navigation()
 	_setup_detection_areas()
@@ -173,6 +178,21 @@ func _ready() -> void:
 	print("[Enemy] Patrol center: ", patrol_center)
 
 func _initialize_ml_system() -> void:
+	MlEnemyData.record_encounter()
+	ml_difficulty_multiplier = MlEnemyData.get_adaptation_multiplier()
+	
+	health = health_max  
+	
+	base_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
+	chase_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
+	damage_to_deal = int(damage_to_deal * ml_difficulty_multiplier)
+	
+	ml_attack_preference = MlEnemyData.learning_data.attack_success_rates.duplicate()
+	
+	print("[ML Enemy] Initialized with difficulty: ", ml_difficulty_multiplier)
+	print("[ML Enemy] Health: ", health, "/", health_max)
+	print("[ML Enemy] Attack preferences: ", ml_attack_preference)
+	print("[ML Enemy] Player behavior data: ", MlEnemyData.learning_data.player_behavior_patterns)
 	MlEnemyData.record_encounter()
 	ml_difficulty_multiplier = MlEnemyData.get_adaptation_multiplier()
 	
@@ -209,7 +229,11 @@ func _observe_player_behavior(delta: float) -> void:
 
 func _setup_hitbox() -> void:
 	if hitbox:
+		# Disconnect first if already connected
+		if hitbox.area_entered.is_connected(_on_hitbox_area_entered):
+			hitbox.area_entered.disconnect(_on_hitbox_area_entered)
 		hitbox.area_entered.connect(_on_hitbox_area_entered)
+		print("[Enemy] Hitbox connected successfully")
 
 func _setup_navigation() -> void:
 	navigation_agent = NavigationAgent2D.new()
@@ -1040,6 +1064,14 @@ func _on_detection_area_exited(body: Node2D) -> void:
 		can_see_player = false
 
 func _on_hitbox_area_entered(area: Area2D) -> void:
+	print("[Enemy] Hitbox entered by: ", area.name if area else "null")
+	print("[Enemy] Global.playerDamageZone: ", Global.playerDamageZone)
+	print("[Enemy] Are they equal? ", area == Global.playerDamageZone)
+	print("[Enemy] Dead status: ", dead)
+	
 	if area == Global.playerDamageZone:
 		var damage = Global.playerDamageAmount
+		print("[Enemy] Taking damage: ", damage)
 		take_damage(damage)
+	else:
+		print("[Enemy] Area does not match playerDamageZone")

@@ -14,7 +14,7 @@ var player_defeated: bool = false
 var ending_playing: bool = false
 
 func _ready() -> void:
-	Global.set_floor_level(3, 1)
+	Global.set_floor_level(3, 2)
 	unlock_attack()
 	unlock_dash()
 	unlock_double_jump()
@@ -22,18 +22,37 @@ func _ready() -> void:
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 	scene_transition_animation.play("fade_out")
 	
+	# Reset flags on scene load
+	boss_defeated = false
+	player_defeated = false
+	ending_playing = false
+	
 	# Hide all ending cutscenes initially
 	if bad_ending:
 		bad_ending.visible = false
 	if good_ending:
 		good_ending.visible = false
 	
-	# Connect to boss death signal
+	# Connect to boss death signal - make sure to disconnect first if reconnecting
 	if advanced_enemy:
+		# Disconnect if already connected (safety check for hot reload)
+		if advanced_enemy.tree_exited.is_connected(_on_boss_defeated):
+			advanced_enemy.tree_exited.disconnect(_on_boss_defeated)
 		advanced_enemy.tree_exited.connect(_on_boss_defeated)
+		
+		# Make sure boss is enabled and can take damage
+		advanced_enemy.set_physics_process(true)
+		advanced_enemy.set_process(true)
 	
 	if player:
+		# Disconnect if already connected (safety check)
+		if player.player_died.is_connected(_on_player_died):
+			player.player_died.disconnect(_on_player_died)
 		player.player_died.connect(_on_player_died)
+		
+		# Make sure player is enabled
+		player.set_physics_process(true)
+		player.set_process_input(true)
 	
 	# Check if cutscene should play
 	var should_play_cutscene = false #_should_show_cutscene()
@@ -120,11 +139,6 @@ func _on_boss_defeated() -> void:
 	
 	# Mark level as completed
 	SaveManager.mark_level_completed(3, 1)  
-	#SaveManager.advance_to_level(3, 2)
-	#Global.advance_level()
-	
-	# Wait a moment for dramatic effect
-	#await get_tree().create_timer(1.0).timeout
 	
 	# Check if we should play the good ending cutscene
 	var should_play_ending = _should_show_ending_cutscene("good")
@@ -155,6 +169,20 @@ func _on_player_died() -> void:
 		# Stop the player's death animation at a good point
 		await get_tree().create_timer(1.5).timeout
 		
+		# Safety check before continuing
+		if not is_inside_tree():
+			return
+		
+		# Make sure other cutscenes are hidden
+		if before_boss_normal:
+			before_boss_normal.visible = false
+			before_boss_normal.set_process(false)
+			before_boss_normal.set_process_input(false)
+		if good_ending:
+			good_ending.visible = false
+			good_ending.set_process(false)
+			good_ending.set_process_input(false)
+		
 		# Play bad ending cutscene
 		if bad_ending:
 			bad_ending.visible = true
@@ -162,6 +190,24 @@ func _on_player_died() -> void:
 	else:
 		# Let the normal game over screen play
 		ending_playing = false
+
+func _retry_boss_fight() -> void:
+	"""Retry the boss fight after bad ending"""
+	print("[Boss Level] Retrying boss fight...")
+	
+	# Reset flags
+	boss_defeated = false
+	player_defeated = false
+	ending_playing = false
+	
+	# Set retry flag
+	Global.is_retrying_level = true
+	get_tree().paused = false
+	
+	# Fade and reload
+	scene_transition_animation.play("fade_in")
+	await scene_transition_animation.animation_finished
+	get_tree().reload_current_scene()
 
 func _should_show_ending_cutscene(ending_type: String) -> bool:
 	"""Determine if ending cutscene should play based on user preference"""
@@ -184,18 +230,17 @@ func _should_show_ending_cutscene(ending_type: String) -> bool:
 
 func _return_to_main_menu() -> void:
 	"""Return to main menu after good ending"""
+	# Safety check for tree
+	if not is_inside_tree():
+		return
+	
 	get_tree().paused = false
 	scene_transition_animation.play("fade_in")
 	await get_tree().create_timer(1.0).timeout
-	get_tree().change_scene_to_file("res://scene/main_menu.tscn")
-
-func _retry_boss_fight() -> void:
-	"""Retry the boss fight after bad ending"""
-	Global.is_retrying_level = true
-	get_tree().paused = false
-	scene_transition_animation.play("fade_in")
-	await get_tree().create_timer(0.5).timeout
-	get_tree().reload_current_scene()
+	
+	# Check again before changing scene
+	if is_inside_tree():
+		get_tree().change_scene_to_file("res://scene/main_menu.tscn")
 
 func _process(delta: float) -> void:
 	pass

@@ -64,15 +64,15 @@ func _on_floor_3_lvl_2_body_entered(body: Node2D) -> void:
 		Global.gameStarted = true
 		#unlock_dash()
 		#unlock_double_jump()
-		#SaveManager.mark_level_completed(3, 1)  
-		#SaveManager.advance_to_level(3, 2)      
-		#Global.advance_level()
+		SaveManager.mark_level_completed(3, 1)  
+		SaveManager.advance_to_level(3, 2)      
+		Global.advance_level()
 		#Global.advance_floor()
 		unlock_attack()
 		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/boss_level_normal.tscn")
+		get_tree().change_scene_to_file("res://scene/floor_3_level_2.tscn")
 		
 
 func _on_spike_collision_body_entered(body: Node2D) -> void:
