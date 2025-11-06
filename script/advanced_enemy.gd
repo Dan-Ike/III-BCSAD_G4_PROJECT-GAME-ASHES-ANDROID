@@ -177,6 +177,7 @@ func _ready() -> void:
 	print("[Enemy] Initialized as ", _get_type_name(), " at ", global_position)
 	print("[Enemy] Patrol center: ", patrol_center)
 
+#FINITE STATE MACHINE -  Controls enemy behavior by transitioning between discrete states based on conditions
 func _initialize_ml_system() -> void:
 	MlEnemyData.record_encounter()
 	ml_difficulty_multiplier = MlEnemyData.get_adaptation_multiplier()
@@ -198,6 +199,11 @@ func _initialize_ml_system() -> void:
 	
 	health_max = int(health_max * ml_difficulty_multiplier)
 	health = health_max
+	
+	if health_bar:
+		health_bar.max_value = health_max
+		health_bar.value = health
+		
 	base_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
 	chase_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
 	damage_to_deal = int(damage_to_deal * ml_difficulty_multiplier)
@@ -613,7 +619,6 @@ func _state_idle(delta: float) -> void:
 	target_velocity_x = 0.0
 
 func _state_return_to_patrol(delta: float) -> void:
-	var direction_to_center = (patrol_center - global_position).normalized()
 	var distance_to_center = global_position.distance_to(patrol_center)
 	
 	if distance_to_center < 50.0:
@@ -621,13 +626,20 @@ func _state_return_to_patrol(delta: float) -> void:
 		current_state = State.WANDER
 		return
 	
-	target_velocity_x = direction_to_center.x * base_speed
+	# Use navigation agent for pathfinding back to patrol center
+	navigation_agent.target_position = patrol_center
 	
-	if abs(direction_to_center.x) > 0.1:
-		animated_sprite.flip_h = direction_to_center.x < 0
-	
-	if is_on_floor() and _should_jump_obstacle(direction_to_center):
-		_perform_jump()
+	if not navigation_agent.is_navigation_finished():
+		var next_position = navigation_agent.get_next_path_position()
+		var direction_to_next = (next_position - global_position).normalized()
+		
+		target_velocity_x = direction_to_next.x * base_speed
+		
+		if abs(direction_to_next.x) > 0.1:
+			animated_sprite.flip_h = direction_to_next.x < 0
+		
+		if is_on_floor() and _should_jump_obstacle(direction_to_next):
+			_perform_jump()
 
 func _state_wander(delta: float) -> void:
 	if edge_check_cooldown <= 0.0:
@@ -649,7 +661,7 @@ func _state_wander(delta: float) -> void:
 
 func _check_edge_ahead() -> bool:
 	return false
-
+#PATHFINDING AND A* - Finds optimal paths around obstacles using a cost-based search algorithm
 func _state_chase(delta: float) -> void:
 	if not player or not Global.playerAlive:
 		current_state = State.WANDER
@@ -659,16 +671,32 @@ func _state_chase(delta: float) -> void:
 		current_state = State.WANDER
 		return
 	
-	var direction = (player.global_position - global_position).normalized()
+	# Set navigation target
+	navigation_agent.target_position = player.global_position
 	
-	if is_on_floor() and _should_jump_obstacle(direction):
-		_perform_jump()
-	
-	target_velocity_x = direction.x * chase_speed
-	
-	if abs(direction.x) > 0.1:
-		animated_sprite.flip_h = direction.x < 0
+	# Get next position in path using A* pathfinding
+	if not navigation_agent.is_navigation_finished():
+		var next_position = navigation_agent.get_next_path_position()
+		var direction = (next_position - global_position).normalized()
+		
+		# Check if we should jump over obstacles
+		if is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * chase_speed
+		
+		if abs(direction.x) > 0.1:
+			animated_sprite.flip_h = direction.x < 0
+	else:
+		# If navigation finished, move directly to player
+		var direction = (player.global_position - global_position).normalized()
+		target_velocity_x = direction.x * chase_speed
+		
+		if abs(direction.x) > 0.1:
+			animated_sprite.flip_h = direction.x < 0
 
+#RAYCASTING - Shoots a ray in front of the enemy to check if there's a wall/obstacle. 
+#If it hits something, the enemy knows to jump.
 func _should_jump_obstacle(direction: Vector2) -> bool:
 	if not can_jump or not is_on_floor():
 		return false
@@ -979,6 +1007,8 @@ func _shoot_projectile(direction: Vector2) -> void:
 		if enemy_type == EnemyType.MACHINE_LEARNING:
 			MlEnemyData.record_attack_result("ranged", true)
 
+#RAYCASTING - Shoots a ray from the enemy to the player. If nothing blocks the ray (result is empty),
+#the enemy can see the player. If something blocks it (wall, obstacle), the enemy cannot see the player.
 func _has_line_of_sight() -> bool:
 	if not player:
 		return false
