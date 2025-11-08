@@ -156,9 +156,9 @@ func _setup_editable_controls() -> void:
 	if control_right:
 		control_right.visible = false
 		control_right.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	#if control_6:
-	#	control_6.visible = false
-	#	control_6.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if control_6:
+		control_6.visible = false
+		control_6.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if control_jump:
 		control_jump.visible = false
 		control_jump.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -171,6 +171,11 @@ func _setup_editable_controls() -> void:
 	if control_shine:
 		control_shine.visible = false
 		control_shine.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# CRITICAL: Hide virtual joystick explicitly
+	if virtual_joystick:
+		virtual_joystick.visible = false
+		virtual_joystick.process_mode = Node.PROCESS_MODE_DISABLED
 	
 	# Disable TouchScreenButtons from receiving input
 	if left:
@@ -185,8 +190,6 @@ func _setup_editable_controls() -> void:
 		dash.process_mode = Node.PROCESS_MODE_DISABLED
 	if shine:
 		shine.process_mode = Node.PROCESS_MODE_DISABLED
-	if virtual_joystick:
-		virtual_joystick.process_mode = Node.PROCESS_MODE_DISABLED
 	
 	# Only show and make editable the enabled controls
 	if Global.is_button_mode():
@@ -198,7 +201,14 @@ func _setup_editable_controls() -> void:
 			control_right.visible = true
 			editable_controls["right"] = control_right
 			_make_control_editable(control_right, "right")
+		
+		# ENSURE joystick stays hidden in button mode
+		if virtual_joystick:
+			virtual_joystick.visible = false
+		if control_6:
+			control_6.visible = false
 	else:
+		# Joystick mode
 		if control_6 and virtual_joystick:
 			control_6.visible = true
 			virtual_joystick.visible = true
@@ -252,7 +262,7 @@ func _setup_editable_controls() -> void:
 		control_shine.visible = true
 		editable_controls["shine"] = control_shine
 		_make_control_editable(control_shine, "shine")
-
+		
 func _make_control_editable(ctrl: Control, id: String) -> void:
 	# Make sure the control can receive input
 	ctrl.mouse_filter = Control.MOUSE_FILTER_STOP

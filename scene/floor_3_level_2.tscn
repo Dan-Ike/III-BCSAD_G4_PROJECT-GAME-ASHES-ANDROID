@@ -13,10 +13,10 @@
 [ext_resource type="PackedScene" uid="uid://bsiqip3vsfyy2" path="res://scene/player.tscn" id="11_hny4h"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="12_1dnb8"]
 [ext_resource type="PackedScene" uid="uid://b115ta3cgft87" path="res://scene/scene_transition_animation.tscn" id="13_3q3sg"]
-[ext_resource type="PackedScene" uid="uid://d0kturq8grqmg" path="res://scene/advanced_enemy.tscn" id="14_07y8j"]
 [ext_resource type="PackedScene" uid="uid://bss3fjsgtra6o" path="res://scene/before_boss_normal.tscn" id="15_ptnhm"]
 [ext_resource type="PackedScene" uid="uid://djq3870fxykiy" path="res://scene/bad_ending.tscn" id="16_o31ol"]
 [ext_resource type="PackedScene" uid="uid://328bqvoevr2x" path="res://scene/good_ending.tscn" id="17_hcq28"]
+[ext_resource type="PackedScene" uid="uid://d5oerf8phnpm" path="res://boss.tscn" id="17_k6qwl"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_547du"]
 texture = ExtResource("2_4pco0")
@@ -362,15 +362,6 @@ shape = SubResource("RectangleShape2D_6by7h")
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("13_3q3sg")]
 visible = false
 
-[node name="AdvancedEnemy" parent="." instance=ExtResource("14_07y8j")]
-position = Vector2(2279, 60)
-enemy_type = 3
-health = 50
-health_max = 50
-chase_speed = 100.0
-damage_to_deal = 10
-patrol_radius = 1000.0
-
 [node name="before_boss_normal" parent="." instance=ExtResource("15_ptnhm")]
 visible = false
 
@@ -379,3 +370,6 @@ visible = false
 
 [node name="good_ending" parent="." instance=ExtResource("17_hcq28")]
 visible = false
+
+[node name="AdvancedEnemy" parent="." instance=ExtResource("17_k6qwl")]
+position = Vector2(2242, 75)

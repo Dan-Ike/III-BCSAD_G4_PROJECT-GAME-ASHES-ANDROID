@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=31 format=3 uid="uid://bjg21ygjiqxou"]
 
 [ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="1_8ywga"]
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
@@ -11,6 +11,11 @@
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="8_nr1lh"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="9_fqcvx"]
 [ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="10_kfhhv"]
+[ext_resource type="Texture2D" uid="uid://dlkjug5hmf8in" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0001_pixel2_EmblemSpace.png" id="12_8eo88"]
+[ext_resource type="Script" uid="uid://3c5h4xu43s8c" path="res://script/health_bar_simple.gd" id="12_dpkfn"]
+[ext_resource type="Texture2D" uid="uid://b11j3qywssrq7" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border_solo.png" id="13_kir6f"]
+[ext_resource type="Texture2D" uid="uid://dxougw36vsnfr" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border.png" id="14_kir6f"]
+[ext_resource type="Script" uid="uid://wml8y6wat2q6" path="res://script/health_bar_advanced.gd" id="15_lf1wj"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_genjj"]
 
@@ -61,6 +66,18 @@ thickness = 5
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_8eo88"]
 color = Color(1, 0.211765, 0.160784, 1)
 thickness = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8eo88"]
+bg_color = Color(0.471589, 0, 0.0796732, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kir6f"]
+bg_color = Color(0.0846281, 0.418202, 1.92523e-07, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dpkfn"]
+bg_color = Color(0.341235, 0.341235, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lf1wj"]
+bg_color = Color(0.752941, 0.752941, 0.752941, 1)
 
 [node name="TouchControls" type="CanvasLayer"]
 script = ExtResource("1_cx18e")
@@ -532,6 +549,110 @@ texture = ExtResource("10_kfhhv")
 position = Vector2(351, 303.5)
 scale = Vector2(0.0523599, 0.092623)
 texture = ExtResource("10_kfhhv")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchor_left = 0.011
+anchor_top = 0.025
+anchor_right = 0.399
+anchor_bottom = 0.196
+offset_left = -0.0800009
+offset_right = -3.72003
+offset_bottom = -0.12001
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HealthBarSimple" type="Control" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("12_dpkfn")
+
+[node name="Frame" type="Sprite2D" parent="HUD/HealthBarSimple"]
+z_index = 2
+position = Vector2(304, 116)
+scale = Vector2(3.16949, 3.05491)
+texture = ExtResource("12_8eo88")
+
+[node name="HealthBarBorder" type="Sprite2D" parent="HUD/HealthBarSimple"]
+z_index = 1
+position = Vector2(357, -14)
+scale = Vector2(3.4428, 4.40278)
+texture = ExtResource("13_kir6f")
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/HealthBarSimple"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.561
+anchor_top = 0.492
+anchor_right = 0.561
+anchor_bottom = 0.492
+offset_left = -181.573
+offset_top = -16.008
+offset_right = 181.427
+offset_bottom = 15.992
+theme_override_styles/background = SubResource("StyleBoxFlat_8eo88")
+theme_override_styles/fill = SubResource("StyleBoxFlat_kir6f")
+value = 100.0
+show_percentage = false
+
+[node name="HealthBarAdvanced" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("15_lf1wj")
+
+[node name="Frame" type="Sprite2D" parent="HUD/HealthBarAdvanced"]
+z_index = 2
+position = Vector2(304, 116)
+scale = Vector2(3.16949, 3.05491)
+texture = ExtResource("12_8eo88")
+
+[node name="Health_Soul_BarBorder" type="Sprite2D" parent="HUD/HealthBarAdvanced"]
+z_index = 1
+position = Vector2(350.5, -61)
+scale = Vector2(3.56356, 3.15515)
+texture = ExtResource("14_kir6f")
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/HealthBarAdvanced"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.546
+anchor_top = 0.386
+anchor_right = 0.546
+anchor_bottom = 0.386
+offset_left = -186.54
+offset_top = -12.478
+offset_right = 186.46
+offset_bottom = 12.522
+theme_override_styles/background = SubResource("StyleBoxFlat_8eo88")
+theme_override_styles/fill = SubResource("StyleBoxFlat_kir6f")
+value = 90.0
+show_percentage = false
+
+[node name="SoulBar" type="ProgressBar" parent="HUD/HealthBarAdvanced"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.546
+anchor_top = 0.667
+anchor_right = 0.546
+anchor_bottom = 0.667
+offset_left = -186.54
+offset_top = -12.041
+offset_right = 186.46
+offset_bottom = 11.959
+theme_override_styles/background = SubResource("StyleBoxFlat_dpkfn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_lf1wj")
+value = 90.0
+show_percentage = false
 
 [connection signal="pressed" from="PauseMenu/Panel/option" to="." method="_on_option_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/resume" to="." method="_on_resume_pressed"]

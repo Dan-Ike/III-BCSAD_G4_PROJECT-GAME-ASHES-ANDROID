@@ -9,7 +9,7 @@ signal player_died
 @onready var player_hitbox: Area2D = $playerHitbox
 @onready var touch_controls: CanvasLayer = $"../Control/TouchControls"
 @onready var soul_light: PointLight2D = $SoulLight
-@onready var health_bar: ProgressBar = $HealthBar
+#@onready var health_bar: ProgressBar = $HealthBar
 
 @onready var sfx_run: AudioStreamPlayer = $SFX_Run
 @onready var sfx_dash: AudioStreamPlayer = $SFX_Dash
@@ -590,7 +590,7 @@ func _handle_shine_active(delta: float) -> void:
 		if health < health_max:
 			health += SHINE_HEAL_PER_SEC
 			health = min(health, health_max)
-			health_bar.value = health
+			#health_bar.value = health
 			print("[Shine] Healed 5 HP. Current health: ", health)
 		shine_heal_timer = 0.0
 	
@@ -641,7 +641,7 @@ func take_damage(damage: int) -> void:
 	if health > 0:
 		health -= damage
 		print("player health: ", health)
-		health_bar.value = health
+		#health_bar.value = health
 		if health <= 0:
 			health = 0
 			die()

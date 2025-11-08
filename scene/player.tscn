@@ -1,8 +1,7 @@
-[gd_scene load_steps=59 format=3 uid="uid://bsiqip3vsfyy2"]
+[gd_scene load_steps=58 format=3 uid="uid://bsiqip3vsfyy2"]
 
 [ext_resource type="Script" uid="uid://dyy271ir1vef4" path="res://script/player.gd" id="1_hjaqi"]
 [ext_resource type="Texture2D" uid="uid://ckkvoewai1fod" path="res://art/Player-Sheet.png" id="1_xo3ru"]
-[ext_resource type="PackedScene" uid="uid://cqh7gljsbhp3c" path="res://scene/health_bar.tscn" id="3_fvtld"]
 [ext_resource type="AudioStream" uid="uid://kua61atu4slu" path="res://audio/running-14658.mp3" id="4_ct4mp"]
 [ext_resource type="AudioStream" uid="uid://c7kiawpooytsx" path="res://audio/simple-whoosh-382724.mp3" id="5_s4jxa"]
 [ext_resource type="AudioStream" uid="uid://caqwsp46ui1ih" path="res://audio/land-81509.mp3" id="6_oh5ij"]
@@ -415,12 +414,6 @@ collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="playerHitbox"]
 shape = SubResource("CapsuleShape2D_fvtld")
-
-[node name="HealthBar" parent="." instance=ExtResource("3_fvtld")]
-offset_left = -5.0
-offset_top = 11.0
-offset_right = 5.0
-offset_bottom = 14.0
 
 [node name="SoulLight" type="PointLight2D" parent="."]
 energy = 2.0

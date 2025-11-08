@@ -17,6 +17,10 @@ extends CanvasLayer
 
 @onready var shine: TouchScreenButton = $Control/Control7/shine
 
+@onready var hud: Control = $HUD
+@onready var health_bar_simple: Control = $HUD/HealthBarSimple
+@onready var health_bar_advanced: Control = $HUD/HealthBarAdvanced
+
 var is_paused := false
 var pause_enabled: bool = true
 
@@ -24,6 +28,7 @@ func _ready() -> void:
 	enable_pause()
 	_load_custom_layout()
 	_update_controls_visibility()
+	_setup_health_bars()
 	Global.control_type_changed.connect(_on_control_type_changed)
 	
 	for node in [pause, pause_menu, option, exit, options]:
@@ -44,6 +49,49 @@ func _ready() -> void:
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_mode_selected)
 	Global.control_type_changed.connect(_sync_with_global)
+
+func _setup_health_bars() -> void:
+	# Check if player has reached floor 2 or above
+	var reached_floor_2 = _has_reached_floor_2()
+	
+	if health_bar_simple and health_bar_advanced:
+		# If player has reached floor 2, always show advanced bar
+		if reached_floor_2:
+			health_bar_simple.visible = false
+			health_bar_advanced.visible = true
+			print("[TouchControls] Player reached Floor 2+ - showing advanced health bar")
+		else:
+			# Show based on current soul light state
+			health_bar_simple.visible = not Global.soul_light_enabled
+			health_bar_advanced.visible = Global.soul_light_enabled
+			print("[TouchControls] Still on Floor 1 - showing simple health bar")
+
+func _has_reached_floor_2() -> bool:
+	# Check if player's highest floor is 2 or above
+	if SaveManager.data["progress"]["current_floor"] >= 2:
+		return true
+	
+	# Also check completed levels - if any level from floor 2+ is completed
+	var completed_levels = SaveManager.data["progress"].get("completed_levels", {})
+	for key in completed_levels:
+		if completed_levels[key]:
+			var parts = key.split("_")
+			if parts.size() == 2:
+				var floor = int(parts[0])
+				if floor >= 2:
+					return true
+	
+	return false
+
+func switch_health_bar_mode(show_soul_light: bool) -> void:
+	if health_bar_simple and health_bar_advanced:
+		# If player has reached floor 2, always show advanced bar
+		if _has_reached_floor_2():
+			health_bar_simple.visible = false
+			health_bar_advanced.visible = true
+		else:
+			health_bar_simple.visible = not show_soul_light
+			health_bar_advanced.visible = show_soul_light
 
 func _load_custom_layout() -> void:
 	var layout = SaveManager.get_control_layout()

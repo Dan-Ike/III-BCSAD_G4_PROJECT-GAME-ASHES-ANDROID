@@ -28,7 +28,8 @@ mouse_filter = 1
 
 [node name="ConfirmDialog" type="ConfirmationDialog" parent="."]
 title = "Confirm Save"
-size = Vector2i(400, 200)
+initial_position = 1
+size = Vector2i(300, 100)
 ok_button_text = "Save"
 
 [node name="Control" type="Control" parent="."]
