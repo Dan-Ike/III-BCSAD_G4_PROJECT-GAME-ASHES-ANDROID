@@ -22,6 +22,7 @@ Global="*res://global.gd"
 MusicManager="*res://MusicManager.gd"
 Supabase="*res://addons/supabase/Supabase/supabase.gd"
 MlEnemyData="*res://ml_enemy_data.gd"
+MlBossData="*res://ml_boss_data.gd"
 
 [display]
 

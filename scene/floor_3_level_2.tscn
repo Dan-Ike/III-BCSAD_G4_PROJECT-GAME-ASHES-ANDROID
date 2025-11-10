@@ -372,4 +372,5 @@ visible = false
 visible = false
 
 [node name="AdvancedEnemy" parent="." instance=ExtResource("17_k6qwl")]
-position = Vector2(2242, 75)
+position = Vector2(2313, -39)
+can_attack_through_platforms = true

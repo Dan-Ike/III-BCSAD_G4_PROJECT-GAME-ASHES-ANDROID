@@ -344,6 +344,7 @@ func _physics_process(delta: float) -> void:
 		if not dead:
 			handle_input(delta)
 			check_hitbox()
+			check_deal_damage()
 	
 	move_and_slide()
 	velocity = velocity 
@@ -561,6 +562,28 @@ func check_hitbox() -> void:
 	
 	if can_take_damage and damage != 0:
 		take_damage(damage)
+
+# Add this new function after check_hitbox()
+func check_deal_damage() -> void:
+	# Check if player's attack is hitting enemies/boss
+	if not current_attack:
+		return
+	
+	if deal_damage_zone:
+		var damage_areas := deal_damage_zone.get_overlapping_areas()
+		for area in damage_areas:
+			if area == Global.bossDamageZone:
+				# Hit the boss
+				var boss = area.get_parent()
+				if boss and boss.has_method("take_damage"):
+					boss.take_damage(Global.playerDamageAmount)
+					print("[Player] Hit boss for %d damage!" % Global.playerDamageAmount)
+			elif area == Global.batDamageZone:
+				# Existing bat enemy logic
+				pass
+			elif area == Global.golemDamageZone:
+				# Existing golem logic
+				pass
 
 func _activate_shine() -> void:
 	print("[Shine] Ability activated!")

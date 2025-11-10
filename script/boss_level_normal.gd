@@ -5,7 +5,7 @@ extends Node2D
 @onready var before_boss_normal: CanvasLayer = $before_boss_normal
 @onready var bad_ending: CanvasLayer = $bad_ending
 @onready var good_ending: CanvasLayer = $good_ending
-@onready var advanced_enemy: AdvancedEnemy = $AdvancedEnemy
+@onready var advanced_enemy: CharacterBody2D = $AdvancedEnemy
 @onready var player: Player = $player
 
 
