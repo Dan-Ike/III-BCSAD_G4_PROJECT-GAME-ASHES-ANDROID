@@ -17,7 +17,6 @@ const BEHAVIOR_CHECK_INTERVAL = 1.0
 @onready var deal_damage_area_jump_down_attack: Area2D = $DealDamageArea_JumpDownAttack
 @onready var deal_damage_area_down_slash: Area2D = $DealDamageArea_DownSlash
 @onready var hitbox2: Area2D = $Hitbox
-@onready var health_bar2: ProgressBar = $HealthBar
 
 # Boss settings
 @export var can_attack_through_platforms: bool = false  # Toggle for upward attacks through platforms
@@ -32,7 +31,7 @@ const DOWN_SLASH_COOLDOWN_TIME = 1.5
 const DASH_SPEED = 400.0
 const DASH_DURATION = 0.3
 const DASH_COOLDOWN = 1.0
-const DASH_TRIGGER_DISTANCE = 100.0  # Use dash if player is this far
+const DASH_TRIGGER_DISTANCE = 50.0  # Use dash if player is this far
 
 var dashing: bool = false
 var dash_time: float = 0.0
@@ -140,6 +139,8 @@ func _ready() -> void:
 	Global.bossDamageZone = hitbox2
 	print("[Boss] Hitbox registered for player damage")
 	
+	add_to_group("boss")
+	
 	# Initialize ML system
 	ml_system = load("res://ml_boss_data.gd").new()
 	add_child(ml_system)
@@ -171,11 +172,21 @@ func _start_rest() -> void:
 	change_state(State.RESTING)
 
 func _end_rest() -> void:
+	# Check if boss still exists before triggering shockwave
+	if not is_instance_valid(self):
+		return
+	
 	if not shockwave_triggered:
 		_trigger_shockwave()
+		
+		# Wait for shockwave, but check if boss still exists
+		await get_tree().create_timer(0.5).timeout
+		if not is_instance_valid(self):
+			return
 	
-	await get_tree().create_timer(0.5).timeout
 	is_resting = false
+	is_invulnerable = false  # ADDED: Make sure boss can take damage again
+	can_take_damage = true   # ADDED: Double check this is enabled
 	print("[Boss] Rest complete! Resuming battle!")
 	change_state(State.CHASE)
 
@@ -195,18 +206,28 @@ func _perform_jump_over_player() -> void:
 
 
 func _trigger_shockwave() -> void:
+	# Check if boss still exists
+	if not is_instance_valid(self):
+		return
+	
 	shockwave_triggered = true
 	print("[Boss] SHOCKWAVE!")
 	
-	# Visual effect (you can add particles here)
-	if animated_sprite_2d:
+	# Visual effect
+	if animated_sprite_2d and is_instance_valid(animated_sprite_2d):
 		var original_modulate = animated_sprite_2d.modulate
 		animated_sprite_2d.modulate = Color(2.0, 2.0, 2.0)
+		
 		await get_tree().create_timer(0.2).timeout
+		
+		# Check again after await
+		if not is_instance_valid(self) or not is_instance_valid(animated_sprite_2d):
+			return
+		
 		animated_sprite_2d.modulate = original_modulate
 	
 	# Knockback and damage player if close enough
-	if player and not player.dead:
+	if player and is_instance_valid(player) and not player.dead:
 		var distance = global_position.distance_to(player.global_position)
 		if distance < 150:  # Shockwave range
 			var direction = sign(player.global_position.x - global_position.x)
@@ -232,6 +253,13 @@ func _physics_process(delta: float) -> void:
 			ml_system.record_player_behavior(distance, false, moved_toward_boss, jumped)
 			last_player_position = player.global_position
 	
+	# Debug rest system
+	if not is_resting:
+		var attack_threshold = PHASE2_ATTACK_DURATION if current_phase == 2 else PHASE1_ATTACK_DURATION
+		var time_until_rest = attack_threshold - time_attacking
+		if int(time_until_rest) % 10 == 0 and int(time_until_rest * 10) % 10 == 0:  # Print every 10 seconds
+			print("[Boss] Time until rest: %.1f seconds (Phase %d)" % [time_until_rest, current_phase])
+		
 	# Update cooldowns
 	if jump_cooldown > 0:
 		jump_cooldown -= delta
@@ -266,9 +294,9 @@ func _physics_process(delta: float) -> void:
 	if direction_lock_timer > 0:
 		direction_lock_timer -= delta
 	
-	# Track attack time for rest system
-	if current_state == State.ATTACKING or current_state == State.ATTACK_READY:
-		if not is_resting:
+	# Track attack time for rest system - count ALL combat time (not just attacking)
+	if current_state != State.IDLE and current_state != State.RESTING and current_state != State.DEAD:
+		if not is_resting and is_player_detected:
 			time_attacking += delta
 			
 			var attack_threshold = PHASE2_ATTACK_DURATION if current_phase == 2 else PHASE1_ATTACK_DURATION
@@ -850,16 +878,14 @@ func _state_hurt(delta: float) -> void:
 
 func _state_resting(delta: float) -> void:
 	velocity.x = 0
+	velocity.y = 0  # Stop all movement including gravity
 	animated_sprite_2d.play("idle")
-	can_take_damage = true
+	can_take_damage = true  # CHANGED: Allow damage during rest
+	is_invulnerable = false  # CHANGED: Not invulnerable during rest
 	
 	# Regenerate health
 	var regen_rate = 15.0 if current_phase == 2 else 10.0
 	health = min(health + int(regen_rate * delta), health_max)
-	
-	# Update health bar
-	if health_bar2:
-		health_bar2.value = health
 
 func _state_dead(delta: float) -> void:
 	velocity.x = 0
@@ -938,21 +964,22 @@ func take_damage(damage: int) -> void:
 	health -= damage
 	print("[Boss] Took %d damage. Health: %d/%d" % [damage, health, health_max])
 	
-	# Update health bar
-	if health_bar2:
-		health_bar2.max_value = health_max
-		health_bar2.value = health
-	
-	# Check for Phase 2 transition
+	# Check for Phase 2 transition - ONLY trigger once
 	var health_percentage = float(health) / float(health_max)
 	if not phase_2_triggered and health_percentage <= phase_2_health_threshold:
 		_trigger_phase_2()
+		return  # ADDED: Don't continue to hurt state during phase transition
 	
 	# Change to hurt state briefly
 	if current_state != State.HURT and health > 0:
 		can_take_damage = false
 		change_state(State.HURT)
 		await get_tree().create_timer(0.3).timeout
+		
+		# Check if boss still exists after await
+		if not is_instance_valid(self):
+			return
+		
 		can_take_damage = true
 		if current_state == State.HURT:
 			change_state(State.CHASE)
@@ -966,12 +993,15 @@ func _trigger_phase_2() -> void:
 	current_phase = 2
 	print("[Boss] ===== PHASE 2 ACTIVATED! =====")
 	
-	# Reduce all cooldowns by 50%
-	# (We'll modify the actual cooldown constants through getters)
+	# RESET ATTACK TIMER - Phase 2 starts fresh
+	time_attacking = 0.0
+	is_resting = false
+	rest_timer = 0.0
+	should_retreat = false
+	retreat_timer = 0.0
 	
 	# Visual feedback - flash or animation
 	if animated_sprite_2d:
-		# Play a special transition if you have one, or just roar
 		var original_modulate = animated_sprite_2d.modulate
 		animated_sprite_2d.modulate = Color(1.5, 0.5, 0.5)  # Red flash
 		await get_tree().create_timer(0.3).timeout

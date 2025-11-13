@@ -1,21 +1,26 @@
-[gd_scene load_steps=31 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=36 format=3 uid="uid://bjg21ygjiqxou"]
 
-[ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="1_8ywga"]
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
-[ext_resource type="Texture2D" uid="uid://bqr7e7tjqxf40" path="res://art/sword.png" id="2_cx18e"]
-[ext_resource type="Texture2D" uid="uid://h8o3yxkpgn82" path="res://art/speed.png" id="4_gmaj2"]
-[ext_resource type="Texture2D" uid="uid://c4d750n7vg2w7" path="res://art/pause.png" id="5_bwiib"]
+[ext_resource type="Texture2D" uid="uid://my3ic52dkreg" path="res://art/buttons/Left_Walk_Button.png" id="2_s02ob"]
+[ext_resource type="Texture2D" uid="uid://chf683gk0fhvu" path="res://art/buttons/Left_Walk_Button (2).png" id="3_adyei"]
+[ext_resource type="Texture2D" uid="uid://c5fisa6jsh3cl" path="res://art/buttons/Attack_Button.png" id="4_w2cpb"]
+[ext_resource type="Texture2D" uid="uid://cqp2sy78lultn" path="res://art/buttons/Attack_Button (3).png" id="5_qlw5r"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="6_nito4"]
-[ext_resource type="Texture2D" uid="uid://brj1q1al7gv8k" path="res://art/brightness.png" id="6_pl8x0"]
+[ext_resource type="Texture2D" uid="uid://b4a6tn24y26ho" path="res://art/buttons/Run_Button.png" id="6_nr2pm"]
+[ext_resource type="Texture2D" uid="uid://bjlm2ymy3gvx7" path="res://art/buttons/Run_Button (2).png" id="7_38dk4"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="8_nr1lh"]
+[ext_resource type="Texture2D" uid="uid://c0mkv7s0ifai4" path="res://art/buttons/Pause_Icon.png" id="8_rijgt"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="9_fqcvx"]
+[ext_resource type="Texture2D" uid="uid://4shetylo1b0u" path="res://art/buttons/Pause_Icon (2).png" id="9_r10gs"]
+[ext_resource type="Texture2D" uid="uid://psy4tvqoprkf" path="res://art/buttons/Light_Button.png" id="10_5vxk1"]
 [ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="10_kfhhv"]
 [ext_resource type="Texture2D" uid="uid://dlkjug5hmf8in" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0001_pixel2_EmblemSpace.png" id="12_8eo88"]
 [ext_resource type="Script" uid="uid://3c5h4xu43s8c" path="res://script/health_bar_simple.gd" id="12_dpkfn"]
 [ext_resource type="Texture2D" uid="uid://b11j3qywssrq7" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border_solo.png" id="13_kir6f"]
 [ext_resource type="Texture2D" uid="uid://dxougw36vsnfr" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border.png" id="14_kir6f"]
 [ext_resource type="Script" uid="uid://wml8y6wat2q6" path="res://script/health_bar_advanced.gd" id="15_lf1wj"]
+[ext_resource type="Script" uid="uid://cfdrnhnjcgj7x" path="res://script/health_bar_boss.gd" id="17_raqan"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_genjj"]
 
@@ -102,8 +107,9 @@ offset_right = 65.24
 offset_bottom = 65.24
 
 [node name="left" type="TouchScreenButton" parent="Control/Control"]
-scale = Vector2(0.242187, 0.238281)
-texture_normal = ExtResource("1_8ywga")
+scale = Vector2(1.23, 1.29214)
+texture_normal = ExtResource("2_s02ob")
+texture_pressed = ExtResource("3_adyei")
 action = "left"
 
 [node name="Control2" type="Control" parent="Control"]
@@ -120,59 +126,64 @@ offset_bottom = 63.7599
 [node name="right" type="TouchScreenButton" parent="Control/Control2"]
 position = Vector2(129, 125)
 rotation = 3.14159
-scale = Vector2(0.245703, 0.235322)
-texture_normal = ExtResource("1_8ywga")
+scale = Vector2(1.18463, 1.35001)
+texture_normal = ExtResource("2_s02ob")
+texture_pressed = ExtResource("3_adyei")
 action = "right"
 
 [node name="Control3" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.732
-anchor_top = 0.801
-anchor_right = 0.732
-anchor_bottom = 0.801
-offset_left = -63.9601
-offset_top = -62.72
-offset_right = 65.0399
-offset_bottom = 62.28
+anchor_left = 0.738
+anchor_top = 0.784
+anchor_right = 0.738
+anchor_bottom = 0.784
+offset_left = -64.64
+offset_top = -62.48
+offset_right = 64.36
+offset_bottom = 62.52
 
 [node name="jump" type="TouchScreenButton" parent="Control/Control3"]
-position = Vector2(125, -0.142029)
+position = Vector2(130, 2.00001)
 rotation = 1.5708
-scale = Vector2(0.242242, 0.245702)
-texture_normal = ExtResource("1_8ywga")
+scale = Vector2(1.2166, 1.38029)
+texture_normal = ExtResource("2_s02ob")
+texture_pressed = ExtResource("3_adyei")
 action = "jump"
 
 [node name="Control4" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.88
-anchor_top = 0.698
-anchor_right = 0.88
-anchor_bottom = 0.698
-offset_left = -67.4
-offset_top = -67.56
-offset_right = 67.6
-offset_bottom = 67.44
+anchor_left = 0.853
+anchor_top = 0.705
+anchor_right = 0.853
+anchor_bottom = 0.705
+offset_left = -67.8401
+offset_top = -67.6
+offset_right = 67.1599
+offset_bottom = 67.4
 
 [node name="atk" type="TouchScreenButton" parent="Control/Control4"]
-position = Vector2(4, 0)
-scale = Vector2(0.244141, 0.251953)
-texture_normal = ExtResource("2_cx18e")
+position = Vector2(-1.00002, 8)
+scale = Vector2(1.33, 1.31959)
+texture_normal = ExtResource("4_w2cpb")
+texture_pressed = ExtResource("5_qlw5r")
 action = "z"
 
 [node name="Control5" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.739
-anchor_top = 0.567
-anchor_right = 0.739
-anchor_bottom = 0.567
-offset_left = -72.92
-offset_top = -65.24
-offset_right = 73.08
-offset_bottom = 65.76
+anchor_left = 0.644
+anchor_top = 0.723
+anchor_right = 0.644
+anchor_bottom = 0.723
+offset_left = -73.3201
+offset_top = -65.5601
+offset_right = 72.6799
+offset_bottom = 65.4399
 
 [node name="dash" type="TouchScreenButton" parent="Control/Control5"]
-scale = Vector2(0.244141, 0.251953)
-texture_normal = ExtResource("4_gmaj2")
+position = Vector2(4.99994, 9)
+scale = Vector2(1.36, 1.48101)
+texture_normal = ExtResource("6_nr2pm")
+texture_pressed = ExtResource("7_38dk4")
 action = "dash"
 
 [node name="Control6" type="Control" parent="Control"]
@@ -188,30 +199,32 @@ offset_bottom = 51.12
 
 [node name="pause" type="TouchScreenButton" parent="Control/Control6"]
 process_mode = 3
-position = Vector2(21, 13)
-scale = Vector2(0.121094, 0.150391)
-texture_normal = ExtResource("5_bwiib")
+position = Vector2(2.00016, 8)
+scale = Vector2(0.919999, 1.0119)
+texture_normal = ExtResource("8_rijgt")
+texture_pressed = ExtResource("9_r10gs")
 action = "pause"
 
 [node name="Control7" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.878
-anchor_top = 0.445
-anchor_right = 0.878
-anchor_bottom = 0.445
-offset_left = -91.8401
-offset_top = -20.4
-offset_right = 42.1599
-offset_bottom = 84.6
+anchor_left = 0.743
+anchor_top = 0.578
+anchor_right = 0.743
+anchor_bottom = 0.578
+offset_left = -83.04
+offset_top = -73.16
+offset_right = 82.96
+offset_bottom = 73.84
 
 [node name="shine" type="TouchScreenButton" parent="Control/Control7"]
 process_mode = 3
 position = Vector2(13.9999, 6)
-scale = Vector2(0.1875, 0.1875)
-texture_normal = ExtResource("6_pl8x0")
+scale = Vector2(1.41, 1.31313)
+texture_normal = ExtResource("10_5vxk1")
 action = "shine"
 
 [node name="Virtual Joystick" parent="Control" instance=ExtResource("6_nito4")]
+visible = false
 layout_mode = 1
 anchor_left = 0.132
 anchor_top = 0.782
@@ -345,6 +358,7 @@ scale = Vector2(0.0626844, 0.125615)
 texture = ExtResource("10_kfhhv")
 
 [node name="Options" type="Panel" parent="."]
+visible = false
 z_index = -1
 anchors_preset = -1
 anchor_left = 0.506
@@ -551,6 +565,7 @@ scale = Vector2(0.0523599, 0.092623)
 texture = ExtResource("10_kfhhv")
 
 [node name="HUD" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchor_left = 0.011
 anchor_top = 0.025
@@ -565,9 +580,15 @@ grow_vertical = 2
 [node name="HealthBarSimple" type="Control" parent="HUD"]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -246.5
+offset_top = -61.5
+offset_right = 246.5
+offset_bottom = 61.5
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("12_dpkfn")
@@ -602,10 +623,15 @@ show_percentage = false
 
 [node name="HealthBarAdvanced" type="Control" parent="HUD"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -3.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -246.5
+offset_top = -61.5
+offset_right = 246.5
+offset_bottom = 61.5
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("15_lf1wj")
@@ -652,6 +678,62 @@ offset_bottom = 11.959
 theme_override_styles/background = SubResource("StyleBoxFlat_dpkfn")
 theme_override_styles/fill = SubResource("StyleBoxFlat_lf1wj")
 value = 90.0
+show_percentage = false
+
+[node name="HUDBoss" type="Control" parent="."]
+visible = false
+z_index = 10
+layout_mode = 3
+anchor_left = 0.692
+anchor_top = 0.928
+anchor_right = 0.692
+anchor_bottom = 0.928
+offset_left = -390.76
+offset_top = -64.16
+offset_right = 390.24
+offset_bottom = 63.84
+
+[node name="HealthBarBoss" type="Control" parent="HUDBoss"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -686.5
+offset_top = -32.0
+offset_right = 94.5
+offset_bottom = 29.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("17_raqan")
+
+[node name="Frame" type="Sprite2D" parent="HUDBoss/HealthBarBoss"]
+z_index = 2
+position = Vector2(390, 84)
+scale = Vector2(3.16949, 3.05491)
+texture = ExtResource("12_8eo88")
+
+[node name="HealthBarBorder" type="Sprite2D" parent="HUDBoss/HealthBarBoss"]
+z_index = 1
+position = Vector2(554, -46)
+scale = Vector2(4.92585, 4.40278)
+texture = ExtResource("13_kir6f")
+
+[node name="HealthBar" type="ProgressBar" parent="HUDBoss/HealthBarBoss"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.561
+anchor_top = 0.459
+anchor_right = 0.561
+anchor_bottom = 0.459
+offset_left = -260.141
+offset_top = -15.999
+offset_right = 260.859
+offset_bottom = 16.001
+theme_override_styles/background = SubResource("StyleBoxFlat_8eo88")
+theme_override_styles/fill = SubResource("StyleBoxFlat_kir6f")
+value = 100.0
 show_percentage = false
 
 [connection signal="pressed" from="PauseMenu/Panel/option" to="." method="_on_option_pressed"]

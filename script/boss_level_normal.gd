@@ -8,7 +8,6 @@ extends Node2D
 @onready var advanced_enemy: CharacterBody2D = $AdvancedEnemy
 @onready var player: Player = $player
 
-
 var boss_defeated: bool = false
 var player_defeated: bool = false
 var ending_playing: bool = false
@@ -71,12 +70,56 @@ func _ready() -> void:
 		camera_2d_2.enabled = true
 		get_tree().paused = false
 		MusicManager.play_song("boss")
+		_show_boss_health_bar() 
 		
 		# Remove cutscene node since we're not using it
 		if before_boss_normal:
 			before_boss_normal.queue_free()
 	
 	Global.set_retrying(false)
+
+func _show_boss_health_bar() -> void:
+	"""Show the boss health bar after 3 seconds"""
+	print("[Boss Level] Attempting to show boss health bar...")
+	
+	# Wait a frame to ensure everything is loaded
+	await get_tree().process_frame
+	
+	# Find TouchControls in the current scene tree
+	var touch_controls = get_tree().get_first_node_in_group("touch_controls")
+	
+	# If not found by group, try finding by type
+	if not touch_controls:
+		touch_controls = get_node_or_null("TouchControls")
+	
+	# Last resort: search through all CanvasLayer nodes
+	if not touch_controls:
+		for node in get_tree().get_nodes_in_group(""):
+			if node.name == "TouchControls" or node.get_script() and node.get_script().resource_path.contains("touch_controls"):
+				touch_controls = node
+				break
+	
+	if not touch_controls:
+		print("[Boss Level] ERROR: TouchControls not found in scene tree!")
+		return
+	
+	print("[Boss Level] TouchControls found!")
+	
+	# Access hud_boss and health_bar_boss directly
+	if not touch_controls.hud_boss:
+		print("[Boss Level] ERROR: hud_boss not found!")
+		return
+	
+	if not touch_controls.health_bar_boss:
+		print("[Boss Level] ERROR: health_bar_boss not found!")
+		return
+	
+	print("[Boss Level] Found boss health bar components!")
+	
+	await get_tree().create_timer(3.0).timeout
+	touch_controls.hud_boss.visible = true
+	touch_controls.health_bar_boss.visible = true
+	print("[Boss Level] Boss health bar now visible!")
 
 func unlock_double_jump():
 	Global.can_double_jump = true

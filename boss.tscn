@@ -1,4 +1,4 @@
-[gd_scene load_steps=99 format=3 uid="uid://d5oerf8phnpm"]
+[gd_scene load_steps=98 format=3 uid="uid://d5oerf8phnpm"]
 
 [ext_resource type="Script" uid="uid://bh0jmbq4nysau" path="res://script/new_boss.gd" id="1_8arul"]
 [ext_resource type="Texture2D" uid="uid://brmwepnr5k6r2" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/6 - dash.png" id="2_etj48"]
@@ -12,7 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://b10uuu6yr2k1e" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/5 - fall.png" id="8_8arul"]
 [ext_resource type="Texture2D" uid="uid://dwvnm8o3ps6aq" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/9 - idle-up-attack.png" id="8_rrd6h"]
 [ext_resource type="Texture2D" uid="uid://bktw2d7u2hs6t" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/7 - jump-up-attack.png" id="9_3d2wm"]
-[ext_resource type="PackedScene" uid="uid://cqh7gljsbhp3c" path="res://scene/health_bar.tscn" id="9_8arul"]
 [ext_resource type="Texture2D" uid="uid://b5g4qpsv564vy" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/2 - Run.png" id="10_rrd6h"]
 [ext_resource type="Texture2D" uid="uid://db7dou5ek2cd3" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/8 - jump-down-attack.png" id="12_7g8a4"]
 [ext_resource type="Texture2D" uid="uid://dk0itun4wx0tp" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/13 - spetial dash.png" id="15_r8fku"]
@@ -622,7 +621,7 @@ metadata/_custom_type_script = "uid://ckxwmmk44cq7t"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3d2wm")
-animation = &"idle"
+animation = &"jump"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -1)
@@ -692,6 +691,4 @@ collision_mask = 8
 position = Vector2(0, -1)
 shape = SubResource("CapsuleShape2D_7ke2s")
 
-[node name="HealthBar" parent="." instance=ExtResource("9_8arul")]
-offset_top = 19.0
-offset_bottom = 26.0
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

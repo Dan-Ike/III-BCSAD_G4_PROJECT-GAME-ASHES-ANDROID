@@ -21,10 +21,14 @@ extends CanvasLayer
 @onready var health_bar_simple: Control = $HUD/HealthBarSimple
 @onready var health_bar_advanced: Control = $HUD/HealthBarAdvanced
 
+@onready var hud_boss: Control = $HUDBoss
+@onready var health_bar_boss: Control = $HUDBoss/HealthBarBoss
+
 var is_paused := false
 var pause_enabled: bool = true
 
 func _ready() -> void:
+	add_to_group("touch_controls")
 	enable_pause()
 	_load_custom_layout()
 	_update_controls_visibility()
