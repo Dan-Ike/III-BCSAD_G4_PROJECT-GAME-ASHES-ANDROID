@@ -621,7 +621,7 @@ metadata/_custom_type_script = "uid://ckxwmmk44cq7t"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3d2wm")
-animation = &"jump"
+animation = &"vertical_slash"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -1)

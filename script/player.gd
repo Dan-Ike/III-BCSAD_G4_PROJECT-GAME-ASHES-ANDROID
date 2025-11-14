@@ -114,6 +114,7 @@ var knockback_timer: float = 0.0
 var knockback_friction: float = 0.9
 
 func _ready() -> void:
+	add_to_group("player") 
 	Global.playerBody = self
 	Global.playerAlive = true
 	#print("Player instance ID:", get_instance_id())
@@ -400,6 +401,7 @@ func handle_input(delta: float) -> void:
 		return
 	if Input.is_action_just_pressed("jump") and jumps_left > 0 and not current_attack:
 		#print("[JUMP] Jump button pressed! Playing jump sound...")
+		Input.vibrate_handheld(20)
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
 		was_in_air = true
@@ -446,6 +448,7 @@ func _start_dash_cooldown() -> void:
 	dash_on_cooldown = false
 
 func start_attack() -> void:
+	Input.vibrate_handheld(20)
 	if dashing:
 		_end_dash()
 	current_attack = true

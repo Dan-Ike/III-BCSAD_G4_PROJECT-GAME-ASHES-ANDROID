@@ -1,6 +1,7 @@
-[gd_scene load_steps=61 format=3 uid="uid://drghwclt6hkfs"]
+[gd_scene load_steps=62 format=3 uid="uid://drghwclt6hkfs"]
 
 [ext_resource type="Texture2D" uid="uid://d1kfwljh8qtmm" path="res://art/Enemy_Galore_I/Rat/Rat_Ability.png" id="1_soiu5"]
+[ext_resource type="Script" uid="uid://dgq0gplw1q77o" path="res://script/rat.gd" id="1_xyyii"]
 [ext_resource type="Texture2D" uid="uid://chycabfqn1psp" path="res://art/Enemy_Galore_I/Rat/Rat_Attack.png" id="2_xyyii"]
 [ext_resource type="Texture2D" uid="uid://bginyhdbdkfeh" path="res://art/Enemy_Galore_I/Rat/Rat_Attack_FX.png" id="3_kyosi"]
 [ext_resource type="Texture2D" uid="uid://dv0v6l8no3ol0" path="res://art/Enemy_Galore_I/Rat/Rat_Death.png" id="4_4ucir"]
@@ -383,6 +384,7 @@ radius = 11.0
 height = 22.0
 
 [node name="Rat" type="CharacterBody2D"]
+script = ExtResource("1_xyyii")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_83d0x")
@@ -395,6 +397,8 @@ shape = SubResource("CapsuleShape2D_xxg73")
 
 [node name="DetectionArea" type="Area2D" parent="."]
 visible = false
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_en4gi")
@@ -409,6 +413,8 @@ debug_color = Color(0, 0, 0, 0.42)
 
 [node name="AttackArea" type="Area2D" parent="."]
 visible = false
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 position = Vector2(-1, 9)
@@ -437,3 +443,9 @@ shape = SubResource("CapsuleShape2D_ooadm")
 [node name="HealthBar" parent="." instance=ExtResource("9_fqw7x")]
 offset_top = 19.0
 offset_bottom = 26.0
+
+[connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
+[connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_entered"]
+[connection signal="body_exited" from="AttackArea" to="." method="_on_attack_area_exited"]
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=64 format=3 uid="uid://cxrtjipedae3y"]
+[gd_scene load_steps=65 format=3 uid="uid://cxrtjipedae3y"]
 
 [ext_resource type="Texture2D" uid="uid://krqb44s4cmb8" path="res://art/enemies/EVil Wizard 2/EVil Wizard 2/Sprites/Death.png" id="1_eakbk"]
+[ext_resource type="Script" uid="uid://cq5150hssayra" path="res://script/warlock.gd" id="1_mulje"]
 [ext_resource type="Texture2D" uid="uid://f4lpoo47xoo4" path="res://art/enemies/EVil Wizard 2/EVil Wizard 2/Sprites/Attack2.png" id="2_mulje"]
 [ext_resource type="Texture2D" uid="uid://bk872hhp4pjv7" path="res://art/enemies/EVil Wizard 2/EVil Wizard 2/Sprites/Fall.png" id="3_n4bpk"]
 [ext_resource type="Texture2D" uid="uid://bcmu1e6cibdgx" path="res://art/enemies/EVil Wizard 2/EVil Wizard 2/Sprites/Take hit.png" id="4_pl4y1"]
@@ -400,6 +401,7 @@ radius = 11.0
 height = 44.0
 
 [node name="Warlock" type="CharacterBody2D"]
+script = ExtResource("1_mulje")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_pk3ud")
@@ -466,3 +468,9 @@ shape = SubResource("CapsuleShape2D_26ewc")
 visible = false
 offset_top = 19.0
 offset_bottom = 26.0
+
+[connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
+[connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_entered"]
+[connection signal="body_exited" from="AttackArea" to="." method="_on_attack_area_exited"]
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]

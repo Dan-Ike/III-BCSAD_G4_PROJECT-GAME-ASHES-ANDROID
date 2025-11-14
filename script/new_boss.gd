@@ -83,7 +83,7 @@ var can_take_damage: bool = true
 
 # Detection and attack ranges
 const DETECTION_RANGE = 500.0
-const ATTACK_RANGE = 80.0  # Half of attack area, boss stops here
+const ATTACK_RANGE = 100.0  # Half of attack area, boss stops here
 const CHASE_STOP_DISTANCE = 60.0  # Minimum distance before stopping
 
 # Boss properties
@@ -132,6 +132,11 @@ var should_retreat: bool = false
 var retreat_timer: float = 0.0
 const RETREAT_DURATION = 3.0
 const RETREAT_DISTANCE = 250.0
+
+# Attack telegraph delays
+const ATTACK_TELEGRAPH_TIME = 0.2  # Delay before damage is dealt
+var attack_telegraph_timer: float = 0.0
+var is_telegraphing: bool = false
 
 func _ready() -> void:
 	change_state(State.IDLE)
@@ -556,12 +561,15 @@ func _end_dash() -> void:
 
 func _perform_vertical_slash() -> void:
 	change_state(State.ATTACKING)
-	animated_sprite_2d.play("vertical_slash")
+	print("[Boss] Vertical Slash!")
 	vertical_slash_cooldown = get_vertical_slash_cooldown()
 	attack_cooldown = get_attack_cooldown()
-	print("[Boss] Vertical Slash!")
 	
+	# Delay before animation and damage
+	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	animated_sprite_2d.play("vertical_slash")
 	_enable_damage_area(deal_damage_area_vertical_slash)
+	
 	await get_tree().create_timer(0.8).timeout
 	_disable_all_damage_areas()
 	
@@ -570,12 +578,15 @@ func _perform_vertical_slash() -> void:
 
 func _perform_down_slash() -> void:
 	change_state(State.ATTACKING)
-	animated_sprite_2d.play("down_slash")
+	print("[Boss] Down Slash!")
 	down_slash_cooldown = get_down_slash_cooldown()
 	attack_cooldown = get_attack_cooldown()
-	print("[Boss] Down Slash!")
 	
+	# Delay before animation and damage
+	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	animated_sprite_2d.play("down_slash")
 	_enable_damage_area(deal_damage_area_down_slash)
+	
 	await get_tree().create_timer(0.7).timeout
 	_disable_all_damage_areas()
 	
@@ -648,10 +659,12 @@ func _perform_special_dash() -> void:
 
 func _perform_jump_up_attack() -> void:
 	change_state(State.ATTACKING)
-	animated_sprite_2d.play("jump_up_attack")
-	attack_cooldown = ATTACK_COOLDOWN_TIME
 	print("[Boss] Jump Up Attack!")
+	attack_cooldown = ATTACK_COOLDOWN_TIME
 	
+	# Delay before animation and damage
+	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	animated_sprite_2d.play("jump_up_attack")
 	_enable_damage_area(deal_damage_area_jump_up_attack)
 	
 	await get_tree().create_timer(0.6).timeout
@@ -662,10 +675,12 @@ func _perform_jump_up_attack() -> void:
 
 func _perform_idle_up_attack() -> void:
 	change_state(State.ATTACKING)
-	animated_sprite_2d.play("idle_up_attack")
-	attack_cooldown = ATTACK_COOLDOWN_TIME
 	print("[Boss] Idle Up Attack!")
+	attack_cooldown = ATTACK_COOLDOWN_TIME
 	
+	# Delay before animation and damage
+	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	animated_sprite_2d.play("idle_up_attack")
 	_enable_damage_area(deal_damage_area_jump_up_attack)
 	
 	await get_tree().create_timer(0.6).timeout
@@ -676,10 +691,12 @@ func _perform_idle_up_attack() -> void:
 
 func _perform_jump_down_attack() -> void:
 	change_state(State.ATTACKING)
-	animated_sprite_2d.play("jump_down_attack")
-	attack_cooldown = ATTACK_COOLDOWN_TIME
 	print("[Boss] Jump Down Attack!")
+	attack_cooldown = ATTACK_COOLDOWN_TIME
 	
+	# Delay before animation and damage
+	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	animated_sprite_2d.play("jump_down_attack")
 	_enable_damage_area(deal_damage_area_jump_down_attack)
 	
 	await get_tree().create_timer(0.7).timeout

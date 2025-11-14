@@ -20,6 +20,8 @@ var advancedEnemyDamageZone
 var advancedEnemyDamageAmount: int = 0
 
 var bossDamageZone
+
+var slimeDamageZone
 # Floor and Level Tracking
 var current_floor: int = 1
 var current_level: int = 1

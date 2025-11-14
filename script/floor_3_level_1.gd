@@ -24,8 +24,8 @@ func _ready() -> void:
 		# Don't stop or play music here - let cutscene handle it
 		
 		# Show and start cutscene with unique ID
-		before_3_1.visible = true
-		before_3_1.start_cutscene("floor_3_level_1_prologue")
+#		before_3_1.visible = true
+#		before_3_1.start_cutscene("floor_3_level_1_prologue")
 	else:
 		# Skip cutscene - go straight to gameplay
 		get_tree().paused = false 

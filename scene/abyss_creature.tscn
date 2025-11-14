@@ -1,5 +1,6 @@
-[gd_scene load_steps=97 format=3 uid="uid://tof8k8qf6nw7"]
+[gd_scene load_steps=98 format=3 uid="uid://tof8k8qf6nw7"]
 
+[ext_resource type="Script" uid="uid://cpyci2wdd0nyh" path="res://script/abyss_creature.gd" id="1_ipnu4"]
 [ext_resource type="Texture2D" uid="uid://dikt7skyx1k1i" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Shadowed Wetlands Boss v1.1/Sprite Sheet/Attack 2.png" id="1_lck2y"]
 [ext_resource type="Texture2D" uid="uid://c5vkn5xxlqtdf" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Shadowed Wetlands Boss v1.1/Sprite Sheet/new/end-Attack 3.png" id="2_ipnu4"]
 [ext_resource type="Texture2D" uid="uid://bitcf0ipw0a7g" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Shadowed Wetlands Boss v1.1/Sprite Sheet/new/Pre-Attack 3.png" id="3_eqacg"]
@@ -628,10 +629,11 @@ radius = 17.0
 height = 44.0
 
 [node name="AbyssCreature" type="CharacterBody2D"]
+script = ExtResource("1_ipnu4")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_83g21")
-animation = &"idle"
+animation = &"vertical_attack"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
@@ -711,3 +713,9 @@ shape = SubResource("CapsuleShape2D_kq33s")
 visible = false
 offset_top = 19.0
 offset_bottom = 26.0
+
+[connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
+[connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_entered"]
+[connection signal="body_exited" from="AttackArea" to="." method="_on_attack_area_exited"]
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]
