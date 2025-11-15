@@ -61,13 +61,16 @@ func _process(delta: float) -> void:
 
 func _on_floor_3_lvl_2_body_entered(body: Node2D) -> void:
 	if body is Player:
+		# Stop player's timer
+		var completion_time = body._get_elapsed_time()
+		body.stop_level_timer()
+		
+		print("[Level] Completed in: ", completion_time, " seconds")
+		
 		Global.gameStarted = true
-		#unlock_dash()
-		#unlock_double_jump()
 		SaveManager.mark_level_completed(3, 1)  
 		SaveManager.advance_to_level(3, 2)      
 		Global.advance_level()
-		#Global.advance_floor()
 		unlock_attack()
 		body.touch_controls.disable_all_controls() 
 		scene_transition_animation.play("fade_in")

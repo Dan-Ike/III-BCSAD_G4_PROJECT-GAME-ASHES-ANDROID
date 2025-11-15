@@ -250,7 +250,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"downward_attack",
-"speed": 10.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -373,7 +373,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"upward_attack",
-"speed": 10.0
+"speed": 15.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c5tdt"]
@@ -405,7 +405,7 @@ script = ExtResource("1_mulje")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_pk3ud")
-animation = &"idle"
+animation = &"upward_attack"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
@@ -414,6 +414,8 @@ shape = SubResource("CapsuleShape2D_c5tdt")
 
 [node name="DetectionArea" type="Area2D" parent="."]
 visible = false
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_d88ti")
@@ -428,6 +430,8 @@ debug_color = Color(0, 0, 0, 0.42)
 
 [node name="AttackArea" type="Area2D" parent="."]
 visible = false
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 position = Vector2(-1, 9)

@@ -3,6 +3,10 @@ class_name Player
 
 signal player_died
 
+# Time tracking
+var level_start_time: float = 0.0
+var is_level_active: bool = false
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var deal_damage_zone: Area2D = $DealDamageZone
 @onready var damage_shape: CollisionShape2D = $DealDamageZone/CollisionShape2D
@@ -142,6 +146,23 @@ func _ready() -> void:
 		#print("Saved new soul_mode to Global:", soul_mode)
 	
 	_print_mode_info()
+	_start_level_timer()
+
+func _start_level_timer() -> void:
+	"""Start tracking time when level begins"""
+	level_start_time = Time.get_ticks_msec() / 1000.0
+	is_level_active = true
+	print("[Player] Timer started at: ", level_start_time)
+
+func _get_elapsed_time() -> float:
+	"""Get time elapsed since level start"""
+	if not is_level_active:
+		return 0.0
+	return (Time.get_ticks_msec() / 1000.0) - level_start_time
+
+func stop_level_timer() -> void:
+	"""Stop timer when level ends"""
+	is_level_active = false
 
 func apply_knockback(force: Vector2) -> void:
 	"""Apply knockback force to the player"""
@@ -161,7 +182,6 @@ func apply_knockback(force: Vector2) -> void:
 	
 	if animated_sprite:
 		animated_sprite.play("idle")  # Use idle since no hurt animation
-
 
 func play_sfx_once(sfx: AudioStreamPlayer) -> void:
 	#"""Play a one-shot sound effect (jump, land, attack, dash)"""
@@ -699,6 +719,10 @@ func die() -> void:
 func handle_death_animation() -> void:
 	player_died.emit()
 	
+	# Get time before stopping timer
+	var time_survived = _get_elapsed_time()
+	is_level_active = false
+	
 	$CollisionShape2D.position.y = 5
 	animated_sprite.play("death")
 	await get_tree().create_timer(0.5).timeout
@@ -712,12 +736,13 @@ func handle_death_animation() -> void:
 	Global.playerAlive = false
 	var died_on_floor = Global.current_floor
 	var died_on_level = Global.current_level
-	print("[Player] Died on Floor %d, Level %d" % [died_on_floor, died_on_level])
+	print("[Player] Died on Floor %d, Level %d after %.2f seconds" % [died_on_floor, died_on_level, time_survived])
+	
 	var game_over_scene = preload("res://scene/game_over.tscn")
 	var game_over = game_over_scene.instantiate()
 	get_tree().root.add_child(game_over)
 	if game_over.has_method("show_game_over"):
-		game_over.show_game_over(died_on_floor, died_on_level)
+		game_over.show_game_over(died_on_floor, died_on_level, time_survived, false)
 
 func take_damage_cooldown(wait_time: float) -> void:
 	can_take_damage = false

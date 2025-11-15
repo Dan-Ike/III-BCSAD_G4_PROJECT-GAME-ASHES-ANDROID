@@ -633,10 +633,9 @@ script = ExtResource("1_ipnu4")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_83g21")
-animation = &"vertical_attack"
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(-18, 18)
 shape = SubResource("CapsuleShape2D_ottmt")
 
@@ -710,9 +709,10 @@ position = Vector2(-19, 16)
 shape = SubResource("CapsuleShape2D_kq33s")
 
 [node name="HealthBar" parent="." instance=ExtResource("10_2wnvn")]
-visible = false
-offset_top = 19.0
-offset_bottom = 26.0
+offset_left = -110.0
+offset_top = 46.0
+offset_right = 68.0
+offset_bottom = 53.0
 
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]

@@ -63,7 +63,7 @@ var can_attack: bool = true
 var attack_cooldown: float = 0.0
 const ATTACK_COOLDOWN_TIME = 1.5
 const ATTACK_TELEGRAPH_TIME = 0.5  # Delay before attack
-const ATTACK_RANGE = 60.0
+const ATTACK_RANGE = 30.0
 
 # Damage tracking
 var players_hit_this_attack: Array = []
@@ -97,9 +97,10 @@ func _ready() -> void:
 			detection_area.body_entered.connect(_on_detection_area_entered)
 		if not detection_area.body_exited.is_connected(_on_detection_area_exited):
 			detection_area.body_exited.connect(_on_detection_area_exited)
-		print("[Enemy] Detection area connected - Mask set to Layer 2")
+		#print("[Enemy] Detection area connected - Mask set to Layer 2")
 	else:
-		print("[Enemy] ERROR: No DetectionArea found!")
+		pass
+		#print("[Enemy] ERROR: No DetectionArea found!")
 	
 	if attack_area:
 		attack_area.collision_mask = 2  # Also set attack area to Layer 2
@@ -123,9 +124,9 @@ func _ready() -> void:
 		health_bar.max_value = health_max
 		health_bar.value = health
 	
-	print("[Enemy] Initialized as ", "PATROL" if enemy_type == EnemyType.PATROL else "PERSISTENT")
-	print("[Enemy] Patrol bounds: Left=", patrol_left_bound, " Right=", patrol_right_bound)
-	print("[Enemy] Starting direction: ", "RIGHT" if patrol_direction > 0 else "LEFT")
+	#print("[Enemy] Initialized as ", "PATROL" if enemy_type == EnemyType.PATROL else "PERSISTENT")
+	#print("[Enemy] Patrol bounds: Left=", patrol_left_bound, " Right=", patrol_right_bound)
+	#print("[Enemy] Starting direction: ", "RIGHT" if patrol_direction > 0 else "LEFT")
 
 func _check_edge_ahead() -> bool:
 	if not is_on_floor():
@@ -162,12 +163,12 @@ func _setup_navigation_patrol_bounds() -> void:
 			patrol_left_bound = nav_region.global_position.x + bounds.position.x + 50  # Add padding
 			patrol_right_bound = nav_region.global_position.x + bounds.end.x - 50  # Add padding
 			
-			print("[Enemy] Found NavigationRegion2D bounds: ", bounds)
+			#print("[Enemy] Found NavigationRegion2D bounds: ", bounds)
 		else:
-			print("[Enemy] WARNING: NavigationRegion2D has no navigation_polygon!")
+			#print("[Enemy] WARNING: NavigationRegion2D has no navigation_polygon!")
 			_use_fallback_patrol()
 	else:
-		print("[Enemy] WARNING: No NavigationRegion2D found! Using fallback patrol.")
+		#print("[Enemy] WARNING: No NavigationRegion2D found! Using fallback patrol.")
 		_use_fallback_patrol()
 
 func _use_fallback_patrol() -> void:
@@ -284,14 +285,14 @@ func _state_patrol(delta: float) -> void:
 func _state_chase(delta: float) -> void:
 	# Check if player is valid
 	if not player or not is_instance_valid(player) or player.dead:
-		print("[Enemy] Player invalid/dead, returning to patrol")
+		#print("[Enemy] Player invalid/dead, returning to patrol")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
 	
 	# PATROL type: Return to patrol if player leaves detection
 	if enemy_type == EnemyType.PATROL and not is_player_in_detection:
-		print("[Enemy] PATROL type and player left detection, returning")
+		#print("[Enemy] PATROL type and player left detection, returning")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
@@ -322,7 +323,7 @@ func _state_attack_ready(delta: float) -> void:
 	var distance_to_player = global_position.distance_to(player.global_position)
 	
 	# Player escaped range
-	if distance_to_player > ATTACK_RANGE + 20:
+	if distance_to_player > ATTACK_RANGE: #+ 20:
 		change_state(State.CHASE)
 		return
 	
@@ -368,7 +369,7 @@ func _perform_attack() -> void:
 	attack_cooldown = ATTACK_COOLDOWN_TIME
 	players_hit_this_attack.clear()
 	
-	print("[Enemy] Attacking!")
+	#print("[Enemy] Attacking!")
 	
 	# Telegraph delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
@@ -376,8 +377,14 @@ func _perform_attack() -> void:
 	if not is_instance_valid(self):
 		return
 	
-	# Play both animations at the same time
+	# Store original offset and adjust by -12px
+	var original_offset = animated_sprite.offset
+	animated_sprite.offset.x = original_offset.x + (-12 * facing_direction)
+	
+	# Play attack animation
 	animated_sprite.play("attack")
+	
+	await get_tree().create_timer(0.2).timeout
 	
 	_enable_damage_area()
 	
@@ -393,6 +400,9 @@ func _perform_attack() -> void:
 	
 	_disable_damage_area()
 	is_attacking = false
+	
+	# Reset offset
+	animated_sprite.offset = original_offset
 	
 	if current_state == State.ATTACKING:
 		change_state(State.CHASE)
@@ -423,7 +433,7 @@ func _check_damage_to_player() -> void:
 				if player.has_method("take_damage"):
 					player.take_damage(damage) # damage = attack
 					players_hit_this_attack.append(player)
-					print("[Enemy] Hit player for %d damage!" % damage)
+					#print("[Enemy] Hit player for %d damage!" % damage)
 					
 					# Apply knockback
 					var direction = sign(player.global_position.x - global_position.x)
@@ -443,7 +453,7 @@ func _return_to_patrol() -> void:
 		is_returning_to_patrol = false
 		patrol_direction = 1 if randf() > 0.5 else -1  # Random direction
 		change_state(State.PATROL)
-		print("[Enemy] Reached return position, resuming patrol")
+		#print("[Enemy] Reached return position, resuming patrol")
 		return
 	
 	# Move toward return position
@@ -466,14 +476,15 @@ func change_state(new_state: State) -> void:
 	
 	# Only print important state changes
 	if new_state == State.CHASE or new_state == State.ATTACKING or new_state == State.DEAD:
-		print("[Enemy] State: %s -> %s" % [State.keys()[previous_state], State.keys()[current_state]])
+		#print("[Enemy] State: %s -> %s" % [State.keys()[previous_state], State.keys()[current_state]])
+		pass
 
 func take_damage(damage_amount: int) -> void:
 	if current_state == State.DEAD or not can_take_damage:
 		return
 	
 	health -= damage_amount
-	print("[Enemy] Took %d damage. Health: %d/%d" % [damage_amount, health, health_max])
+	#print("[Enemy] Took %d damage. Health: %d/%d" % [damage_amount, health, health_max])
 	
 	if health <= 0:
 		die()
@@ -485,7 +496,7 @@ func die() -> void:
 	if current_state == State.DEAD:
 		return  # Prevent multiple death calls
 	
-	print("[Enemy] Died!")
+	#print("[Enemy] Died!")
 	change_state(State.DEAD)
 	
 	# Disable collision immediately
@@ -531,7 +542,7 @@ func _on_detection_area_entered(body: Node2D) -> void:
 		is_player = true
 	
 	if is_player:
-		print("[Enemy] ✓ Player detected! Starting chase!")
+		#print("[Enemy] ✓ Player detected! Starting chase!")
 		is_player_in_detection = true
 		player = body
 		
@@ -541,17 +552,18 @@ func _on_detection_area_entered(body: Node2D) -> void:
 
 func _on_detection_area_exited(body: Node2D) -> void:
 	if body == Global.playerBody:
-		print("[Enemy] Player left detection area!")
+		#print("[Enemy] Player left detection area!")
 		is_player_in_detection = false
 		
 		# Only return to patrol if PATROL type
 		if enemy_type == EnemyType.PATROL:
 			if current_state == State.CHASE or current_state == State.ATTACK_READY:
-				print("[Enemy] PATROL type - returning to patrol")
+				#print("[Enemy] PATROL type - returning to patrol")
 				return_position = global_position
 				is_returning_to_patrol = true
 		else:
-			print("[Enemy] PERSISTENT type - continuing chase")
+			#print("[Enemy] PERSISTENT type - continuing chase")
+			pass
 
 func _on_attack_area_entered(body: Node2D) -> void:
 	if body == Global.playerBody:

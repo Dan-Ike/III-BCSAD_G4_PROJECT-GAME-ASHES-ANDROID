@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3 uid="uid://bwqxv1ufecym4"]
+[gd_scene load_steps=60 format=3 uid="uid://bwqxv1ufecym4"]
 
 [ext_resource type="Script" uid="uid://db2y1afsiw72m" path="res://script/hell_knight.gd" id="1_2e4gn"]
 [ext_resource type="Texture2D" uid="uid://bit4gg8mdroqm" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Free Assets/SAHDOW Series - Frost Curse Boss/Sprite/3. attack 1 - 2.png" id="1_uq2j2"]
@@ -10,29 +10,13 @@
 [ext_resource type="Texture2D" uid="uid://br2a6d6x13hct" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Free Assets/SAHDOW Series - Frost Curse Boss/Sprite/2. run.png" id="7_66l20"]
 [ext_resource type="PackedScene" uid="uid://cqh7gljsbhp3c" path="res://scene/health_bar.tscn" id="8_kgop6"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_2g0xr"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_i6tyw"]
 atlas = ExtResource("1_uq2j2")
-region = Rect2(0, 0, 137, 40)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4nkq5"]
-atlas = ExtResource("1_uq2j2")
-region = Rect2(137, 0, 137, 40)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_gkd4x"]
-atlas = ExtResource("1_uq2j2")
-region = Rect2(274, 0, 137, 40)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rc16n"]
-atlas = ExtResource("1_uq2j2")
-region = Rect2(411, 0, 137, 40)
+region = Rect2(822, 0, 137, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5msx2"]
 atlas = ExtResource("1_uq2j2")
 region = Rect2(685, 0, 137, 40)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_i6tyw"]
-atlas = ExtResource("1_uq2j2")
-region = Rect2(822, 0, 137, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jjgic"]
 atlas = ExtResource("1_uq2j2")
@@ -202,22 +186,10 @@ region = Rect2(96, 0, 32, 64)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_2g0xr")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4nkq5")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gkd4x")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rc16n")
+"texture": SubResource("AtlasTexture_i6tyw")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5msx2")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_i6tyw")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_jjgic")
@@ -388,7 +360,7 @@ radius = 254.096
 radius = 586.308
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_duggc"]
-radius = 74.0068
+radius = 119.921
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dl1tv"]
 height = 50.0
@@ -402,10 +374,11 @@ script = ExtResource("1_2e4gn")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_01hmn")
-animation = &"idle"
+animation = &"attack"
+frame = 5
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(1, 2)
 shape = SubResource("CapsuleShape2D_2pl16")
 
@@ -433,12 +406,11 @@ shape = SubResource("CircleShape2D_duggc")
 debug_color = Color(0.999109, 0, 0.123329, 0.42)
 
 [node name="DealDamageArea_Attack" type="Area2D" parent="."]
-visible = false
 collision_layer = 16
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DealDamageArea_Attack"]
-position = Vector2(36, 5)
+position = Vector2(24, 5)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_dl1tv")
 

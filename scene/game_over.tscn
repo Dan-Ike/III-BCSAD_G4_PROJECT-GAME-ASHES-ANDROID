@@ -68,6 +68,18 @@ text = "\"Git Gud\""
 horizontal_alignment = 1
 autowrap_mode = 3
 
+[node name="Spacer3" type="Control" parent="CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="TimeCleared" type="Label" parent="CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Time Cleared: "
+horizontal_alignment = 1
+autowrap_mode = 3
+
 [node name="ButtonContainer" type="HBoxContainer" parent="CenterContainer/Panel/MarginContainer/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 20

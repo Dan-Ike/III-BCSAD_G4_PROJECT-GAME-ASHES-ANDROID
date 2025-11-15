@@ -14,7 +14,10 @@ const EDGE_CHECK_INTERVAL: float = 0.1  # Check edges every 0.1 seconds
 @onready var detection_area: Area2D = $DetectionArea
 @onready var patrol_area: Area2D = $PatrolArea
 @onready var attack_area: Area2D = $AttackArea
-@onready var deal_damage_area_attack: Area2D = $DealDamageArea_Attack
+@onready var deal_damage_area_vertical_attack: Area2D = $DealDamageArea_VerticalAttack #vertical_attack
+@onready var deal_damage_area_downward_attack: Area2D = $DealDamageArea_DownwardAttack #downward_attack and bash_attack
+@onready var deal_damage_area_back_attack: Area2D = $DealDamageArea_BackAttack #back_attack
+@onready var deal_damage_area_charge_attack: Area2D = $DealDamageArea_ChargeAttack #charge
 @onready var hitbox: Area2D = $Hitbox
 @onready var health_bar: ProgressBar = $HealthBar
 
@@ -23,6 +26,15 @@ const EDGE_CHECK_INTERVAL: float = 0.1  # Check edges every 0.1 seconds
 @export var health_min: int = 0
 @export var health_max: int = 100
 @export var damage: int = 10
+
+# Charge Attack System
+var charge_speed: float = 300.0
+var charge_duration: float = 2.0
+var charge_cooldown: float = 3.0
+var is_charging: bool = false
+var can_charge: bool = true
+var charge_direction: Vector2 = Vector2.ZERO
+var charge_timer: float = 0.0
 
 # Movement
 @export var patrol_speed: float = 50.0
@@ -45,6 +57,7 @@ enum State {
 	IDLE,
 	PATROL,
 	CHASE,
+	CHARGE,
 	ATTACK_READY,
 	ATTACKING,
 	HURT,
@@ -97,9 +110,10 @@ func _ready() -> void:
 			detection_area.body_entered.connect(_on_detection_area_entered)
 		if not detection_area.body_exited.is_connected(_on_detection_area_exited):
 			detection_area.body_exited.connect(_on_detection_area_exited)
-		print("[Enemy] Detection area connected - Mask set to Layer 2")
+		#print("[Enemy] Detection area connected - Mask set to Layer 2")
 	else:
-		print("[Enemy] ERROR: No DetectionArea found!")
+		pass
+		#print("[Enemy] ERROR: No DetectionArea found!")
 	
 	if attack_area:
 		attack_area.collision_mask = 2  # Also set attack area to Layer 2
@@ -123,9 +137,9 @@ func _ready() -> void:
 		health_bar.max_value = health_max
 		health_bar.value = health
 	
-	print("[Enemy] Initialized as ", "PATROL" if enemy_type == EnemyType.PATROL else "PERSISTENT")
-	print("[Enemy] Patrol bounds: Left=", patrol_left_bound, " Right=", patrol_right_bound)
-	print("[Enemy] Starting direction: ", "RIGHT" if patrol_direction > 0 else "LEFT")
+	#print("[Enemy] Initialized as ", "PATROL" if enemy_type == EnemyType.PATROL else "PERSISTENT")
+	#print("[Enemy] Patrol bounds: Left=", patrol_left_bound, " Right=", patrol_right_bound)
+	#print("[Enemy] Starting direction: ", "RIGHT" if patrol_direction > 0 else "LEFT")
 
 func _check_edge_ahead() -> bool:
 	if not is_on_floor():
@@ -162,12 +176,12 @@ func _setup_navigation_patrol_bounds() -> void:
 			patrol_left_bound = nav_region.global_position.x + bounds.position.x + 50  # Add padding
 			patrol_right_bound = nav_region.global_position.x + bounds.end.x - 50  # Add padding
 			
-			print("[Enemy] Found NavigationRegion2D bounds: ", bounds)
+			#print("[Enemy] Found NavigationRegion2D bounds: ", bounds)
 		else:
-			print("[Enemy] WARNING: NavigationRegion2D has no navigation_polygon!")
+			#print("[Enemy] WARNING: NavigationRegion2D has no navigation_polygon!")
 			_use_fallback_patrol()
 	else:
-		print("[Enemy] WARNING: No NavigationRegion2D found! Using fallback patrol.")
+		#print("[Enemy] WARNING: No NavigationRegion2D found! Using fallback patrol.")
 		_use_fallback_patrol()
 
 func _use_fallback_patrol() -> void:
@@ -214,6 +228,8 @@ func _physics_process(delta: float) -> void:
 			_state_patrol(delta)
 		State.CHASE:
 			_state_chase(delta)
+		State.CHARGE:
+			_state_charge(delta)
 		State.ATTACK_READY:
 			_state_attack_ready(delta)
 		State.ATTACKING:
@@ -284,24 +300,25 @@ func _state_patrol(delta: float) -> void:
 func _state_chase(delta: float) -> void:
 	# Check if player is valid
 	if not player or not is_instance_valid(player) or player.dead:
-		print("[Enemy] Player invalid/dead, returning to patrol")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
 	
 	# PATROL type: Return to patrol if player leaves detection
 	if enemy_type == EnemyType.PATROL and not is_player_in_detection:
-		print("[Enemy] PATROL type and player left detection, returning")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
-	
-	# PERSISTENT type: Always chase until player dies
 	
 	animated_sprite.play("run")
 	
 	var direction_to_player = sign(player.global_position.x - global_position.x)
 	var distance_to_player = global_position.distance_to(player.global_position)
+	
+	# Check if should charge (if far enough and charge available)
+	if distance_to_player > 150.0 and distance_to_player < 400.0 and can_charge:
+		change_state(State.CHARGE)
+		return
 	
 	# Check if in attack range
 	if distance_to_player <= ATTACK_RANGE and can_attack:
@@ -311,6 +328,100 @@ func _state_chase(delta: float) -> void:
 	# Move toward player
 	velocity.x = direction_to_player * chase_speed
 	facing_direction = direction_to_player
+
+func _state_charge(delta: float) -> void:
+	if not is_charging:
+		is_charging = true
+		can_charge = false
+		charge_timer = charge_duration
+		
+		if player:
+			charge_direction = (player.global_position - global_position).normalized()
+			animated_sprite.flip_h = charge_direction.x < 0
+			print("[Enemy] Starting charge!")
+			animated_sprite.play("charge")
+	
+	velocity.x = charge_direction.x * charge_speed
+	
+	# Check for charge end conditions
+	var should_break = false
+	var hit_player = false
+	
+	# Check if hit wall
+	if is_on_wall():
+		print("[Enemy] Charge hit wall!")
+		should_break = true
+	
+	# Check if reached player
+	if player:
+		var distance = global_position.distance_to(player.global_position)
+		if distance < 50.0:
+			print("[Enemy] Charge reached player!")
+			should_break = true
+			hit_player = true
+	
+	# Check if timer expired
+	charge_timer -= delta
+	if charge_timer <= 0.0:
+		print("[Enemy] Charge time expired!")
+		should_break = true
+	
+	# Execute break charge and bash combo
+	if should_break:
+		await _perform_break_charge(hit_player)
+		return
+
+func _perform_break_charge(hit_player: bool) -> void:
+	print("[Enemy] BREAK CHARGE!")
+	
+	# Stop movement
+	velocity.x = 0.0
+	is_charging = false
+	
+	# Play break_charge animation
+	animated_sprite.play("break_charge")
+	
+	# Deal damage during break_charge if player is nearby
+	if hit_player and player:
+		await get_tree().create_timer(0.2).timeout
+		if is_instance_valid(self) and player:
+			var distance = global_position.distance_to(player.global_position)
+			if distance < 70.0:
+				if player.has_method("take_damage"):
+					player.take_damage(damage)
+					print("[Enemy] Break charge hit for ", damage, " damage")
+	
+	# Wait for break_charge animation
+	await get_tree().create_timer(0.5).timeout
+	
+	if not is_instance_valid(self):
+		return
+	
+	# COMBO: Bash attack
+	print("[Enemy] BASH ATTACK!")
+	animated_sprite.play("bash_attack")
+	
+	# Enable bash damage area
+	_enable_damage_area("bash")
+	
+	# Check for bash damage
+	var bash_duration = 0.6
+	var bash_timer = 0.0
+	while bash_timer < bash_duration:
+		if not is_instance_valid(self):
+			return
+		_check_damage_to_player("bash")
+		await get_tree().process_frame
+		bash_timer += get_physics_process_delta_time()
+	
+	_disable_damage_area("bash")
+	
+	# End charge attack sequence
+	charge_direction = Vector2.ZERO
+	change_state(State.CHASE)
+	
+	await get_tree().create_timer(charge_cooldown).timeout
+	can_charge = true
 
 func _state_attack_ready(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
@@ -322,7 +433,7 @@ func _state_attack_ready(delta: float) -> void:
 	var distance_to_player = global_position.distance_to(player.global_position)
 	
 	# Player escaped range
-	if distance_to_player > ATTACK_RANGE + 20:
+	if distance_to_player > ATTACK_RANGE: #+ 20:
 		change_state(State.CHASE)
 		return
 	
@@ -368,7 +479,7 @@ func _perform_attack() -> void:
 	attack_cooldown = ATTACK_COOLDOWN_TIME
 	players_hit_this_attack.clear()
 	
-	print("[Enemy] Attacking!")
+	#print("[Enemy] Attacking!")
 	
 	# Telegraph delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
@@ -376,10 +487,22 @@ func _perform_attack() -> void:
 	if not is_instance_valid(self):
 		return
 	
-	# Play both animations at the same time
-	animated_sprite.play("vertical_attack")
+	# Determine which attack to use based on player position
+	var attack_type = "upward"
+	if player:
+		var vertical_diff = player.global_position.y - global_position.y
+		if vertical_diff > 20:  # Player is below
+			attack_type = "downward"
+		else:  # Player is above or same level
+			attack_type = "upward"
 	
-	_enable_damage_area()
+	# Play appropriate animation
+	if attack_type == "upward":
+		animated_sprite.play("upward_attack")
+	else:
+		animated_sprite.play("downward_attack")
+	
+	_enable_damage_area(attack_type)
 	
 	# Check for damage during the attack
 	var damage_check_timer = 0.0
@@ -387,43 +510,76 @@ func _perform_attack() -> void:
 	while damage_check_timer < attack_duration:
 		if not is_instance_valid(self):
 			return
-		_check_damage_to_player()
+		_check_damage_to_player(attack_type)
 		await get_tree().process_frame
 		damage_check_timer += get_physics_process_delta_time()
 	
-	_disable_damage_area()
+	_disable_damage_area(attack_type)
 	is_attacking = false
 	
 	if current_state == State.ATTACKING:
 		change_state(State.CHASE)
 
-func _enable_damage_area() -> void:
-	if deal_damage_area_attack:
-		for child in deal_damage_area_attack.get_children():
+func _enable_damage_area(attack_type: String = "vertical") -> void:
+	var damage_area
+	match attack_type:
+		"vertical":
+			damage_area = deal_damage_area_vertical_attack
+		"downward", "bash":
+			damage_area = deal_damage_area_downward_attack
+		"back":
+			damage_area = deal_damage_area_back_attack
+		"charge":
+			damage_area = deal_damage_area_charge_attack
+	
+	if damage_area:
+		for child in damage_area.get_children():
 			if child is CollisionShape2D:
 				child.disabled = false
 
-func _disable_damage_area() -> void:
-	if deal_damage_area_attack:
-		for child in deal_damage_area_attack.get_children():
+func _disable_damage_area(attack_type: String = "vertical") -> void:
+	var damage_area
+	match attack_type:
+		"vertical":
+			damage_area = deal_damage_area_vertical_attack
+		"downward", "bash":
+			damage_area = deal_damage_area_downward_attack
+		"back":
+			damage_area = deal_damage_area_back_attack
+		"charge":
+			damage_area = deal_damage_area_charge_attack
+	
+	if damage_area:
+		for child in damage_area.get_children():
 			if child is CollisionShape2D:
 				child.disabled = true
 
-func _check_damage_to_player() -> void:
+func _check_damage_to_player(attack_type: String = "vertical") -> void:
 	if not is_attacking or not player:
 		return
 	
 	if players_hit_this_attack.has(player):
 		return
 	
-	if deal_damage_area_attack:
-		var overlapping = deal_damage_area_attack.get_overlapping_bodies()  # Changed to bodies
+	var damage_area
+	match attack_type:
+		"vertical":
+			damage_area = deal_damage_area_vertical_attack
+		"downward", "bash":
+			damage_area = deal_damage_area_downward_attack
+		"back":
+			damage_area = deal_damage_area_back_attack
+		"charge":
+			damage_area = deal_damage_area_charge_attack
+	
+	if damage_area:
+		var overlapping = damage_area.get_overlapping_bodies()
 		for body in overlapping:
 			if body == player or body == Global.playerBody:
 				if player.has_method("take_damage"):
-					player.take_damage(damage) # damage = attack
+					player.take_damage(damage)
 					players_hit_this_attack.append(player)
-					print("[Enemy] Hit player for %d damage!" % damage)
+					print("[Enemy] Hit player for ", damage, " damage with ", attack_type)
 					
 					# Apply knockback
 					var direction = sign(player.global_position.x - global_position.x)
@@ -443,7 +599,7 @@ func _return_to_patrol() -> void:
 		is_returning_to_patrol = false
 		patrol_direction = 1 if randf() > 0.5 else -1  # Random direction
 		change_state(State.PATROL)
-		print("[Enemy] Reached return position, resuming patrol")
+		#print("[Enemy] Reached return position, resuming patrol")
 		return
 	
 	# Move toward return position
@@ -454,8 +610,14 @@ func _return_to_patrol() -> void:
 func _update_sprite_direction() -> void:
 	if facing_direction != 0:
 		animated_sprite.flip_h = facing_direction < 0
-		if deal_damage_area_attack:
-			deal_damage_area_attack.scale.x = facing_direction
+		if deal_damage_area_vertical_attack:
+			deal_damage_area_vertical_attack.scale.x = facing_direction
+		if deal_damage_area_downward_attack:
+			deal_damage_area_downward_attack.scale.x = facing_direction
+		if deal_damage_area_back_attack:
+			deal_damage_area_back_attack.scale.x = facing_direction
+		if deal_damage_area_charge_attack:
+			deal_damage_area_charge_attack.scale.x = facing_direction
 
 func change_state(new_state: State) -> void:
 	if current_state == new_state:
@@ -466,14 +628,15 @@ func change_state(new_state: State) -> void:
 	
 	# Only print important state changes
 	if new_state == State.CHASE or new_state == State.ATTACKING or new_state == State.DEAD:
-		print("[Enemy] State: %s -> %s" % [State.keys()[previous_state], State.keys()[current_state]])
+		#print("[Enemy] State: %s -> %s" % [State.keys()[previous_state], State.keys()[current_state]])
+		pass
 
 func take_damage(damage_amount: int) -> void:
 	if current_state == State.DEAD or not can_take_damage:
 		return
 	
 	health -= damage_amount
-	print("[Enemy] Took %d damage. Health: %d/%d" % [damage_amount, health, health_max])
+	#print("[Enemy] Took %d damage. Health: %d/%d" % [damage_amount, health, health_max])
 	
 	if health <= 0:
 		die()
@@ -485,7 +648,7 @@ func die() -> void:
 	if current_state == State.DEAD:
 		return  # Prevent multiple death calls
 	
-	print("[Enemy] Died!")
+	#print("[Enemy] Died!")
 	change_state(State.DEAD)
 	
 	# Disable collision immediately
@@ -531,7 +694,7 @@ func _on_detection_area_entered(body: Node2D) -> void:
 		is_player = true
 	
 	if is_player:
-		print("[Enemy] ✓ Player detected! Starting chase!")
+		#print("[Enemy] ✓ Player detected! Starting chase!")
 		is_player_in_detection = true
 		player = body
 		
@@ -541,17 +704,18 @@ func _on_detection_area_entered(body: Node2D) -> void:
 
 func _on_detection_area_exited(body: Node2D) -> void:
 	if body == Global.playerBody:
-		print("[Enemy] Player left detection area!")
+		#print("[Enemy] Player left detection area!")
 		is_player_in_detection = false
 		
 		# Only return to patrol if PATROL type
 		if enemy_type == EnemyType.PATROL:
 			if current_state == State.CHASE or current_state == State.ATTACK_READY:
-				print("[Enemy] PATROL type - returning to patrol")
+				#print("[Enemy] PATROL type - returning to patrol")
 				return_position = global_position
 				is_returning_to_patrol = true
 		else:
-			print("[Enemy] PERSISTENT type - continuing chase")
+			#print("[Enemy] PERSISTENT type - continuing chase")
+			pass
 
 func _on_attack_area_entered(body: Node2D) -> void:
 	if body == Global.playerBody:

@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var quote: Label = $CenterContainer/Panel/MarginContainer/VBox/Quote
 @onready var retry: Button = $CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/Retry
 @onready var main_menu: Button = $CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/MainMenu
+@onready var time_cleared: Label = $CenterContainer/Panel/MarginContainer/VBox/TimeCleared
 
 # Quotes organized by floor/level
 var quotes = {
@@ -54,7 +55,7 @@ func _ready() -> void:
 	main_menu.pressed.connect(_on_main_menu_pressed)
 	
 
-func show_game_over(floor_num: int, level_num: int) -> void:
+func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, level_completed: bool = false) -> void:
 	# Seed RNG for varied quotes
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
@@ -66,6 +67,17 @@ func show_game_over(floor_num: int, level_num: int) -> void:
 	
 	# Update floor/level label
 	floor_level.text = "Floor %d - Level %d" % [floor_num, level_num]
+	
+	# Format and display time with conditional label
+	var minutes = int(time_taken) / 60
+	var seconds = int(time_taken) % 60
+	var milliseconds = int((time_taken - int(time_taken)) * 100)
+	var time_string = "%02d:%02d.%02d" % [minutes, seconds, milliseconds]
+	
+	if level_completed:
+		time_cleared.text = "Time Cleared: " + time_string
+	else:
+		time_cleared.text = "Time Survived: " + time_string
 	
 	# Pick a quote for this floor/level
 	var key: String = "%d_%d" % [floor_num, level_num]
