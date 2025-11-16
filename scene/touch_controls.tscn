@@ -1,20 +1,21 @@
-[gd_scene load_steps=36 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=37 format=3 uid="uid://bjg21ygjiqxou"]
 
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
-[ext_resource type="Texture2D" uid="uid://my3ic52dkreg" path="res://art/buttons/Left_Walk_Button.png" id="2_s02ob"]
-[ext_resource type="Texture2D" uid="uid://chf683gk0fhvu" path="res://art/buttons/Left_Walk_Button (2).png" id="3_adyei"]
-[ext_resource type="Texture2D" uid="uid://c5fisa6jsh3cl" path="res://art/buttons/Attack_Button.png" id="4_w2cpb"]
-[ext_resource type="Texture2D" uid="uid://cqp2sy78lultn" path="res://art/buttons/Attack_Button (3).png" id="5_qlw5r"]
+[ext_resource type="Texture2D" uid="uid://b5bnhc68juqkl" path="res://art/buttons_new/Left_Button.png" id="2_w2cpb"]
+[ext_resource type="Texture2D" uid="uid://cp8s4yaugc21e" path="res://art/buttons_new/Left_Button (1).png" id="3_qlw5r"]
+[ext_resource type="Texture2D" uid="uid://deyqg2dppmuma" path="res://art/buttons_new/Attack_Button (4).png" id="4_adyei"]
+[ext_resource type="Texture2D" uid="uid://b427axi2we7lv" path="res://art/buttons_new/Attack_Button (5).png" id="5_w2cpb"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="6_nito4"]
-[ext_resource type="Texture2D" uid="uid://b4a6tn24y26ho" path="res://art/buttons/Run_Button.png" id="6_nr2pm"]
-[ext_resource type="Texture2D" uid="uid://bjlm2ymy3gvx7" path="res://art/buttons/Run_Button (2).png" id="7_38dk4"]
+[ext_resource type="Texture2D" uid="uid://cu0sn88ftr0d1" path="res://art/buttons_new/Dash_Button.png" id="6_qlw5r"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
+[ext_resource type="Texture2D" uid="uid://l0ackv2go2fa" path="res://art/buttons_new/Dash_Button (1).png" id="7_nr2pm"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="8_nr1lh"]
 [ext_resource type="Texture2D" uid="uid://c0mkv7s0ifai4" path="res://art/buttons/Pause_Icon.png" id="8_rijgt"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="9_fqcvx"]
 [ext_resource type="Texture2D" uid="uid://4shetylo1b0u" path="res://art/buttons/Pause_Icon (2).png" id="9_r10gs"]
-[ext_resource type="Texture2D" uid="uid://psy4tvqoprkf" path="res://art/buttons/Light_Button.png" id="10_5vxk1"]
+[ext_resource type="Texture2D" uid="uid://vd3tj0r2tuuh" path="res://art/buttons_new/Light_Button (3).png" id="10_38dk4"]
 [ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="10_kfhhv"]
+[ext_resource type="Texture2D" uid="uid://fnf5df2gnran" path="res://art/buttons_new/Light_Button (4).png" id="11_rijgt"]
 [ext_resource type="Texture2D" uid="uid://dlkjug5hmf8in" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0001_pixel2_EmblemSpace.png" id="12_8eo88"]
 [ext_resource type="Script" uid="uid://3c5h4xu43s8c" path="res://script/health_bar_simple.gd" id="12_dpkfn"]
 [ext_resource type="Texture2D" uid="uid://b11j3qywssrq7" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border_solo.png" id="13_kir6f"]
@@ -108,82 +109,82 @@ offset_bottom = 65.24
 
 [node name="left" type="TouchScreenButton" parent="Control/Control"]
 scale = Vector2(1.23, 1.29214)
-texture_normal = ExtResource("2_s02ob")
-texture_pressed = ExtResource("3_adyei")
+texture_normal = ExtResource("2_w2cpb")
+texture_pressed = ExtResource("3_qlw5r")
 action = "left"
 
 [node name="Control2" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.225
-anchor_top = 0.792
-anchor_right = 0.225
-anchor_bottom = 0.792
-offset_left = -70.0
-offset_top = -63.2401
-offset_right = 69.0
-offset_bottom = 63.7599
+anchor_left = 0.218
+anchor_top = 0.807
+anchor_right = 0.218
+anchor_bottom = 0.807
+offset_left = -61.04
+offset_top = -65.04
+offset_right = 59.96
+offset_bottom = 68.96
 
 [node name="right" type="TouchScreenButton" parent="Control/Control2"]
-position = Vector2(129, 125)
+position = Vector2(122, 131)
 rotation = 3.14159
-scale = Vector2(1.18463, 1.35001)
-texture_normal = ExtResource("2_s02ob")
-texture_pressed = ExtResource("3_adyei")
+scale = Vector2(1.25549, 1.35001)
+texture_normal = ExtResource("2_w2cpb")
+texture_pressed = ExtResource("3_qlw5r")
 action = "right"
 
 [node name="Control3" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.738
-anchor_top = 0.784
-anchor_right = 0.738
-anchor_bottom = 0.784
-offset_left = -64.64
-offset_top = -62.48
-offset_right = 64.36
-offset_bottom = 62.52
+anchor_left = 0.746
+anchor_top = 0.81
+anchor_right = 0.746
+anchor_bottom = 0.818
+offset_left = -67.8801
+offset_top = -67.2001
+offset_right = 68.1199
+offset_bottom = 61.04
 
 [node name="jump" type="TouchScreenButton" parent="Control/Control3"]
-position = Vector2(130, 2.00001)
+position = Vector2(137, 2.00001)
 rotation = 1.5708
-scale = Vector2(1.2166, 1.38029)
-texture_normal = ExtResource("2_s02ob")
-texture_pressed = ExtResource("3_adyei")
+scale = Vector2(1.32289, 1.38029)
+texture_normal = ExtResource("2_w2cpb")
+texture_pressed = ExtResource("3_qlw5r")
 action = "jump"
 
 [node name="Control4" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.853
-anchor_top = 0.705
-anchor_right = 0.853
-anchor_bottom = 0.705
-offset_left = -67.8401
-offset_top = -67.6
-offset_right = 67.1599
-offset_bottom = 67.4
+anchor_left = 0.858
+anchor_top = 0.706
+anchor_right = 0.858
+anchor_bottom = 0.706
+offset_left = -67.24
+offset_top = -62.32
+offset_right = 67.76
+offset_bottom = 63.68
 
 [node name="atk" type="TouchScreenButton" parent="Control/Control4"]
-position = Vector2(-1.00002, 8)
+position = Vector2(-1.00002, 1)
 scale = Vector2(1.33, 1.31959)
-texture_normal = ExtResource("4_w2cpb")
-texture_pressed = ExtResource("5_qlw5r")
+texture_normal = ExtResource("4_adyei")
+texture_pressed = ExtResource("5_w2cpb")
 action = "z"
 
 [node name="Control5" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.644
-anchor_top = 0.723
-anchor_right = 0.644
-anchor_bottom = 0.723
-offset_left = -73.3201
-offset_top = -65.5601
-offset_right = 72.6799
-offset_bottom = 65.4399
+anchor_left = 0.633
+anchor_top = 0.71
+anchor_right = 0.633
+anchor_bottom = 0.71
+offset_left = -64.24
+offset_top = -65.2
+offset_right = 63.76
+offset_bottom = 65.8
 
 [node name="dash" type="TouchScreenButton" parent="Control/Control5"]
-position = Vector2(4.99994, 9)
-scale = Vector2(1.36, 1.48101)
-texture_normal = ExtResource("6_nr2pm")
-texture_pressed = ExtResource("7_38dk4")
+position = Vector2(0, 2)
+scale = Vector2(1.31, 1.30303)
+texture_normal = ExtResource("6_qlw5r")
+texture_pressed = ExtResource("7_nr2pm")
 action = "dash"
 
 [node name="Control6" type="Control" parent="Control"]
@@ -207,20 +208,21 @@ action = "pause"
 
 [node name="Control7" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.743
-anchor_top = 0.578
-anchor_right = 0.743
-anchor_bottom = 0.578
-offset_left = -83.04
-offset_top = -73.16
-offset_right = 82.96
-offset_bottom = 73.84
+anchor_left = 0.746
+anchor_top = 0.567
+anchor_right = 0.746
+anchor_bottom = 0.567
+offset_left = -67.8801
+offset_top = -65.24
+offset_right = 68.1199
+offset_bottom = 65.76
 
 [node name="shine" type="TouchScreenButton" parent="Control/Control7"]
 process_mode = 3
-position = Vector2(13.9999, 6)
+position = Vector2(-1.99998, 6)
 scale = Vector2(1.41, 1.31313)
-texture_normal = ExtResource("10_5vxk1")
+texture_normal = ExtResource("10_38dk4")
+texture_pressed = ExtResource("11_rijgt")
 action = "shine"
 
 [node name="Virtual Joystick" parent="Control" instance=ExtResource("6_nito4")]
@@ -237,7 +239,6 @@ offset_bottom = 149.96
 
 [node name="PauseMenu" type="Control" parent="."]
 process_mode = 3
-visible = false
 layout_mode = 3
 anchor_left = 0.496
 anchor_top = 0.494

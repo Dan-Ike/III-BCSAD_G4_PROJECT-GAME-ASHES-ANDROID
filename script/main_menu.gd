@@ -32,12 +32,13 @@ var local_server: TCPServer = null
 var auth_connection: StreamPeerTCP = null
 
 func _ready() -> void:
+		# Handle web OAuth callback FIRST before anything else
 	if OS.has_feature("web"):
 		var has_tokens = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received') === 'true'")
 		if has_tokens:
-			_log_debug("OAuth tokens found in sessionStorage, deferring callback...")
-			add_child(http)  
-			call_deferred("_check_web_oauth_callback") 
+			_log_debug("OAuth tokens found in sessionStorage")
+			add_child(http)
+			_check_web_oauth_callback()  # Call directly, not deferred
 			return
 	
 	add_child(http)
@@ -358,7 +359,6 @@ func _start_web_oauth_flow():
 	
 	_log_debug("Executing redirect...")
 	JavaScriptBridge.eval("window.location.href = '" + oauth_url + "';")
-	_log_debug("Redirect sent")
 
 func _start_google_oauth_flow():
 	var redirect_url = ""
@@ -502,11 +502,29 @@ func _load_session() -> void:
 		if typeof(parsed) == TYPE_DICTIONARY:
 			var access = parsed.get("access_token", "")
 			var refresh = parsed.get("refresh_token", "")
+			var user_data = parsed.get("user", {})
 			
-			if access != "":
-				print("💾 Session found, verifying with server...")
-				# Don't show UI yet, wait for verification
-				_verify_and_restore_session(access, refresh)
+			if access != "" and user_data.size() > 0:
+				# Check if we have internet before trying to verify
+				if internet_connected:
+					print("💾 Session found, verifying with server...")
+					_verify_and_restore_session(access, refresh)
+				else:
+					print("💾 Offline mode: Restoring session without verification")
+					# Restore session directly without verification when offline
+					Global.set_session(user_data, access, refresh)
+					google_login.visible = false
+					profile_pic.visible = true
+					_load_cached_profile_image()
+					
+					# When internet comes back, verify in background
+					if not has_node("OnlineCheckTimer"):
+						var timer = Timer.new()
+						timer.name = "OnlineCheckTimer"
+						timer.wait_time = 30.0  # Check every 30 seconds
+						timer.autostart = true
+						timer.timeout.connect(_check_and_refresh_when_online.bind(access, refresh))
+						add_child(timer)
 				return
 	
 	# No valid session
@@ -515,10 +533,13 @@ func _load_session() -> void:
 
 func _verify_and_restore_session(access: String, refresh: String) -> void:
 	"""Verify the token is still valid before showing UI"""
+	print("🔍 Verifying session...")
+	var verify_start = Time.get_ticks_msec()
+	
 	if http.request_completed.is_connected(_on_verify_session_completed):
 		http.request_completed.disconnect(_on_verify_session_completed)
 	
-	http.request_completed.connect(_on_verify_session_completed.bind(access, refresh))
+	http.request_completed.connect(_on_verify_session_completed.bind(access, refresh, verify_start), CONNECT_ONE_SHOT)
 	
 	var url = SUPABASE_URL + "/auth/v1/user"
 	var headers = [
@@ -526,38 +547,214 @@ func _verify_and_restore_session(access: String, refresh: String) -> void:
 		"Authorization: Bearer " + access
 	]
 	
-	http.request(url, headers, HTTPClient.METHOD_GET)
+	var err = http.request(url, headers, HTTPClient.METHOD_GET)
+	
+	# If request fails immediately (no internet), restore session anyway
+	if err != OK:
+		print("⚠️ Network error, restoring session offline")
+		_restore_session_offline(access, refresh)
 
-func _on_verify_session_completed(result, response_code, headers, body, access, refresh):
-	if http.request_completed.is_connected(_on_verify_session_completed):
-		http.request_completed.disconnect(_on_verify_session_completed)
+func _check_and_refresh_when_online(access: String, refresh: String) -> void:
+	"""Check if online and refresh token if needed"""
+	if not internet_connected:
+		return
+	
+	# We're online now, try to refresh the token
+	print("🌐 Internet detected, refreshing token...")
+	
+	# Stop the timer since we're online
+	if has_node("OnlineCheckTimer"):
+		var timer = get_node("OnlineCheckTimer")
+		timer.stop()
+		timer.queue_free()
+	
+	# Try to refresh the token
+	_silent_token_refresh(access, refresh)
+
+func _silent_token_refresh(access: String, refresh: String) -> void:
+	"""Silently refresh token in background without disrupting user"""
+	var refresh_http = HTTPRequest.new()
+	add_child(refresh_http)
+	
+	refresh_http.request_completed.connect(func(result, response_code, headers, body):
+		var text = body.get_string_from_utf8()
+		
+		if response_code == 200:
+			var res = JSON.parse_string(text)
+			if typeof(res) == TYPE_DICTIONARY and res.has("access_token"):
+				print("✅ Token silently refreshed")
+				var new_access = res["access_token"]
+				var new_refresh = res.get("refresh_token", refresh)
+				var current_user = Global.get_current_user()
+				Global.set_session(current_user, new_access, new_refresh)
+				_save_session(new_access, new_refresh, current_user)
+				
+				# Sync save data now that we're online
+				if current_user.has("id"):
+					_background_sync(str(current_user["id"]))
+			else:
+				print("⚠️ Refresh token invalid or expired")
+				_handle_expired_refresh_token()
+		elif response_code == 400 or response_code == 401:
+			# Refresh token is expired or invalid
+			print("❌ Refresh token expired - user needs to log in again")
+			_handle_expired_refresh_token()
+		else:
+			# Network error or other issue - keep user logged in locally
+			print("⚠️ Silent refresh failed (%d), keeping user logged in locally" % response_code)
+		
+		refresh_http.queue_free()
+	)
+	
+	var url = SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token"
+	var headers = ["apikey: " + SUPABASE_KEY, "Content-Type: application/json"]
+	var req_body = JSON.stringify({"refresh_token": refresh})
+	
+	refresh_http.request(url, headers, HTTPClient.METHOD_POST, req_body)
+
+func _handle_expired_refresh_token() -> void:
+	"""Handle when refresh token has expired - show friendly message"""
+	# Don't immediately log out, show a gentle notification
+	var dlg := AcceptDialog.new()
+	dlg.dialog_text = "Your session has expired.\n\nYour progress is saved locally. Please log in again to sync with the cloud."
+	dlg.title = "Session Expired"
+	dlg.confirmed.connect(func():
+		# Clear session and show login button
+		_clear_session_file()
+		Global.clear_session()
+		google_login.visible = true
+		profile_pic.visible = false
+		_update_profile_placeholder()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
+	
+	# User can still play, just not synced
+	print("🎮 User can continue playing locally until they log in again")
+
+func _on_verify_session_completed(result, response_code, headers, body, access, refresh, verify_start):
+	var verify_time = Time.get_ticks_msec() - verify_start
+	print("⏱️ Session check completed in %d ms (code: %d)" % [verify_time, response_code])
 	
 	var text = body.get_string_from_utf8()
 	
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY:
-			print("Session restored:", res.get("email", ""))
-			# Restore session without showing the welcome dialog again
+			print("✅ Session valid:", res.get("email", ""))
 			Global.set_session(res, access, refresh)
 			
 			google_login.visible = false
 			profile_pic.visible = true
-			_update_google_profile_image(res.get("user_metadata", {}).get("avatar_url", ""))
 			
-			# Silently sync in background
+			var avatar_url = res.get("user_metadata", {}).get("avatar_url", "")
+			if avatar_url != "":
+				call_deferred("_update_google_profile_image", avatar_url)
+			else:
+				_load_cached_profile_image()
+			
 			if res.has("id"):
 				var user_id = str(res["id"])
-				await SaveManager.sync_from_supabase(user_id)
-				print("Save data synced with Supabase")
+				_background_sync(user_id)
 		else:
-			_session_invalid()
+			_try_refresh_or_stay_offline(access, refresh)
+	elif response_code == 401 or response_code == 403:
+		print("🔄 Access token expired, trying refresh token...")
+		_refresh_stored_token_with_fallback(refresh)
+	elif result == HTTPRequest.RESULT_CANT_CONNECT or result == HTTPRequest.RESULT_CANT_RESOLVE or result == HTTPRequest.RESULT_TIMEOUT:
+		# Network error - stay logged in offline
+		print("📴 Network error - staying logged in offline")
+		_restore_session_offline(access, refresh)
 	else:
-		if response_code == 401 or response_code == 403:
-			print("Token expired, attempting refresh...")
-			_refresh_stored_token(refresh)
-		else:
-			_session_invalid()
+		print("❌ Unexpected error: result=%d, code=%d" % [result, response_code])
+		_try_refresh_or_stay_offline(access, refresh)
+
+func _try_refresh_or_stay_offline(access: String, refresh: String) -> void:
+	"""Try to refresh token, or stay logged in offline if that fails"""
+	if internet_connected:
+		print("🔄 Trying to refresh token...")
+		_refresh_stored_token_with_fallback(refresh)
+	else:
+		print("📴 No internet - staying logged in offline")
+		_restore_session_offline(access, refresh)
+
+func _restore_session_offline(access: String, refresh: String) -> void:
+	"""Restore session from cache when offline"""
+	if FileAccess.file_exists("user://session.json"):
+		var f = FileAccess.open("user://session.json", FileAccess.READ)
+		if f:
+			var session_text = f.get_as_text()
+			f.close()
+			var parsed = JSON.parse_string(session_text)
+			if typeof(parsed) == TYPE_DICTIONARY:
+				var user_data = parsed.get("user", {})
+				if user_data.size() > 0:
+					print("✅ Restored session offline for:", user_data.get("email", "User"))
+					Global.set_session(user_data, access, refresh)
+					google_login.visible = false
+					profile_pic.visible = true
+					_load_cached_profile_image()
+					
+					# Set up listener for when internet comes back
+					if not has_node("OnlineCheckTimer"):
+						var timer = Timer.new()
+						timer.name = "OnlineCheckTimer"
+						timer.wait_time = 30.0
+						timer.autostart = true
+						timer.timeout.connect(_check_and_refresh_when_online.bind(access, refresh))
+						add_child(timer)
+					return
+	
+	# If we can't restore, show login
+	_session_invalid()
+
+func _refresh_stored_token_with_fallback(refresh: String) -> void:
+	"""Refresh token with fallback to offline mode"""
+	if refresh == "":
+		_session_invalid()
+		return
+	
+	if http.request_completed.is_connected(_on_refresh_stored_token_response):
+		http.request_completed.disconnect(_on_refresh_stored_token_response)
+	http.request_completed.connect(_on_refresh_token_with_fallback_response.bind(refresh))
+	
+	var url = SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token"
+	var headers = ["apikey: " + SUPABASE_KEY, "Content-Type: application/json"]
+	var body = JSON.stringify({"refresh_token": refresh})
+	
+	print("🔄 Refreshing token...")
+	http.request(url, headers, HTTPClient.METHOD_POST, body)
+
+func _on_refresh_token_with_fallback_response(result, response_code, headers, body, original_refresh):
+	if http.request_completed.is_connected(_on_refresh_token_with_fallback_response):
+		http.request_completed.disconnect(_on_refresh_token_with_fallback_response)
+	
+	var text = body.get_string_from_utf8()
+	
+	if response_code == 200:
+		var res = JSON.parse_string(text)
+		if typeof(res) == TYPE_DICTIONARY and res.has("access_token"):
+			print("✅ Token refreshed successfully")
+			var new_access = res["access_token"]
+			var new_refresh = res.get("refresh_token", Global.refresh_token)
+			var current_user = Global.get_current_user()
+			Global.set_session(current_user, new_access, new_refresh)
+			_save_session(new_access, new_refresh, current_user)
+			
+			google_login.visible = false
+			profile_pic.visible = true
+			return
+	
+	# Refresh failed
+	if response_code == 400 or response_code == 401:
+		# Refresh token expired - user MUST log in again
+		print("❌ Refresh token expired - showing friendly message")
+		_handle_expired_refresh_token()
+	else:
+		# Network error or other - stay offline
+		print("📴 Refresh failed but staying logged in offline (code: %d)" % response_code)
+		_restore_session_offline(Global.session_token, original_refresh)
+
 
 func _refresh_stored_token(refresh: String) -> void:
 	"""Refresh token without showing error dialogs"""
@@ -608,17 +805,8 @@ func _session_invalid() -> void:
 	profile_pic.visible = false
 
 func _process(_delta: float) -> void:
-	# Periodic internet check every 5 seconds
-	if not checking_internet:
-		if not has_node("InternetCheckTimer"):
-			var timer = Timer.new()
-			timer.name = "InternetCheckTimer"
-			timer.wait_time = 5.0
-			timer.autostart = true
-			timer.timeout.connect(_check_internet_connection)
-			add_child(timer)
-	
-	if not OS.has_feature("web"):
+	# Only handle desktop OAuth callback
+	if not OS.has_feature("web") and not OS.has_feature("Android"):
 		if local_server != null and local_server.is_connection_available():
 			auth_connection = local_server.take_connection()
 			if auth_connection:
@@ -630,10 +818,6 @@ func _process(_delta: float) -> void:
 				var data = auth_connection.get_string(available)
 				_handle_oauth_callback_request(data)
 				auth_connection = null
-	
-	# Check for web OAuth callback (only on web)
-	if OS.has_feature("web") and auth_in_progress:
-		_check_web_oauth_callback()
 
 func _check_web_oauth_callback():
 	var callback_received = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received')")
@@ -828,12 +1012,19 @@ func _check_android_intent():
 			_parse_oauth_callback(data_string)
 
 func _perform_login(access_token: String, refresh_tok: String = ""):
-	print("Attempting login with access token...")
+	print("⚡ Fast login starting...")
+	var start_time = Time.get_ticks_msec()
 	
+	# Immediately show as logged in for better UX
+	google_login.visible = false
+	profile_pic.visible = true
+	_update_profile_placeholder()
+	
+	# Disconnect any existing signals first
 	if http.request_completed.is_connected(_on_user_info_request_completed):
 		http.request_completed.disconnect(_on_user_info_request_completed)
 	
-	http.request_completed.connect(_on_user_info_request_completed.bind(access_token, refresh_tok))
+	http.request_completed.connect(_on_user_info_request_completed.bind(access_token, refresh_tok, start_time), CONNECT_ONE_SHOT)
 	
 	var url = SUPABASE_URL + "/auth/v1/user"
 	var headers = [
@@ -841,41 +1032,61 @@ func _perform_login(access_token: String, refresh_tok: String = ""):
 		"Authorization: Bearer " + access_token
 	]
 	
-	http.request(url, headers, HTTPClient.METHOD_GET)
+	var err = http.request(url, headers, HTTPClient.METHOD_GET)
+	if err != OK:
+		print("❌ HTTP request failed immediately:", err)
+		_show_error("Network request failed")
 
-func _on_user_info_request_completed(result, response_code, headers, body, access_token, refresh_tok):
-	if http.request_completed.is_connected(_on_user_info_request_completed):
-		http.request_completed.disconnect(_on_user_info_request_completed)
+func _on_user_info_request_completed(result, response_code, headers, body, access_token, refresh_tok, start_time):
+	var elapsed = Time.get_ticks_msec() - start_time
+	print("⏱️ User info received in %d ms" % elapsed)
 	
 	var text = body.get_string_from_utf8()
 	
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY:
-			print("Logged in as:", res.get("email", ""))
+			print("✅ Logged in as:", res.get("email", ""))
 			Global.set_session(res, access_token, refresh_tok)
 			_save_session(access_token, refresh_tok, res)
 			
-			# Hide login button, show profile picture
-			google_login.visible = false
-			profile_pic.visible = true
-			_update_google_profile_image(res.get("user_metadata", {}).get("avatar_url", ""))
+			# Update profile image in background (non-blocking)
+			var avatar_url = res.get("user_metadata", {}).get("avatar_url", "")
+			if avatar_url != "":
+				call_deferred("_update_google_profile_image", avatar_url)
 			
+			# Sync in background without blocking UI
 			if res.has("id"):
 				var user_id = str(res["id"])
-				await SaveManager.sync_from_supabase(user_id)
-				print("Save data synced with Supabase")
-				_show_info("Login successful!\nWelcome, " + res.get("email", "User"))
+				_background_sync(user_id)
+			
+			_show_info("Welcome back, " + res.get("email", "User") + "!")
+			print("⚡ Total login time: %d ms" % (Time.get_ticks_msec() - start_time))
 		else:
 			_show_error("Invalid user data received")
+			_handle_login_failure()
 	else:
-		if response_code == 403 or (response_code == 401 and text.find("expired") != -1):
-			print("Token expired, attempting refresh...")
+		if response_code == 403 or response_code == 401:
+			print("🔄 Token expired, refreshing...")
 			_refresh_access_token()
 		else:
 			_show_error("Login failed (" + str(response_code) + ")")
-			google_login.visible = true
-			profile_pic.visible = false
+			_handle_login_failure()
+
+func _background_sync(user_id: String) -> void:
+	"""Sync data in background without blocking"""
+	print("🔄 Background sync starting...")
+	var sync_start = Time.get_ticks_msec()
+	
+	await SaveManager.sync_from_supabase(user_id)
+	
+	var sync_time = Time.get_ticks_msec() - sync_start
+	print("✅ Background sync completed in %d ms" % sync_time)
+
+func _handle_login_failure() -> void:
+	google_login.visible = true
+	profile_pic.visible = false
+	_update_profile_placeholder()
 
 func _refresh_access_token():
 	var stored_refresh = Global.refresh_token

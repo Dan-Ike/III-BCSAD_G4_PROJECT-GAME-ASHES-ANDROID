@@ -193,6 +193,11 @@ func _update_controls_visibility() -> void:
 	shine.visible = Global.touchshine
 	pause.visible = pause_enabled
 
+func hide_for_editor() -> void:
+	self.visible = false
+	virtual_joystick.visible = false
+	virtual_joystick.set_process(false)
+
 func _hide_all_controls() -> void:
 	for node in [left, right, jump, atk, dash, shine]:
 		node.visible = false

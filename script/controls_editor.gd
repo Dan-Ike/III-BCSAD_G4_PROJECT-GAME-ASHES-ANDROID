@@ -26,7 +26,7 @@ extends Control
 @onready var control_shine: Control = $Control/Control7
 @onready var shine: TouchScreenButton = $Control/Control7/shine
 @onready var control_6: Control = $Control/Control6
-@onready var virtual_joystick: VirtualJoystick = $"Control/Control6/Virtual Joystick"
+@onready var virtual_joystick: VirtualJoystick = $"Control/Virtual Joystick"
 
 
 var editable_controls: Dictionary = {}
@@ -42,16 +42,22 @@ const ROTATION_STEP = 15.0
 # Default layout - using your actual TouchControls positions
 var default_layout = {
 	"left": {"x": 52, "y": 516, "rotation": 0, "scale": 1.0},
-	"right": {"x": 218, "y": 507, "rotation": 0, "scale": 1.0},
-	"jump": {"x": 873, "y": 514, "rotation": 0, "scale": 1.0},
-	"atk": {"x": 1059, "y": 435, "rotation": 0, "scale": 1.0},
-	"dash": {"x": 873, "y": 343, "rotation": 0, "scale": 1.0},
-	"shine": {"x": 1032, "y": 300, "rotation": 0, "scale": 1.0},
+	"right": {"x": 218, "y": 516, "rotation": 0, "scale": 1.0},
+	"jump": {"x": 887, "y": 516, "rotation": 0, "scale": 1.0},
+	"atk": {"x": 1031, "y": 446, "rotation": 0, "scale": 1.0},
+	"dash": {"x": 746, "y": 446, "rotation": 0, "scale": 1.0},
+	"shine": {"x": 887, "y": 343, "rotation": 0, "scale": 1.0},
 	"joystick": {"x": 19, "y": 413, "rotation": 0, "scale": 1.0}
 }
 
 func _ready() -> void:
 	print("[ControlsEditor] Starting _ready()")
+	
+	# CRITICAL: Hide the actual gameplay TouchControls
+	var touch_controls = get_tree().get_first_node_in_group("touch_controls")
+	if touch_controls:
+		touch_controls.hide_for_editor()
+		print("[ControlsEditor] Hid gameplay TouchControls")
 	
 	# CRITICAL: Set proper pause modes
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -262,7 +268,7 @@ func _setup_editable_controls() -> void:
 		control_shine.visible = true
 		editable_controls["shine"] = control_shine
 		_make_control_editable(control_shine, "shine")
-		
+	
 func _make_control_editable(ctrl: Control, id: String) -> void:
 	# Make sure the control can receive input
 	ctrl.mouse_filter = Control.MOUSE_FILTER_STOP

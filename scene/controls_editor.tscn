@@ -1,11 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://e1xxbe7h2h17"]
+[gd_scene load_steps=11 format=3 uid="uid://e1xxbe7h2h17"]
 
 [ext_resource type="Script" uid="uid://c0d1n5pfwwj5y" path="res://script/controls_editor.gd" id="1_pglvk"]
-[ext_resource type="Texture2D" uid="uid://cdtv3jcswu0ad" path="res://art/left-arrow.png" id="2_02yaw"]
-[ext_resource type="Texture2D" uid="uid://bqr7e7tjqxf40" path="res://art/sword.png" id="3_0amn8"]
-[ext_resource type="Texture2D" uid="uid://h8o3yxkpgn82" path="res://art/speed.png" id="4_hfh0r"]
-[ext_resource type="Texture2D" uid="uid://brj1q1al7gv8k" path="res://art/brightness.png" id="6_jiktk"]
+[ext_resource type="Texture2D" uid="uid://b5bnhc68juqkl" path="res://art/buttons_new/Left_Button.png" id="2_ulkxl"]
+[ext_resource type="Texture2D" uid="uid://cp8s4yaugc21e" path="res://art/buttons_new/Left_Button (1).png" id="3_nqr8e"]
+[ext_resource type="Texture2D" uid="uid://deyqg2dppmuma" path="res://art/buttons_new/Attack_Button (4).png" id="4_qd5to"]
+[ext_resource type="Texture2D" uid="uid://b427axi2we7lv" path="res://art/buttons_new/Attack_Button (5).png" id="5_xdv04"]
+[ext_resource type="Texture2D" uid="uid://cu0sn88ftr0d1" path="res://art/buttons_new/Dash_Button.png" id="6_v5rni"]
+[ext_resource type="Texture2D" uid="uid://l0ackv2go2fa" path="res://art/buttons_new/Dash_Button (1).png" id="7_pgmic"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="7_ulkxl"]
+[ext_resource type="Texture2D" uid="uid://vd3tj0r2tuuh" path="res://art/buttons_new/Light_Button (3).png" id="10_istw3"]
+[ext_resource type="Texture2D" uid="uid://fnf5df2gnran" path="res://art/buttons_new/Light_Button (4).png" id="11_tqidb"]
 
 [node name="ControlsEditor" type="Control"]
 layout_mode = 3
@@ -31,139 +35,6 @@ title = "Confirm Save"
 initial_position = 1
 size = Vector2i(300, 100)
 ok_button_text = "Save"
-
-[node name="Control" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Control" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.092
-anchor_top = 0.808
-anchor_right = 0.092
-anchor_bottom = 0.808
-offset_left = -65.76
-offset_top = -65.76
-offset_right = 65.24
-offset_bottom = 65.24
-
-[node name="left" type="TouchScreenButton" parent="Control/Control"]
-scale = Vector2(0.242187, 0.238281)
-texture_normal = ExtResource("2_02yaw")
-action = "left"
-
-[node name="Control2" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.225
-anchor_top = 0.792
-anchor_right = 0.225
-anchor_bottom = 0.792
-offset_left = -70.0
-offset_top = -63.2401
-offset_right = 69.0
-offset_bottom = 63.7599
-
-[node name="right" type="TouchScreenButton" parent="Control/Control2"]
-position = Vector2(129, 125)
-rotation = 3.14159
-scale = Vector2(0.245703, 0.235322)
-texture_normal = ExtResource("2_02yaw")
-action = "right"
-
-[node name="Control3" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.732
-anchor_top = 0.801
-anchor_right = 0.732
-anchor_bottom = 0.801
-offset_left = -63.9601
-offset_top = -62.72
-offset_right = 65.0399
-offset_bottom = 62.28
-
-[node name="jump" type="TouchScreenButton" parent="Control/Control3"]
-position = Vector2(125, -0.142029)
-rotation = 1.5708
-scale = Vector2(0.242242, 0.245702)
-texture_normal = ExtResource("2_02yaw")
-action = "jump"
-
-[node name="Control4" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.88
-anchor_top = 0.698
-anchor_right = 0.88
-anchor_bottom = 0.698
-offset_left = -67.4
-offset_top = -67.56
-offset_right = 67.6
-offset_bottom = 67.44
-
-[node name="atk" type="TouchScreenButton" parent="Control/Control4"]
-position = Vector2(4, 0)
-scale = Vector2(0.244141, 0.251953)
-texture_normal = ExtResource("3_0amn8")
-action = "z"
-
-[node name="Control5" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.739
-anchor_top = 0.567
-anchor_right = 0.739
-anchor_bottom = 0.567
-offset_left = -72.92
-offset_top = -65.24
-offset_right = 73.08
-offset_bottom = 65.76
-
-[node name="dash" type="TouchScreenButton" parent="Control/Control5"]
-scale = Vector2(0.244141, 0.251953)
-texture_normal = ExtResource("4_hfh0r")
-action = "dash"
-
-[node name="Control7" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.878
-anchor_top = 0.445
-anchor_right = 0.878
-anchor_bottom = 0.445
-offset_left = -91.8401
-offset_top = -20.4
-offset_right = 42.1599
-offset_bottom = 84.6
-
-[node name="shine" type="TouchScreenButton" parent="Control/Control7"]
-process_mode = 3
-position = Vector2(13.9999, 6)
-scale = Vector2(0.1875, 0.1875)
-texture_normal = ExtResource("6_jiktk")
-action = "shine"
-
-[node name="Control6" type="Control" parent="Control"]
-layout_mode = 1
-anchor_left = 0.13
-anchor_top = 0.781
-anchor_right = 0.13
-anchor_bottom = 0.781
-offset_left = -134.4
-offset_top = -123.32
-offset_right = 128.6
-offset_bottom = 121.68
-
-[node name="Virtual Joystick" parent="Control/Control6" instance=ExtResource("7_ulkxl")]
-layout_mode = 1
-anchor_left = -21.925
-anchor_top = 6.425
-anchor_right = -21.925
-anchor_bottom = 6.425
-offset_left = 5800.28
-offset_top = -1558.13
-offset_right = 6001.28
-offset_bottom = -1345.13
 
 [node name="TopBar" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -218,5 +89,134 @@ text = "Save"
 custom_minimum_size = Vector2(80, 60)
 layout_mode = 2
 text = "Back"
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.092
+anchor_top = 0.808
+anchor_right = 0.092
+anchor_bottom = 0.808
+offset_left = -65.76
+offset_top = -65.76
+offset_right = 65.24
+offset_bottom = 65.24
+
+[node name="left" type="TouchScreenButton" parent="Control/Control"]
+scale = Vector2(1.23, 1.29214)
+texture_normal = ExtResource("2_ulkxl")
+texture_pressed = ExtResource("3_nqr8e")
+action = "left"
+
+[node name="Control2" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.218
+anchor_top = 0.807
+anchor_right = 0.218
+anchor_bottom = 0.807
+offset_left = -61.04
+offset_top = -65.04
+offset_right = 59.96
+offset_bottom = 68.96
+
+[node name="right" type="TouchScreenButton" parent="Control/Control2"]
+position = Vector2(122, 131)
+rotation = 3.14159
+scale = Vector2(1.25549, 1.35001)
+texture_normal = ExtResource("2_ulkxl")
+texture_pressed = ExtResource("3_nqr8e")
+action = "right"
+
+[node name="Control3" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.746
+anchor_top = 0.81
+anchor_right = 0.746
+anchor_bottom = 0.818
+offset_left = -67.8801
+offset_top = -67.2001
+offset_right = 68.1199
+offset_bottom = 61.04
+
+[node name="jump" type="TouchScreenButton" parent="Control/Control3"]
+position = Vector2(137, 2.00001)
+rotation = 1.5708
+scale = Vector2(1.32289, 1.38029)
+texture_normal = ExtResource("2_ulkxl")
+texture_pressed = ExtResource("3_nqr8e")
+action = "jump"
+
+[node name="Control4" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.858
+anchor_top = 0.706
+anchor_right = 0.858
+anchor_bottom = 0.706
+offset_left = -67.24
+offset_top = -62.32
+offset_right = 67.76
+offset_bottom = 63.68
+
+[node name="atk" type="TouchScreenButton" parent="Control/Control4"]
+position = Vector2(-1.00002, 1)
+scale = Vector2(1.33, 1.31959)
+texture_normal = ExtResource("4_qd5to")
+texture_pressed = ExtResource("5_xdv04")
+action = "z"
+
+[node name="Control5" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.633
+anchor_top = 0.71
+anchor_right = 0.633
+anchor_bottom = 0.71
+offset_left = -64.24
+offset_top = -65.2
+offset_right = 63.76
+offset_bottom = 65.8
+
+[node name="dash" type="TouchScreenButton" parent="Control/Control5"]
+position = Vector2(0, 2)
+scale = Vector2(1.31, 1.30303)
+texture_normal = ExtResource("6_v5rni")
+texture_pressed = ExtResource("7_pgmic")
+action = "dash"
+
+[node name="Control7" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.746
+anchor_top = 0.567
+anchor_right = 0.746
+anchor_bottom = 0.567
+offset_left = -67.8801
+offset_top = -65.24
+offset_right = 68.1199
+offset_bottom = 65.76
+
+[node name="shine" type="TouchScreenButton" parent="Control/Control7"]
+process_mode = 3
+position = Vector2(-1.99998, 6)
+scale = Vector2(1.41, 1.31313)
+texture_normal = ExtResource("10_istw3")
+texture_pressed = ExtResource("11_tqidb")
+action = "shine"
+
+[node name="Virtual Joystick" parent="Control" instance=ExtResource("7_ulkxl")]
+layout_mode = 1
+anchor_left = 0.132
+anchor_top = 0.782
+anchor_right = 0.132
+anchor_bottom = 0.782
+offset_left = -149.96
+offset_top = -150.04
+offset_right = 150.04
+offset_bottom = 149.96
 
 [connection signal="pressed" from="TopBar/Save" to="." method="_on_save_pressed"]
