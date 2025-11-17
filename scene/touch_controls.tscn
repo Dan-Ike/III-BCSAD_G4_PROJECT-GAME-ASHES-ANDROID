@@ -89,6 +89,7 @@ bg_color = Color(0.752941, 0.752941, 0.752941, 1)
 script = ExtResource("1_cx18e")
 
 [node name="Control" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -359,6 +360,7 @@ scale = Vector2(0.0626844, 0.125615)
 texture = ExtResource("10_kfhhv")
 
 [node name="Options" type="Panel" parent="."]
+visible = false
 z_index = -1
 anchors_preset = -1
 anchor_left = 0.506

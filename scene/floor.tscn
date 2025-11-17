@@ -1,13 +1,20 @@
-[gd_scene load_steps=12 format=3 uid="uid://yaeq7flcmtiq"]
+[gd_scene load_steps=20 format=3 uid="uid://yaeq7flcmtiq"]
 
-[ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_54icn"]
 [ext_resource type="Script" uid="uid://bhtjmndrdcrqu" path="res://script/floor.gd" id="1_bha7m"]
+[ext_resource type="Texture2D" uid="uid://b276ynq2mgobf" path="res://art/components/Settings_PopUp.png" id="2_iefsv"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_3mjqk"]
+[ext_resource type="Texture2D" uid="uid://swpg4lhjs76u" path="res://art/components/Floor1_Button.png" id="3_c7cqc"]
 [ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="4_iefsv"]
+[ext_resource type="Texture2D" uid="uid://c0pkdwiigu0n2" path="res://art/components/Floor1_Button (1).png" id="4_tj1ij"]
+[ext_resource type="Texture2D" uid="uid://txt00wohumco" path="res://art/components/Floor2_Button.png" id="5_0pc6r"]
+[ext_resource type="Texture2D" uid="uid://cmr6cy6v2gx1m" path="res://art/components/Floor2_Button (1).png" id="6_hn5fd"]
+[ext_resource type="Texture2D" uid="uid://dhitesqu0ltdn" path="res://art/components/Floor3_Button.png" id="7_51akc"]
+[ext_resource type="Texture2D" uid="uid://bf461ngdsq5mw" path="res://art/components/Floor3_Button (1).png" id="8_0p1gy"]
+[ext_resource type="Texture2D" uid="uid://6er44r68klkb" path="res://art/components/Back_Button.png" id="9_0pc6r"]
+[ext_resource type="Texture2D" uid="uid://bsus22e1igs6" path="res://art/components/Back_Button (1).png" id="10_hn5fd"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bha7m"]
-texture = ExtResource("1_54icn")
-modulate_color = Color(0.2, 0.2, 0.2, 1)
+texture = ExtResource("2_iefsv")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_54icn"]
 
@@ -63,6 +70,79 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_bha7m")
+
+[node name="floor" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="floor"]
+layout_mode = 1
+anchor_left = 0.522
+anchor_top = 0.312
+anchor_right = 0.522
+anchor_bottom = 0.312
+offset_left = -207.16
+offset_top = -49.64
+offset_right = 206.84
+offset_bottom = 50.36
+
+[node name="floor1" type="TouchScreenButton" parent="floor/Control"]
+scale = Vector2(1.9, 1.56061)
+texture_normal = ExtResource("3_c7cqc")
+texture_pressed = ExtResource("4_tj1ij")
+
+[node name="Control2" type="Control" parent="floor"]
+layout_mode = 1
+anchor_left = 0.522
+anchor_top = 0.5
+anchor_right = 0.522
+anchor_bottom = 0.5
+offset_left = -207.16
+offset_top = -47.0
+offset_right = 206.84
+offset_bottom = 53.0
+
+[node name="floor2" type="TouchScreenButton" parent="floor/Control2"]
+scale = Vector2(1.9, 1.56061)
+texture_normal = ExtResource("5_0pc6r")
+texture_pressed = ExtResource("6_hn5fd")
+
+[node name="Control3" type="Control" parent="floor"]
+layout_mode = 1
+anchor_left = 0.522
+anchor_top = 0.694
+anchor_right = 0.522
+anchor_bottom = 0.694
+offset_left = -207.16
+offset_top = -49.68
+offset_right = 206.84
+offset_bottom = 50.32
+
+[node name="floor3" type="TouchScreenButton" parent="floor/Control3"]
+scale = Vector2(1.9, 1.56061)
+texture_normal = ExtResource("7_51akc")
+texture_pressed = ExtResource("8_0p1gy")
+
+[node name="Control4" type="Control" parent="floor"]
+layout_mode = 1
+anchor_left = 0.064
+anchor_top = 0.115
+anchor_right = 0.064
+anchor_bottom = 0.115
+offset_left = -31.92
+offset_top = -34.8
+offset_right = 33.08
+offset_bottom = 35.2
+
+[node name="back" type="TouchScreenButton" parent="floor/Control4"]
+scale = Vector2(1.259, 1.35)
+texture_normal = ExtResource("9_0pc6r")
+texture_pressed = ExtResource("10_hn5fd")
 
 [node name="FloorBtns" type="VBoxContainer" parent="."]
 layout_mode = 1

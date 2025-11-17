@@ -3,12 +3,25 @@ extends Control
 var pending_deep_link: String = ""
 var debug_label: Label = null  
 
+
+@onready var main_btns: VBoxContainer = $MainBtns
+@onready var options: Panel = $Options
+@onready var control_choice: OptionButton = $Options/ControlChoice
+@onready var google_login: TextureRect = $GoogleLogin
+@onready var profile_pic: TextureRect = $ProfilePic
+@onready var cutscene_choice: OptionButton = $Options/CutsceneChoice
+@onready var start_button: Button = $MainBtns/start
+@onready var loading: CanvasLayer = $loading
+@onready var newgame: Button = $MainBtns/newgame
+@onready var main_menu_4: Sprite2D = $MainBtns/MainMenu4
+@onready var unlockall: Button = $unlockall
+
 @onready var background: Panel = $Background
 @onready var bg_2: Panel = $bg2 #always use this as bg when say settings or exitgame are clicked so show this as background or basically make everything not visible and also not clickable and only the one clicked should be, say setting, only settings can be interacted and seen and this bg as the background image
 @onready var audio_control: HSlider = $Settings/AudioControl
 @onready var audio_sound_control_2: HSlider = $Settings/AudioSoundControl2
-@onready var control_choice: OptionButton = $Settings/ControlChoice
-@onready var cutscene_choice: OptionButton = $Settings/CutsceneChoice
+@onready var control_choice_2: OptionButton = $Settings/ControlChoice
+@onready var cutscene_choice_2: OptionButton = $Settings/CutsceneChoice
 @onready var exit: Control = $Exit #show this when @onready var exit: TouchScreenButton = $Mainbtn/Control3/exit is clicked
 @onready var exit_game: TouchScreenButton = $Exit/Control2/exit #use this to truly exit the game
 @onready var cancel: TouchScreenButton = $Exit/Control/cancel #when clicked it should just go back to main menu
@@ -18,17 +31,15 @@ var debug_label: Label = null
 @onready var google: TouchScreenButton = $components/Control/google #use this for google now
 @onready var profile: TextureRect = $components/Control2/profile
 #@onready var profile: TouchScreenButton = $components/Control2/profile #display the profilepicture here now
-@onready var unlockall: TouchScreenButton = $components/Control5/unlockall #use this now as the unlock all levels
-@onready var newgame: TouchScreenButton = $Mainbtn/Control/newgame #use this now as the newgame
+@onready var unlockall_2: TouchScreenButton = $components/Control5/unlockall #use this now as the unlock all levels
+@onready var newgame_2: TouchScreenButton = $Mainbtn/Control/newgame #use this now as the newgame
 @onready var start_continue: TouchScreenButton = $Mainbtn/Control2/start_continue #use this as the start and continue, but for now always set it as continue regardless as now image for start game yet
 @onready var exit_btn: TouchScreenButton = $Mainbtn/Control3/exit #use this now as the exit btn
 @onready var cancel_unlock: TouchScreenButton = $Unlock/Control/cancel
 @onready var yes_unlock: TouchScreenButton = $Unlock/Control2/yes
-@onready var main_btns: Control = $Mainbtn
+@onready var main_btns_2: Control = $Mainbtn
 @onready var components: Control = $components
 @onready var settings_btn: TouchScreenButton = $components/Control3/settings
-@onready var title: TextureRect = $title
-
 
 const SUPABASE_URL = "https://fsntwndbknzhmotgphtj.supabase.co"
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbnR3bmRia256aG1vdGdwaHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NjUwMjAsImV4cCI6MjA3NTE0MTAyMH0.ZJESWD5jcH2rmFodnwHpI_cSsQWqnk1Fk-mmcrjP5mE"
@@ -44,11 +55,6 @@ var auth_in_progress: bool = false
 var local_server: TCPServer = null
 var auth_connection: StreamPeerTCP = null
 
-func delayed_action(delay: float, action: Callable) -> void:
-	await get_tree().create_timer(delay).timeout
-	action.call()
-
-
 func _ready() -> void:
 		# Handle web OAuth callback FIRST before anything else
 	if OS.has_feature("web"):
@@ -61,20 +67,13 @@ func _ready() -> void:
 	
 	add_child(http)
 	main_btns.visible = true
-	settings.visible = false
-	components.visible = true
-	bg_2.visible = false
-	background.visible = true
-	title.visible = true
-	unlock.visible = false
-	exit.visible = false
+	options.visible = false
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
 	
 	newgame.pressed.connect(_on_newgame_pressed)
 	unlockall.pressed.connect(_on_unlockall_pressed)
-	
 	
 	var saved_cutscene_pref = SaveManager.get_setting("cutscene_preference")
 	if saved_cutscene_pref == null:
@@ -88,8 +87,8 @@ func _ready() -> void:
 	
 	cutscene_choice.item_selected.connect(_on_cutscene_choice_selected)
 	
-	google.pressed.connect(_on_google_pressed)
-	profile.gui_input.connect(_on_profile_click)
+	google_login.gui_input.connect(_on_google_login_input)
+	profile_pic.gui_input.connect(_on_profile_click)
 	
 	var shader = Shader.new()
 	shader.code = """
@@ -109,8 +108,8 @@ void fragment() {
 	
 	var material = ShaderMaterial.new()
 	material.shader = shader
-	profile.material = material
-	profile.custom_minimum_size = Vector2(64, 64)
+	profile_pic.material = material
+	profile_pic.custom_minimum_size = Vector2(64, 64)
 	
 # Check internet connectivity first
 	_check_internet_connection()
@@ -118,8 +117,8 @@ void fragment() {
 	if Global.session_token == "":
 		_load_session()
 	else:
-		google.visible = false
-		profile.visible = true
+		google_login.visible = false
+		profile_pic.visible = true
 		_load_cached_profile_image()  # Load from cache first
 		
 	if OS.has_feature("Android"):
@@ -132,8 +131,7 @@ void fragment() {
 		get_tree().root.connect("focus_entered", _on_app_focus_gained)
 	
 	_update_start_button_text()
-#	_update_newgame_button_visibility()
-
+	_update_newgame_button_visibility()
 
 func _on_app_focus_gained() -> void:
 	"""Called when app gains focus (returns from browser)"""
@@ -340,31 +338,32 @@ func _log_debug(message: String) -> void:
 		lines.append(message)
 		debug_label.text = "\n".join(lines)
 
-func _on_google_pressed() -> void:
-	# Check internet first
-	if not internet_connected:
-		_show_error("No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
-		return
-	
-	_log_debug("Google Login clicked")
-	_log_debug("OS: " + OS.get_name())
-	
-	if OS.has_feature("Android"):
-		auth_in_progress = true
-		_log_debug("Starting OAuth flow...")
-		_start_google_oauth_flow()
-		_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically redirected back to the game.")
-	elif OS.has_feature("web"):
-		auth_in_progress = true
-		_log_debug("Starting Web OAuth flow...")
-		_start_web_oauth_flow()
-	else:
-		if _start_local_server():
+func _on_google_login_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Check internet first
+		if not internet_connected:
+			_show_error("No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
+			return
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_log_debug("Google Login clicked")
+		_log_debug("OS: " + OS.get_name())
+		
+		if OS.has_feature("Android"):
 			auth_in_progress = true
+			_log_debug("Starting OAuth flow...")
 			_start_google_oauth_flow()
-			_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically logged in!")
+			_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically redirected back to the game.")
+		elif OS.has_feature("web"):
+			auth_in_progress = true
+			_log_debug("Starting Web OAuth flow...")
+			_start_web_oauth_flow()
 		else:
-			_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
+			if _start_local_server():
+				auth_in_progress = true
+				_start_google_oauth_flow()
+				_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically logged in!")
+			else:
+				_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
 
 func _start_web_oauth_flow():
 	_log_debug("Starting web OAuth flow...")
@@ -403,20 +402,20 @@ func _start_google_oauth_flow():
 	OS.shell_open(oauth_url)
 
 func _on_unlockall_pressed() -> void:
-	delayed_action(0.2, func():
-		# Check if user is logged in
-		if Global.get_current_user().size() > 0:
-			_show_error("Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
-			return
-		
-		unlock.visible = true
-		main_btns.visible = false
-		background.visible = false
-		bg_2.visible = true
-		components.visible = false
-		title.visible = false
-	)
+	# Check if user is logged in
+	if Global.get_current_user().size() > 0:
+		_show_error("Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
+		return
 	
+	# Show confirmation dialog
+	var dlg := ConfirmationDialog.new()
+	dlg.dialog_text = "Unlock all levels and abilities?\n\nThis is for testing only and will not sync to cloud."
+	dlg.confirmed.connect(func():
+		_unlock_all_content()
+		_show_info("All levels and abilities unlocked!")
+	)
+	add_child(dlg)
+	dlg.popup_centered()
 
 func _unlock_all_content() -> void:
 	# Unlock all abilities
@@ -454,10 +453,10 @@ func _update_newgame_button_visibility() -> void:
 	
 	var should_show = has_progress or is_past_first_level
 	
-#	newgame.modulate.a = 1.0 if should_show else 0.0  
-#	newgame.mouse_filter = Control.MOUSE_FILTER_STOP if should_show else Control.MOUSE_FILTER_IGNORE
+	newgame.modulate.a = 1.0 if should_show else 0.0  
+	newgame.mouse_filter = Control.MOUSE_FILTER_STOP if should_show else Control.MOUSE_FILTER_IGNORE
 	
-	#main_menu_4.modulate.a = 1.0 if should_show else 0.0
+	main_menu_4.modulate.a = 1.0 if should_show else 0.0
 
 func _on_newgame_pressed() -> void:
 	# Check if user is logged in
@@ -516,8 +515,8 @@ func _load_session() -> void:
 	if FileAccess.file_exists("user://session.json"):
 		var f = FileAccess.open("user://session.json", FileAccess.READ)
 		if not f:
-			google.visible = true
-			profile.visible = false
+			google_login.visible = true
+			profile_pic.visible = false
 			return
 		
 		var text = f.get_as_text()
@@ -538,8 +537,8 @@ func _load_session() -> void:
 					print("💾 Offline mode: Restoring session without verification")
 					# Restore session directly without verification when offline
 					Global.set_session(user_data, access, refresh)
-					google.visible = false
-					profile.visible = true
+					google_login.visible = false
+					profile_pic.visible = true
 					_load_cached_profile_image()
 					
 					# When internet comes back, verify in background
@@ -553,8 +552,8 @@ func _load_session() -> void:
 				return
 	
 	# No valid session
-	google.visible = true
-	profile.visible = false
+	google_login.visible = true
+	profile_pic.visible = false
 
 func _verify_and_restore_session(access: String, refresh: String) -> void:
 	"""Verify the token is still valid before showing UI"""
@@ -647,8 +646,8 @@ func _handle_expired_refresh_token() -> void:
 		# Clear session and show login button
 		_clear_session_file()
 		Global.clear_session()
-		google.visible = true
-		profile.visible = false
+		google_login.visible = true
+		profile_pic.visible = false
 		_update_profile_placeholder()
 	)
 	add_child(dlg)
@@ -669,8 +668,8 @@ func _on_verify_session_completed(result, response_code, headers, body, access, 
 			print("✅ Session valid:", res.get("email", ""))
 			Global.set_session(res, access, refresh)
 			
-			google.visible = false
-			profile.visible = true
+			google_login.visible = false
+			profile_pic.visible = true
 			
 			var avatar_url = res.get("user_metadata", {}).get("avatar_url", "")
 			if avatar_url != "":
@@ -716,8 +715,8 @@ func _restore_session_offline(access: String, refresh: String) -> void:
 				if user_data.size() > 0:
 					print("✅ Restored session offline for:", user_data.get("email", "User"))
 					Global.set_session(user_data, access, refresh)
-					google.visible = false
-					profile.visible = true
+					google_login.visible = false
+					profile_pic.visible = true
 					_load_cached_profile_image()
 					
 					# Set up listener for when internet comes back
@@ -766,8 +765,8 @@ func _on_refresh_token_with_fallback_response(result, response_code, headers, bo
 			Global.set_session(current_user, new_access, new_refresh)
 			_save_session(new_access, new_refresh, current_user)
 			
-			google.visible = false
-			profile.visible = true
+			google_login.visible = false
+			profile_pic.visible = true
 			return
 	
 	# Refresh failed
@@ -779,6 +778,7 @@ func _on_refresh_token_with_fallback_response(result, response_code, headers, bo
 		# Network error or other - stay offline
 		print("📴 Refresh failed but staying logged in offline (code: %d)" % response_code)
 		_restore_session_offline(Global.session_token, original_refresh)
+
 
 func _refresh_stored_token(refresh: String) -> void:
 	"""Refresh token without showing error dialogs"""
@@ -813,8 +813,8 @@ func _on_refresh_stored_token_response(result, response_code, headers, body):
 			Global.set_session(current_user, new_access, new_refresh)
 			_save_session(new_access, new_refresh, current_user)
 			
-			google.visible = false
-			profile.visible = true
+			google_login.visible = false
+			profile_pic.visible = true
 		else:
 			_session_invalid()
 	else:
@@ -825,8 +825,8 @@ func _session_invalid() -> void:
 	print("Session invalid, clearing...")
 	_clear_session_file()
 	Global.clear_session()
-	google.visible = true
-	profile.visible = false
+	google_login.visible = true
+	profile_pic.visible = false
 
 func _process(_delta: float) -> void:
 	# Only handle desktop OAuth callback
@@ -881,18 +881,18 @@ func _periodic_intent_check() -> void:
 		_check_for_deep_link()
 
 func _update_start_button_text() -> void:
-	if start_continue:
+	if start_button:
 		var has_progress = SaveManager.data["progress"]["completed_levels"].size() > 0
 		var current_floor = SaveManager.data["progress"]["current_floor"]
 		var current_level = SaveManager.data["progress"]["current_level"]
 		var is_past_first_level = (current_floor > 1) or (current_floor == 1 and current_level > 1)
 		
-		#if has_progress or is_past_first_level:
-		#	start_button.text = "Continue"
-		#else:
-		#	start_button.text = "Start Game"
+		if has_progress or is_past_first_level:
+			start_button.text = "Continue"
+		else:
+			start_button.text = "Start Game"
 		
-#		_update_newgame_button_visibility()
+		_update_newgame_button_visibility()
 
 func _start_local_server() -> bool:
 	if local_server != null:
@@ -1056,8 +1056,8 @@ func _perform_login(access_token: String, refresh_tok: String = ""):
 	var start_time = Time.get_ticks_msec()
 	
 	# Immediately show as logged in for better UX
-	google.visible = false
-	profile.visible = true
+	google_login.visible = false
+	profile_pic.visible = true
 	_update_profile_placeholder()
 	
 	# Disconnect any existing signals first
@@ -1124,8 +1124,8 @@ func _background_sync(user_id: String) -> void:
 	print("✅ Background sync completed in %d ms" % sync_time)
 
 func _handle_login_failure() -> void:
-	google.visible = true
-	profile.visible = false
+	google_login.visible = true
+	profile_pic.visible = false
 	_update_profile_placeholder()
 
 func _refresh_access_token():
@@ -1169,8 +1169,8 @@ func _on_refresh_token_response(result, response_code, headers, body):
 		_handle_refresh_failure()
 
 func _handle_refresh_failure():
-	google.visible = true
-	profile.visible = false
+	google_login.visible = true
+	profile_pic.visible = false
 	_clear_session_file()
 	Global.clear_session()
 
@@ -1196,14 +1196,14 @@ func _clear_session_file() -> void:
 func _update_google_profile_image(avatar_url: String):
 	if avatar_url == "":
 		_load_cached_profile_image()  # Try to load from cache first
-		if profile.texture == null:
+		if profile_pic.texture == null:
 			_update_profile_placeholder()
 		return
 	
 	if not internet_connected:
 		print("No internet - using cached profile image")
 		_load_cached_profile_image()
-		if profile.texture == null:
+		if profile_pic.texture == null:
 			_update_profile_placeholder()
 		return
 	
@@ -1214,17 +1214,17 @@ func _update_google_profile_image(avatar_url: String):
 		if code == 200:
 			var img = Image.new()
 			if img.load_jpg_from_buffer(body) == OK or img.load_png_from_buffer(body) == OK:
-				profile.texture = ImageTexture.create_from_image(img)
+				profile_pic.texture = ImageTexture.create_from_image(img)
 				_save_profile_image_locally(img)  # Save to cache
 				print("Profile picture loaded and cached")
 			else:
 				_load_cached_profile_image()  # Fallback to cache
-				if profile.texture == null:
+				if profile_pic.texture == null:
 					_update_profile_placeholder()
 		else:
 			print("Failed to download profile image, using cache")
 			_load_cached_profile_image()
-			if profile.texture == null:
+			if profile_pic.texture == null:
 				_update_profile_placeholder()
 		http_avatar.queue_free()
 	)
@@ -1243,7 +1243,7 @@ func _load_cached_profile_image() -> void:
 		var img = Image.new()
 		var err = img.load(PROFILE_IMAGE_PATH)
 		if err == OK:
-			profile.texture = ImageTexture.create_from_image(img)
+			profile_pic.texture = ImageTexture.create_from_image(img)
 			print("Loaded cached profile image")
 		else:
 			print("Failed to load cached profile image:", err)
@@ -1253,7 +1253,7 @@ func _load_cached_profile_image() -> void:
 func _update_profile_placeholder():
 	var img = Image.create(64, 64, false, Image.FORMAT_RGB8)
 	img.fill(Color(0.2, 0.6, 1.0))
-	profile.texture = ImageTexture.create_from_image(img)
+	profile_pic.texture = ImageTexture.create_from_image(img)
 
 func _on_profile_click(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -1268,8 +1268,8 @@ func _on_profile_click(event: InputEvent) -> void:
 					DirAccess.remove_absolute(PROFILE_IMAGE_PATH)
 					print("Cached profile image deleted")
 				
-				google.visible = true
-				profile.visible = false
+				google_login.visible = true
+				profile_pic.visible = false
 				_update_profile_placeholder()
 				
 				print("User logged out successfully")
@@ -1296,10 +1296,17 @@ func _on_start_pressed() -> void:
 
 func _on_options_pressed() -> void:
 	main_btns.visible = false
-	settings.visible = true
+	options.visible = true
 
 func _on_exit_pressed() -> void:
+	var dlg := ConfirmationDialog.new()
+	dlg.dialog_text = "Are you sure you want to exit the game?"
+	dlg.title = "Exit Game"
+	dlg.confirmed.connect(func():
 		get_tree().quit()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
 
 func _on_back_pressed() -> void:
 	_ready()
@@ -1320,58 +1327,7 @@ func _show_info(msg: String) -> void:
 
 
 func _on_settings_pressed() -> void:
-	delayed_action(0.2, func():
-		main_btns.visible = false
-		background.visible = false
-		bg_2.visible = true
-		components.visible = false
-		settings.visible = true
-		title.visible = false
-	)
-
-
-func _on_cancel_pressed() -> void:
-	delayed_action(0.2, func():
-		_ready()
-	)
-
-
-func _on_yes_pressed() -> void:
-	delayed_action(0.2, func():
-		_unlock_all_content()
-		_ready()
-	)
-
-
-func _on_cancel_unlock_pressed() -> void:
-	delayed_action(0.2, func():
-		_ready()
-	)
-
-
-func _on_exit_btn_pressed() -> void:
-	delayed_action(0.2, func():
-		main_btns.visible = false
-		background.visible = false
-		bg_2.visible = true
-		components.visible = false
-		exit.visible = true
-		title.visible = false  
-	)
-
-
-func _on_back_settings_pressed() -> void:
-	delayed_action(0.2, func():
-		_ready()
-	)
-
-
-func _on_start_continue_pressed() -> void:
-	delayed_action(0.2, func():
-		Global.is_retrying_level = false
-		
-		if has_node("LoadingScreen"):
-			get_node("LoadingScreen").start_loading("res://scene/floor.tscn")
-		else:
-			get_tree().change_scene_to_file("res://scene/floor.tscn")
-	)
+	main_btns_2.visible = false
+	background.visible = false
+	bg_2.visible = true
+	settings.visible = true

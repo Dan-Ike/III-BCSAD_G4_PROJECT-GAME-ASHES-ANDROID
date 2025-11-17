@@ -1,0 +1,1109 @@
+[gd_scene load_steps=47 format=3 uid="uid://dl66qkmieea1a"]
+
+[ext_resource type="Script" uid="uid://c50bar3vo4da6" path="res://script/main_menu_2.gd" id="1_fjsjg"]
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_sepwh"]
+[ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="4_2atga"]
+[ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="4_by01r"]
+[ext_resource type="Texture2D" uid="uid://cx3ict23q5pjj" path="res://art/7123025_logo_google_g_icon.png" id="5_2atga"]
+[ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="5_sepwh"]
+[ext_resource type="Texture2D" uid="uid://c2thoj84krhoy" path="res://art/components/Sample Only.png" id="7_77ut7"]
+[ext_resource type="Texture2D" uid="uid://b276ynq2mgobf" path="res://art/components/Settings_PopUp.png" id="8_rv4g6"]
+[ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="9_5ewxd"]
+[ext_resource type="Texture2D" uid="uid://cu2r0h3qvtrq2" path="res://art/components/BodyText_Background.png" id="10_ev336"]
+[ext_resource type="Texture2D" uid="uid://c1l55auhvft0l" path="res://art/components/Close_Button.png" id="11_fhsge"]
+[ext_resource type="Texture2D" uid="uid://bp3pexm30n2y7" path="res://art/components/Close_Button (1).png" id="12_5jdaj"]
+[ext_resource type="Texture2D" uid="uid://bcv7382p6qtfy" path="res://art/components/Cancel_Button.png" id="13_hucpa"]
+[ext_resource type="Texture2D" uid="uid://c6r4n7s5q0hqu" path="res://art/components/Cancel_Button (1).png" id="14_j2ll4"]
+[ext_resource type="Texture2D" uid="uid://dafkxfsf7n444" path="res://art/components/Exit_Button.png" id="15_63v73"]
+[ext_resource type="Texture2D" uid="uid://bqixfsgv0vttx" path="res://art/components/Exit_Button (1).png" id="16_21387"]
+[ext_resource type="Texture2D" uid="uid://bswaulyk7y5ak" path="res://art/components/Game_Screen_Title.png" id="17_6e5dn"]
+[ext_resource type="Texture2D" uid="uid://bkss3f2oxmjpr" path="res://art/components/Google_Icon.png" id="18_3btm6"]
+[ext_resource type="Texture2D" uid="uid://cbhkmj6283apn" path="res://art/components/Google_Icon (1).png" id="19_dop0c"]
+[ext_resource type="Texture2D" uid="uid://dfbfid87buti6" path="res://art/components/Settings_Icon.png" id="20_pd2qi"]
+[ext_resource type="Texture2D" uid="uid://wnsdl8twdpho" path="res://art/components/Settings_Icon (1).png" id="21_rbg6o"]
+[ext_resource type="Texture2D" uid="uid://rrsa7avar450" path="res://art/components/Credits_Icon.png" id="22_b7nb4"]
+[ext_resource type="Texture2D" uid="uid://drtrhg321a4xf" path="res://art/components/Credits_Icon (1).png" id="23_fhkwy"]
+[ext_resource type="Texture2D" uid="uid://chd3n6h2cmyka" path="res://art/components/Unlock_Icon.png" id="24_ehbcs"]
+[ext_resource type="Texture2D" uid="uid://bep6y0l6n0g1q" path="res://art/components/Unlock_Icon (1).png" id="25_x8720"]
+[ext_resource type="Texture2D" uid="uid://blj24fd2jipo6" path="res://art/components/NewGame_Button.png" id="26_urnva"]
+[ext_resource type="Texture2D" uid="uid://bs1yivsoi7qtn" path="res://art/components/NewGame_Button (1).png" id="27_m3u0m"]
+[ext_resource type="Texture2D" uid="uid://cmqgcsrydcp2y" path="res://art/components/Continue_Button.png" id="28_dklri"]
+[ext_resource type="Texture2D" uid="uid://cu536mjny5ipf" path="res://art/components/Continue_Button (1).png" id="29_k2wd1"]
+[ext_resource type="Texture2D" uid="uid://tu1rnodqye2s" path="res://art/components/ExitGame_Button.png" id="30_nttl3"]
+[ext_resource type="Texture2D" uid="uid://cna2tdbqoineb" path="res://art/components/ExitGame_Button (1).png" id="31_hssnk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hxu56"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m4svf"]
+bg_color = Color(0.6, 0.6, 0.6, 0.392157)
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0.823529, 0, 0.313726)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3er1b"]
+bg_color = Color(0.6, 0.6, 0.6, 0.392157)
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0.933333, 0.313726)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hxu56"]
+bg_color = Color(0.6, 0.6, 0.6, 0.690196)
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0, 0, 0.313726)
+shadow_size = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2fwvj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0iwki"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_0iwki"]
+color = Color(0.980104, 0.87028, 0.863563, 1)
+thickness = 5
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_sepwh"]
+color = Color(1, 0.21268, 0.159696, 1)
+thickness = 5
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_14wem"]
+color = Color(1, 0.211765, 0.160784, 1)
+thickness = 5
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tysan"]
+texture = ExtResource("7_77ut7")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yhqgy"]
+texture = ExtResource("8_rv4g6")
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_323cy"]
+color = Color(0.980104, 0.87028, 0.863563, 1)
+thickness = 5
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_audxb"]
+color = Color(1, 0.21268, 0.159696, 1)
+thickness = 5
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_a68ow"]
+color = Color(1, 0.211765, 0.160784, 1)
+thickness = 5
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_pbe71"]
+
+[node name="main_menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fjsjg")
+
+[node name="unlockall" type="Button" parent="."]
+visible = false
+layout_mode = 2
+anchor_left = 0.745
+anchor_top = 0.443
+anchor_right = 0.745
+anchor_bottom = 0.443
+offset_left = -203.6
+offset_top = -31.96
+offset_right = 203.4
+offset_bottom = 32.04
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hxu56")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
+text = "Unlock All"
+
+[node name="MainBtns" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.702
+anchor_right = 0.3
+anchor_bottom = 0.702
+offset_left = -203.0
+offset_top = -185.44
+offset_right = 204.0
+offset_bottom = 185.56
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="newgame" type="Button" parent="MainBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hxu56")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
+text = "New Game"
+flat = true
+
+[node name="MainMenu4" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(199.5, 48)
+scale = Vector2(0.138274, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="start" type="Button" parent="MainBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hxu56")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
+text = "Start Game"
+flat = true
+
+[node name="options" type="Button" parent="MainBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/focus = SubResource("StyleBoxEmpty_2fwvj")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
+text = "Settings
+"
+flat = true
+
+[node name="exit" type="Button" parent="MainBtns"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(1, 0.756863, 0, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0iwki")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
+text = "Exit
+"
+flat = true
+
+[node name="MainMenu" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(199.5, 143)
+scale = Vector2(0.138274, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="MainMenu2" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(199.5, 240)
+scale = Vector2(0.138274, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="MainMenu3" type="Sprite2D" parent="MainBtns"]
+z_index = -1
+position = Vector2(202.5, 337)
+scale = Vector2(0.12205, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="Options" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.309
+anchor_top = 0.671
+anchor_right = 0.309
+anchor_bottom = 0.671
+offset_left = -249.52
+offset_top = -221.12
+offset_right = 249.48
+offset_bottom = 220.88
+
+[node name="Label" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 78.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 42
+text = "Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="back" type="Button" parent="Options"]
+z_index = 1
+layout_mode = 2
+anchor_left = 0.494
+anchor_top = 0.855
+anchor_right = 0.494
+anchor_bottom = 0.855
+offset_left = -203.506
+offset_top = -31.91
+offset_right = 203.494
+offset_bottom = 32.09
+size_flags_vertical = 3
+theme_override_colors/font_hover_color = Color(0.976471, 0.780392, 0.309804, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_pressed_color = Color(0.772549, 1, 0, 1)
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0iwki")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m4svf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3er1b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_hxu56")
+text = "Back"
+flat = true
+
+[node name="Label2" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.18
+anchor_top = 0.131
+anchor_right = 0.555
+anchor_bottom = 0.231
+offset_left = 0.179993
+offset_top = 0.0979958
+offset_right = 0.0549927
+offset_bottom = -0.102005
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 28
+text = "Music Volume"
+vertical_alignment = 1
+
+[node name="Label4" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.184
+anchor_top = 0.296
+anchor_right = 0.545
+anchor_bottom = 0.396
+offset_left = 0.18399
+offset_top = 0.167999
+offset_right = 7.04498
+offset_bottom = -0.0320129
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 28
+text = "SFX Volume"
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.076
+anchor_top = 0.509
+anchor_right = 0.335
+anchor_bottom = 0.609
+offset_left = 0.0759888
+offset_top = 0.0220032
+offset_right = -0.165009
+offset_bottom = -0.178009
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 26
+text = "Control"
+vertical_alignment = 1
+
+[node name="Label5" type="Label" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.519
+anchor_top = 0.509
+anchor_right = 0.778
+anchor_bottom = 0.609
+offset_left = 0.0189819
+offset_top = 0.0220032
+offset_right = -0.222015
+offset_bottom = -0.178009
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 26
+text = "Cutscene"
+vertical_alignment = 1
+
+[node name="AudioControl" type="HSlider" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.484
+anchor_top = 0.253
+anchor_right = 0.484
+anchor_bottom = 0.253
+offset_left = -153.516
+offset_top = -7.82601
+offset_right = 153.484
+offset_bottom = 8.17399
+theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("5_sepwh")
+audio_bus_name = "Music"
+
+[node name="AudioSoundControl2" type="HSlider" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.484
+anchor_top = 0.45
+anchor_right = 0.484
+anchor_bottom = 0.45
+offset_left = -153.516
+offset_top = -7.90001
+offset_right = 153.484
+offset_bottom = 8.09999
+theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("5_sepwh")
+audio_bus_name = "SFX"
+
+[node name="ControlChoice" type="OptionButton" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.226
+anchor_top = 0.673
+anchor_right = 0.226
+anchor_bottom = 0.673
+offset_left = -71.774
+offset_top = -23.466
+offset_right = 72.226
+offset_bottom = 23.534
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 19
+selected = 0
+item_count = 2
+popup/item_0/text = "Button"
+popup/item_0/id = 0
+popup/item_1/text = "Joystick"
+popup/item_1/id = 1
+
+[node name="CutsceneChoice" type="OptionButton" parent="Options"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.677
+anchor_top = 0.673
+anchor_right = 0.677
+anchor_bottom = 0.673
+offset_left = -71.823
+offset_top = -23.466
+offset_right = 72.177
+offset_bottom = 23.534
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 19
+selected = 0
+item_count = 2
+popup/item_0/text = "Play Once"
+popup/item_0/id = 0
+popup/item_1/text = "Always"
+popup/item_1/id = 1
+
+[node name="MainMenu4" type="Sprite2D" parent="Options"]
+position = Vector2(242, 386)
+scale = Vector2(0.105088, 0.125615)
+texture = ExtResource("4_by01r")
+
+[node name="GoogleLogin" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.941
+anchor_top = 0.104
+anchor_right = 0.941
+anchor_bottom = 0.104
+offset_left = -54.4801
+offset_top = -53.88
+offset_right = 55.5199
+offset_bottom = 54.12
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+texture = ExtResource("5_2atga")
+expand_mode = 1
+
+[node name="ProfilePic" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.944
+anchor_top = 0.106
+anchor_right = 0.944
+anchor_bottom = 0.106
+offset_left = -48.3201
+offset_top = -46.32
+offset_right = 47.6799
+offset_bottom = 46.68
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+expand_mode = 1
+
+[node name="Background" type="Panel" parent="."]
+z_index = -2
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_tysan")
+
+[node name="bg2" type="Panel" parent="."]
+visible = false
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_yhqgy")
+
+[node name="Settings" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -336.5
+offset_top = -252.0
+offset_right = 336.5
+offset_bottom = 252.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.501
+anchor_top = 0.115
+anchor_right = 0.501
+anchor_bottom = 0.115
+offset_left = -275.673
+offset_top = -53.96
+offset_right = 276.327
+offset_bottom = 54.04
+texture = ExtResource("9_5ewxd")
+
+[node name="TextureRect2" type="TextureRect" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.586
+anchor_right = 0.5
+anchor_bottom = 0.586
+offset_left = -352.0
+offset_top = -203.344
+offset_right = 348.0
+offset_bottom = 203.656
+texture = ExtResource("10_ev336")
+
+[node name="Control" type="Control" parent="Settings"]
+layout_mode = 1
+anchor_left = 0.918
+anchor_top = 0.029
+anchor_right = 0.918
+anchor_bottom = 0.029
+offset_left = -32.814
+offset_top = -31.616
+offset_right = 33.186
+offset_bottom = 31.384
+
+[node name="back" type="TouchScreenButton" parent="Settings/Control"]
+scale = Vector2(1.3, 1.3)
+texture_normal = ExtResource("11_fhsge")
+texture_pressed = ExtResource("12_5jdaj")
+
+[node name="Label" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.498
+anchor_top = 0.123
+anchor_right = 0.498
+anchor_bottom = 0.123
+offset_left = -336.654
+offset_top = -38.992
+offset_right = 336.346
+offset_bottom = 39.008
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 42
+text = "Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.316
+anchor_top = 0.455
+anchor_right = 0.316
+anchor_bottom = 0.455
+offset_left = -126.168
+offset_top = -25.32
+offset_right = 126.082
+offset_bottom = 24.88
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 28
+text = "Music"
+vertical_alignment = 1
+
+[node name="Label4" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.31
+anchor_top = 0.574
+anchor_right = 0.31
+anchor_bottom = 0.574
+offset_left = -125.13
+offset_top = -25.296
+offset_right = 124.684
+offset_bottom = 24.904
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 28
+text = "SFX "
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.255
+anchor_top = 0.699
+anchor_right = 0.255
+anchor_bottom = 0.699
+offset_left = -87.115
+offset_top = -25.296
+offset_right = 86.951
+offset_bottom = 24.904
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 26
+text = "Control"
+vertical_alignment = 1
+
+[node name="Label5" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.255
+anchor_top = 0.818
+anchor_right = 0.255
+anchor_bottom = 0.818
+offset_left = -87.115
+offset_top = -25.272
+offset_right = 86.951
+offset_bottom = 24.928
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 26
+text = "Cutscene"
+vertical_alignment = 1
+
+[node name="AudioControl" type="HSlider" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.539
+anchor_top = 0.446
+anchor_right = 0.539
+anchor_bottom = 0.446
+offset_left = -153.247
+offset_top = -7.78401
+offset_right = 153.753
+offset_bottom = 8.21599
+theme_override_styles/slider = SubResource("StyleBoxLine_323cy")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_audxb")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_a68ow")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("5_sepwh")
+audio_bus_name = "Music"
+
+[node name="AudioSoundControl2" type="HSlider" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.542
+anchor_top = 0.577
+anchor_right = 0.542
+anchor_bottom = 0.577
+offset_left = -153.266
+offset_top = -7.80801
+offset_right = 153.734
+offset_bottom = 8.19199
+theme_override_styles/slider = SubResource("StyleBoxLine_323cy")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_audxb")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_a68ow")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("5_sepwh")
+audio_bus_name = "SFX"
+
+[node name="ControlChoice" type="OptionButton" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.57
+anchor_top = 0.695
+anchor_right = 0.57
+anchor_bottom = 0.695
+offset_left = -101.61
+offset_top = -23.28
+offset_right = 101.39
+offset_bottom = 23.72
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 19
+selected = 0
+item_count = 2
+popup/item_0/text = "Button"
+popup/item_0/id = 0
+popup/item_1/text = "Joystick"
+popup/item_1/id = 1
+
+[node name="CutsceneChoice" type="OptionButton" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.571
+anchor_top = 0.824
+anchor_right = 0.571
+anchor_bottom = 0.824
+offset_left = -101.783
+offset_top = -23.296
+offset_right = 101.217
+offset_bottom = 23.704
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 19
+selected = 0
+item_count = 2
+popup/item_0/text = "Play Once"
+popup/item_0/id = 0
+popup/item_1/text = "Always"
+popup/item_1/id = 1
+
+[node name="Exit" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -336.5
+offset_top = -252.0
+offset_right = 336.5
+offset_bottom = 252.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Exit"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.501
+anchor_top = 0.115
+anchor_right = 0.501
+anchor_bottom = 0.115
+offset_left = -275.673
+offset_top = -53.96
+offset_right = 276.327
+offset_bottom = 54.04
+texture = ExtResource("9_5ewxd")
+
+[node name="TextureRect2" type="TextureRect" parent="Exit"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.436
+anchor_right = 0.5
+anchor_bottom = 0.436
+offset_left = -351.5
+offset_top = -127.744
+offset_right = 348.5
+offset_bottom = 127.256
+texture = ExtResource("10_ev336")
+
+[node name="Control" type="Control" parent="Exit"]
+layout_mode = 1
+anchor_left = 0.326
+anchor_top = 0.681
+anchor_right = 0.326
+anchor_bottom = 0.681
+offset_left = -97.398
+offset_top = -27.224
+offset_right = 97.602
+offset_bottom = 26.776
+
+[node name="cancel" type="TouchScreenButton" parent="Exit/Control"]
+scale = Vector2(1.3, 1.3)
+texture_normal = ExtResource("13_hucpa")
+texture_pressed = ExtResource("14_j2ll4")
+
+[node name="Control2" type="Control" parent="Exit"]
+layout_mode = 1
+anchor_left = 0.683
+anchor_top = 0.681
+anchor_right = 0.683
+anchor_bottom = 0.681
+offset_left = -97.159
+offset_top = -27.224
+offset_right = 96.841
+offset_bottom = 26.776
+
+[node name="exit" type="TouchScreenButton" parent="Exit/Control2"]
+scale = Vector2(1.3, 1.3)
+texture_normal = ExtResource("15_63v73")
+texture_pressed = ExtResource("16_21387")
+
+[node name="Label" type="Label" parent="Exit"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.498
+anchor_top = 0.123
+anchor_right = 0.498
+anchor_bottom = 0.123
+offset_left = -336.654
+offset_top = -38.992
+offset_right = 336.346
+offset_bottom = 39.008
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 42
+text = "Exit Game"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Exit"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.492
+anchor_top = 0.46
+anchor_right = 0.492
+anchor_bottom = 0.46
+offset_left = -244.616
+offset_top = -44.84
+offset_right = 244.384
+offset_bottom = 45.16
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 41
+text = "Are you sure you
+want to exit the
+game? "
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Unlock" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -336.5
+offset_top = -252.0
+offset_right = 336.5
+offset_bottom = 252.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Unlock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.501
+anchor_top = 0.115
+anchor_right = 0.501
+anchor_bottom = 0.115
+offset_left = -275.673
+offset_top = -53.96
+offset_right = 276.327
+offset_bottom = 54.04
+texture = ExtResource("9_5ewxd")
+
+[node name="TextureRect2" type="TextureRect" parent="Unlock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.436
+anchor_right = 0.5
+anchor_bottom = 0.436
+offset_left = -351.5
+offset_top = -127.744
+offset_right = 348.5
+offset_bottom = 127.256
+texture = ExtResource("10_ev336")
+
+[node name="Control" type="Control" parent="Unlock"]
+layout_mode = 1
+anchor_left = 0.326
+anchor_top = 0.681
+anchor_right = 0.326
+anchor_bottom = 0.681
+offset_left = -97.398
+offset_top = -27.224
+offset_right = 97.602
+offset_bottom = 26.776
+
+[node name="cancel" type="TouchScreenButton" parent="Unlock/Control"]
+scale = Vector2(1.3, 1.3)
+texture_normal = ExtResource("13_hucpa")
+texture_pressed = ExtResource("14_j2ll4")
+
+[node name="Control2" type="Control" parent="Unlock"]
+layout_mode = 1
+anchor_left = 0.683
+anchor_top = 0.681
+anchor_right = 0.683
+anchor_bottom = 0.681
+offset_left = -97.159
+offset_top = -27.224
+offset_right = 96.841
+offset_bottom = 26.776
+
+[node name="yes" type="TouchScreenButton" parent="Unlock/Control2"]
+scale = Vector2(1.3, 1.3)
+texture_normal = ExtResource("15_63v73")
+texture_pressed = ExtResource("16_21387")
+
+[node name="Label" type="Label" parent="Unlock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.498
+anchor_top = 0.123
+anchor_right = 0.498
+anchor_bottom = 0.123
+offset_left = -336.654
+offset_top = -38.992
+offset_right = 336.346
+offset_bottom = 39.008
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 42
+text = "Exit Game"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Unlock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.492
+anchor_top = 0.46
+anchor_right = 0.492
+anchor_bottom = 0.46
+offset_left = -244.616
+offset_top = -44.84
+offset_right = 244.384
+offset_bottom = 45.16
+theme_override_fonts/font = ExtResource("4_2atga")
+theme_override_font_sizes/font_size = 41
+text = "Unlock all levels
+now?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="title" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.714
+anchor_top = 0.196
+anchor_right = 0.714
+anchor_bottom = 0.196
+offset_left = -273.92
+offset_top = -87.12
+offset_right = 273.08
+offset_bottom = 86.88
+texture = ExtResource("17_6e5dn")
+
+[node name="components" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="components"]
+layout_mode = 1
+anchor_left = 2.55
+anchor_top = 2.25
+anchor_right = 2.55
+anchor_bottom = 2.25
+offset_left = -3203.0
+offset_top = -1571.0
+offset_right = -3121.0
+offset_bottom = -1489.0
+
+[node name="google" type="TouchScreenButton" parent="components/Control"]
+scale = Vector2(1.588, 1.62)
+texture_normal = ExtResource("18_3btm6")
+texture_pressed = ExtResource("19_dop0c")
+
+[node name="Control2" type="Control" parent="components"]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.125
+anchor_right = 0.08
+anchor_bottom = 0.125
+offset_left = -41.4
+offset_top = -41.0
+offset_right = 40.6
+offset_bottom = 41.0
+
+[node name="profile3" type="TouchScreenButton" parent="components/Control2"]
+scale = Vector2(1.58824, 1.62)
+texture_normal = SubResource("ViewportTexture_pbe71")
+
+[node name="profile" type="TextureRect" parent="components/Control2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -41.0
+offset_top = -41.0
+offset_right = 41.0
+offset_bottom = 41.0
+
+[node name="Control3" type="Control" parent="components"]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.554
+anchor_right = 0.08
+anchor_bottom = 0.554
+offset_left = -41.4
+offset_top = -40.88
+offset_right = 40.6
+offset_bottom = 41.12
+
+[node name="settings" type="TouchScreenButton" parent="components/Control3"]
+scale = Vector2(1.62, 1.62)
+texture_normal = ExtResource("20_pd2qi")
+texture_pressed = ExtResource("21_rbg6o")
+
+[node name="Control4" type="Control" parent="components"]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.706
+anchor_right = 0.08
+anchor_bottom = 0.706
+offset_left = -41.4
+offset_top = -41.32
+offset_right = 40.6
+offset_bottom = 40.68
+
+[node name="credits" type="TouchScreenButton" parent="components/Control4"]
+scale = Vector2(1.62, 1.62)
+texture_normal = ExtResource("22_b7nb4")
+texture_pressed = ExtResource("23_fhkwy")
+
+[node name="Control5" type="Control" parent="components"]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.854
+anchor_right = 0.08
+anchor_bottom = 0.854
+offset_left = -41.4
+offset_top = -40.88
+offset_right = 40.6
+offset_bottom = 41.12
+
+[node name="unlockall" type="TouchScreenButton" parent="components/Control5"]
+scale = Vector2(1.62, 1.62)
+texture_normal = ExtResource("24_ehbcs")
+texture_pressed = ExtResource("25_x8720")
+
+[node name="Mainbtn" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.707
+anchor_top = 0.644
+anchor_right = 0.707
+anchor_bottom = 0.644
+offset_left = -170.96
+offset_top = -191.68
+offset_right = 170.04
+offset_bottom = 192.32
+
+[node name="Control" type="Control" parent="Mainbtn"]
+layout_mode = 1
+anchor_left = 0.512
+anchor_top = 0.152
+anchor_right = 0.512
+anchor_bottom = 0.152
+offset_left = -143.592
+offset_top = -42.368
+offset_right = 143.408
+offset_bottom = 42.632
+
+[node name="newgame" type="TouchScreenButton" parent="Mainbtn/Control"]
+scale = Vector2(1.31818, 1.30303)
+texture_normal = ExtResource("26_urnva")
+texture_pressed = ExtResource("27_m3u0m")
+
+[node name="Control2" type="Control" parent="Mainbtn"]
+layout_mode = 1
+anchor_left = 0.512
+anchor_top = 0.439
+anchor_right = 0.512
+anchor_bottom = 0.439
+offset_left = -143.592
+offset_top = -42.576
+offset_right = 143.408
+offset_bottom = 42.424
+
+[node name="start_continue" type="TouchScreenButton" parent="Mainbtn/Control2"]
+scale = Vector2(1.31818, 1.30303)
+texture_normal = ExtResource("28_dklri")
+texture_pressed = ExtResource("29_k2wd1")
+
+[node name="Control3" type="Control" parent="Mainbtn"]
+layout_mode = 1
+anchor_left = 0.512
+anchor_top = 0.728
+anchor_right = 0.512
+anchor_bottom = 0.728
+offset_left = -143.592
+offset_top = -42.552
+offset_right = 143.408
+offset_bottom = 42.448
+
+[node name="exit" type="TouchScreenButton" parent="Mainbtn/Control3"]
+scale = Vector2(1.31818, 1.30303)
+texture_normal = ExtResource("30_nttl3")
+texture_pressed = ExtResource("31_hssnk")
+
+[connection signal="pressed" from="unlockall" to="." method="_on_unlockall_pressed"]
+[connection signal="pressed" from="MainBtns/newgame" to="." method="_on_newgame_pressed"]
+[connection signal="pressed" from="MainBtns/start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="MainBtns/options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="MainBtns/exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="Options/back" to="." method="_on_back_pressed"]
+[connection signal="value_changed" from="Options/AudioControl" to="Options/AudioControl" method="_on_value_changed"]
+[connection signal="value_changed" from="Options/AudioSoundControl2" to="Options/AudioSoundControl2" method="_on_value_changed"]
+[connection signal="value_changed" from="Settings/AudioControl" to="Settings/AudioControl" method="_on_value_changed"]
+[connection signal="value_changed" from="Settings/AudioSoundControl2" to="Settings/AudioSoundControl2" method="_on_value_changed"]
+[connection signal="pressed" from="components/Control3/settings" to="." method="_on_settings_pressed"]
