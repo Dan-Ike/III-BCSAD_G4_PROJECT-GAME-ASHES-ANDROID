@@ -28,6 +28,9 @@ var debug_label: Label = null
 @onready var components: Control = $components
 @onready var settings_btn: TouchScreenButton = $components/Control3/settings
 @onready var title: TextureRect = $title
+@onready var credits: Control = $Credits
+@onready var play_credits: TouchScreenButton = $Credits/Control/play_credits
+@onready var exit_credits: TouchScreenButton = $Credits/Control2/exit_credits
 
 
 const SUPABASE_URL = "https://fsntwndbknzhmotgphtj.supabase.co"
@@ -68,6 +71,7 @@ func _ready() -> void:
 	title.visible = true
 	unlock.visible = false
 	exit.visible = false
+	credits.visible = false
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
@@ -1327,6 +1331,7 @@ func _on_settings_pressed() -> void:
 		components.visible = false
 		settings.visible = true
 		title.visible = false
+		credits.visible = false
 	)
 
 
@@ -1357,6 +1362,7 @@ func _on_exit_btn_pressed() -> void:
 		components.visible = false
 		exit.visible = true
 		title.visible = false  
+		credits.visible = false
 	)
 
 
@@ -1374,4 +1380,21 @@ func _on_start_continue_pressed() -> void:
 			get_node("LoadingScreen").start_loading("res://scene/floor.tscn")
 		else:
 			get_tree().change_scene_to_file("res://scene/floor.tscn")
+	)
+
+
+func _on_credits_pressed() -> void:
+	delayed_action(0.2, func():
+		main_btns.visible = false
+		background.visible = false
+		bg_2.visible = true
+		components.visible = false
+		credits.visible = true
+		title.visible = false  
+	)
+
+
+func _on_exit_credits_pressed() -> void:
+	delayed_action(0.2, func():
+		_ready()
 	)

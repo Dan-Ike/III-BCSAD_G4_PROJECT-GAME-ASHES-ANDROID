@@ -1,10 +1,18 @@
-[gd_scene load_steps=11 format=3 uid="uid://q1fhwdc0e7vv"]
+[gd_scene load_steps=19 format=3 uid="uid://q1fhwdc0e7vv"]
 
 [ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_tm3bt"]
 [ext_resource type="Script" uid="uid://bw4776do5sff3" path="res://script/floor_level.gd" id="1_x40ej"]
 [ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="2_7sqjk"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="4_2y7ik"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="4_x42lc"]
+[ext_resource type="Texture2D" uid="uid://bbg4i56iumsd8" path="res://art/components/Next_Button.png" id="6_xqo66"]
+[ext_resource type="Texture2D" uid="uid://fmnwpdt7p6tk" path="res://art/components/Next_Button (1).png" id="7_mr317"]
+[ext_resource type="Texture2D" uid="uid://o5rljih44bks" path="res://art/components/Previous_Button.png" id="8_f6dc7"]
+[ext_resource type="Texture2D" uid="uid://cg1x225whns17" path="res://art/components/Previous_Button (1).png" id="9_f3evl"]
+[ext_resource type="Texture2D" uid="uid://ccnf4os0mvc8x" path="res://art/components/Play_Button.png" id="10_twwq8"]
+[ext_resource type="Texture2D" uid="uid://bdwfmwv0623dm" path="res://art/components/Play_Button (1).png" id="11_3y5ee"]
+[ext_resource type="Texture2D" uid="uid://r2pgtaeyg48g" path="res://art/components/GoBack_Button.png" id="12_08awo"]
+[ext_resource type="Texture2D" uid="uid://vapx2ckechh2" path="res://art/components/GoBack_Button (1).png" id="13_dq6cu"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7sqjk"]
 texture = ExtResource("1_tm3bt")
@@ -65,6 +73,7 @@ text = "Floor 1 Level 1"
 vertical_alignment = 1
 
 [node name="next" type="Button" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.893
@@ -81,6 +90,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_2y7ik")
 text = "Next"
 
 [node name="prev" type="Button" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.105
@@ -98,6 +108,7 @@ text = "Prev
 "
 
 [node name="play" type="Button" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -115,6 +126,7 @@ text = "Play
 "
 
 [node name="back" type="Button" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.909
@@ -130,7 +142,83 @@ theme_override_font_sizes/font_size = 20
 theme_override_styles/focus = SubResource("StyleBoxEmpty_mr317")
 text = "Back"
 
+[node name="buttons" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="buttons"]
+layout_mode = 1
+anchor_left = 0.894
+anchor_top = 0.477
+anchor_right = 0.894
+anchor_bottom = 0.477
+offset_left = -100.32
+offset_top = -27.44
+offset_right = 100.68
+offset_bottom = 27.56
+
+[node name="next" type="TouchScreenButton" parent="buttons/Control"]
+scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("6_xqo66")
+texture_pressed = ExtResource("7_mr317")
+
+[node name="Control2" type="Control" parent="buttons"]
+layout_mode = 1
+anchor_left = 0.109
+anchor_top = 0.479
+anchor_right = 0.109
+anchor_bottom = 0.479
+offset_left = -99.52
+offset_top = -28.88
+offset_right = 100.48
+offset_bottom = 29.12
+
+[node name="prev" type="TouchScreenButton" parent="buttons/Control2"]
+scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("8_f6dc7")
+texture_pressed = ExtResource("9_f3evl")
+
+[node name="Control3" type="Control" parent="buttons"]
+layout_mode = 1
+anchor_left = 0.507
+anchor_top = 0.854
+anchor_right = 0.507
+anchor_bottom = 0.854
+offset_left = -138.96
+offset_top = -40.88
+offset_right = 140.04
+offset_bottom = 41.12
+
+[node name="play" type="TouchScreenButton" parent="buttons/Control3"]
+scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("10_twwq8")
+texture_pressed = ExtResource("11_3y5ee")
+
+[node name="Control4" type="Control" parent="buttons"]
+layout_mode = 1
+anchor_left = 0.114
+anchor_top = 0.084
+anchor_right = 0.114
+anchor_bottom = 0.084
+offset_left = -100.92
+offset_top = -29.48
+offset_right = 102.08
+offset_bottom = 29.52
+
+[node name="back" type="TouchScreenButton" parent="buttons/Control4"]
+scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("12_08awo")
+texture_pressed = ExtResource("13_dq6cu")
+
 [connection signal="pressed" from="next" to="." method="_on_next_pressed"]
 [connection signal="pressed" from="prev" to="." method="_on_prev_pressed"]
 [connection signal="pressed" from="play" to="." method="_on_play_pressed"]
 [connection signal="pressed" from="back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="buttons/Control/next" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="buttons/Control2/prev" to="." method="_on_prev_pressed"]
+[connection signal="pressed" from="buttons/Control3/play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="buttons/Control4/back" to="." method="_on_back_pressed"]

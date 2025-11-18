@@ -72,7 +72,6 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_bha7m")
 
 [node name="floor" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -145,6 +144,7 @@ texture_normal = ExtResource("9_0pc6r")
 texture_pressed = ExtResource("10_hn5fd")
 
 [node name="FloorBtns" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -245,6 +245,10 @@ position = Vector2(251.5, 351)
 scale = Vector2(0.193584, 0.125615)
 texture = ExtResource("4_iefsv")
 
+[connection signal="pressed" from="floor/Control/floor1" to="." method="_on_floor_1_pressed"]
+[connection signal="pressed" from="floor/Control2/floor2" to="." method="_on_floor_2_pressed"]
+[connection signal="pressed" from="floor/Control3/floor3" to="." method="_on_floor_3_pressed"]
+[connection signal="pressed" from="floor/Control4/back" to="." method="_on_mainmenu_pressed"]
 [connection signal="pressed" from="FloorBtns/floor1" to="." method="_on_floor_1_pressed"]
 [connection signal="pressed" from="FloorBtns/floor2" to="." method="_on_floor_2_pressed"]
 [connection signal="pressed" from="FloorBtns/floor3" to="." method="_on_floor_3_pressed"]
