@@ -9706,13 +9706,7 @@ limit_left = -5
 limit_bottom = 800
 limit_smoothed = true
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TouchControls" parent="Control" instance=ExtResource("5_1qulk")]
+[node name="TouchControls" parent="." instance=ExtResource("5_1qulk")]
 
 [node name="Cutscene" parent="." instance=ExtResource("58_2hjmi")]
 visible = false

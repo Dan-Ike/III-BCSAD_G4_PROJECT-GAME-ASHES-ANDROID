@@ -1,8 +1,8 @@
 [gd_scene load_steps=19 format=3 uid="uid://q1fhwdc0e7vv"]
 
-[ext_resource type="Texture2D" uid="uid://b2ik8pr3kb5kb" path="res://art/hellimg.jpg" id="1_tm3bt"]
 [ext_resource type="Script" uid="uid://bw4776do5sff3" path="res://script/floor_level.gd" id="1_x40ej"]
 [ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="2_7sqjk"]
+[ext_resource type="Texture2D" uid="uid://b276ynq2mgobf" path="res://art/components/Settings_PopUp.png" id="2_08awo"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="4_2y7ik"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="4_x42lc"]
 [ext_resource type="Texture2D" uid="uid://bbg4i56iumsd8" path="res://art/components/Next_Button.png" id="6_xqo66"]
@@ -15,8 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://vapx2ckechh2" path="res://art/components/GoBack_Button (1).png" id="13_dq6cu"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7sqjk"]
-texture = ExtResource("1_tm3bt")
-modulate_color = Color(0.09, 0.09, 0.09, 1)
+texture = ExtResource("2_08awo")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2y7ik"]
 
@@ -45,15 +44,16 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_7sqjk")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-layout_mode = 2
+layout_mode = 1
+anchors_preset = -1
 anchor_left = 0.5
-anchor_top = 0.466
+anchor_top = 0.501
 anchor_right = 0.5
-anchor_bottom = 0.466
-offset_left = -374.0
-offset_top = -216.52
-offset_right = 372.0
-offset_bottom = 216.48
+anchor_bottom = 0.501
+offset_left = -300.0
+offset_top = -189.72
+offset_right = 300.0
+offset_bottom = 189.28
 texture = ExtResource("2_7sqjk")
 
 [node name="Label" type="Label" parent="."]
@@ -152,65 +152,61 @@ grow_vertical = 2
 
 [node name="Control" type="Control" parent="buttons"]
 layout_mode = 1
-anchor_left = 0.894
-anchor_top = 0.477
-anchor_right = 0.894
-anchor_bottom = 0.477
-offset_left = -100.32
-offset_top = -27.44
-offset_right = 100.68
-offset_bottom = 27.56
+anchor_left = 0.841
+anchor_top = 0.5
+anchor_right = 0.841
+anchor_bottom = 0.5
+offset_left = -124.48
+offset_top = -35.0
+offset_right = 125.52
+offset_bottom = 35.0
 
 [node name="next" type="TouchScreenButton" parent="buttons/Control"]
-scale = Vector2(0.8, 0.8)
 texture_normal = ExtResource("6_xqo66")
 texture_pressed = ExtResource("7_mr317")
 
 [node name="Control2" type="Control" parent="buttons"]
 layout_mode = 1
-anchor_left = 0.109
-anchor_top = 0.479
-anchor_right = 0.109
-anchor_bottom = 0.479
-offset_left = -99.52
-offset_top = -28.88
-offset_right = 100.48
-offset_bottom = 29.12
+anchor_left = 0.159
+anchor_top = 0.5
+anchor_right = 0.159
+anchor_bottom = 0.5
+offset_left = -125.52
+offset_top = -35.0
+offset_right = 124.48
+offset_bottom = 36.0
 
 [node name="prev" type="TouchScreenButton" parent="buttons/Control2"]
-scale = Vector2(0.8, 0.8)
 texture_normal = ExtResource("8_f6dc7")
 texture_pressed = ExtResource("9_f3evl")
 
 [node name="Control3" type="Control" parent="buttons"]
 layout_mode = 1
-anchor_left = 0.507
-anchor_top = 0.854
-anchor_right = 0.507
-anchor_bottom = 0.854
-offset_left = -138.96
-offset_top = -40.88
-offset_right = 140.04
-offset_bottom = 41.12
+anchor_left = 0.5
+anchor_top = 0.87
+anchor_right = 0.5
+anchor_bottom = 0.87
+offset_left = -175.0
+offset_top = -52.4
+offset_right = 175.0
+offset_bottom = 52.6
 
 [node name="play" type="TouchScreenButton" parent="buttons/Control3"]
-scale = Vector2(0.8, 0.8)
 texture_normal = ExtResource("10_twwq8")
 texture_pressed = ExtResource("11_3y5ee")
 
 [node name="Control4" type="Control" parent="buttons"]
 layout_mode = 1
-anchor_left = 0.114
-anchor_top = 0.084
-anchor_right = 0.114
-anchor_bottom = 0.084
-offset_left = -100.92
-offset_top = -29.48
-offset_right = 102.08
-offset_bottom = 29.52
+anchor_left = 0.137
+anchor_top = 0.109
+anchor_right = 0.137
+anchor_bottom = 0.109
+offset_left = -125.36
+offset_top = -35.48
+offset_right = 124.64
+offset_bottom = 35.52
 
 [node name="back" type="TouchScreenButton" parent="buttons/Control4"]
-scale = Vector2(0.8, 0.8)
 texture_normal = ExtResource("12_08awo")
 texture_pressed = ExtResource("13_dq6cu")
 

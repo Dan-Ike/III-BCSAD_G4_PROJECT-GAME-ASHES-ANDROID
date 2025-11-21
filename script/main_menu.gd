@@ -3,25 +3,26 @@ extends Control
 var pending_deep_link: String = ""
 var debug_label: Label = null  
 
+@onready var version: Label = $components/version
 @onready var background: Panel = $Background
-@onready var bg_2: Panel = $bg2 #always use this as bg when say settings or exitgame are clicked so show this as background or basically make everything not visible and also not clickable and only the one clicked should be, say setting, only settings can be interacted and seen and this bg as the background image
+@onready var bg_2: Panel = $bg2 
 @onready var audio_control: HSlider = $Settings/AudioControl
 @onready var audio_sound_control_2: HSlider = $Settings/AudioSoundControl2
 @onready var control_choice: OptionButton = $Settings/ControlChoice
 @onready var cutscene_choice: OptionButton = $Settings/CutsceneChoice
-@onready var exit: Control = $Exit #show this when @onready var exit: TouchScreenButton = $Mainbtn/Control3/exit is clicked
-@onready var exit_game: TouchScreenButton = $Exit/Control2/exit #use this to truly exit the game
-@onready var cancel: TouchScreenButton = $Exit/Control/cancel #when clicked it should just go back to main menu
-@onready var settings: Control = $Settings #show this when @onready var settings: TouchScreenButton = $components/Control3/settings is clicked
-@onready var back: TouchScreenButton = $Settings/Control/back #go back to main menu when click
-@onready var unlock: Control = $Unlock #show this when @onready var unlockall: TouchScreenButton = $components/Control5/unlockall is clicked
-@onready var google: TouchScreenButton = $components/Control/google #use this for google now
+@onready var exit: Control = $Exit 
+@onready var exit_game: TouchScreenButton = $Exit/Control2/exit 
+@onready var cancel: TouchScreenButton = $Exit/Control/cancel 
+@onready var settings: Control = $Settings 
+@onready var back: TouchScreenButton = $Settings/Control/back 
+@onready var unlock: Control = $Unlock 
+@onready var google: TouchScreenButton = $components/Control/google 
 @onready var profile: TextureRect = $components/Control2/profile
-#@onready var profile: TouchScreenButton = $components/Control2/profile #display the profilepicture here now
-@onready var unlockall: TouchScreenButton = $components/Control5/unlockall #use this now as the unlock all levels
-@onready var newgame: TouchScreenButton = $Mainbtn/Control/newgame #use this now as the newgame
-@onready var start_continue: TouchScreenButton = $Mainbtn/Control2/start_continue #use this as the start and continue, but for now always set it as continue regardless as now image for start game yet
-@onready var exit_btn: TouchScreenButton = $Mainbtn/Control3/exit #use this now as the exit btn
+#@onready var profile: TouchScreenButton = $components/Control2/profile 
+@onready var unlockall: TouchScreenButton = $components/Control5/unlockall 
+@onready var newgame: TouchScreenButton = $Mainbtn/Control/newgame 
+@onready var start_continue: TouchScreenButton = $Mainbtn/Control2/start_continue 
+@onready var exit_btn: TouchScreenButton = $Mainbtn/Control3/exit 
 @onready var cancel_unlock: TouchScreenButton = $Unlock/Control/cancel
 @onready var yes_unlock: TouchScreenButton = $Unlock/Control2/yes
 @onready var main_btns: Control = $Mainbtn
@@ -53,13 +54,12 @@ func delayed_action(delay: float, action: Callable) -> void:
 
 
 func _ready() -> void:
-		# Handle web OAuth callback FIRST before anything else
 	if OS.has_feature("web"):
 		var has_tokens = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received') === 'true'")
 		if has_tokens:
 			_log_debug("OAuth tokens found in sessionStorage")
 			add_child(http)
-			_check_web_oauth_callback()  # Call directly, not deferred
+			_check_web_oauth_callback() 
 			return
 	
 	add_child(http)
@@ -72,6 +72,7 @@ func _ready() -> void:
 	unlock.visible = false
 	exit.visible = false
 	credits.visible = false
+	version.visible = true
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
@@ -419,6 +420,7 @@ func _on_unlockall_pressed() -> void:
 		bg_2.visible = true
 		components.visible = false
 		title.visible = false
+		version.visible = false
 	)
 	
 
@@ -1332,6 +1334,7 @@ func _on_settings_pressed() -> void:
 		settings.visible = true
 		title.visible = false
 		credits.visible = false
+		version.visible = false
 	)
 
 
@@ -1363,6 +1366,7 @@ func _on_exit_btn_pressed() -> void:
 		exit.visible = true
 		title.visible = false  
 		credits.visible = false
+		version.visible = false
 	)
 
 
@@ -1391,6 +1395,7 @@ func _on_credits_pressed() -> void:
 		components.visible = false
 		credits.visible = true
 		title.visible = false  
+		version.visible = false
 	)
 
 

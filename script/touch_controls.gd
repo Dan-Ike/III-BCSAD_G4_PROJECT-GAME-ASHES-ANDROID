@@ -57,6 +57,7 @@ func _ready() -> void:
 	pause_menu.visible = false
 	options.visible = false
 	
+	
 	control_choice.clear()
 	control_choice.add_item("Button", 0)
 	control_choice.add_item("Joystick", 1)
@@ -209,6 +210,12 @@ func _hide_all_controls() -> void:
 # PAUSE MENU HANDLERS
 # ---------------------------
 func _on_pause_pressed() -> void:
+	# BLOCK pause completely during cutscenes
+	if Global.cutscene_playing:
+		return
+	# Don't allow pause if controls are disabled
+	if not self.visible:
+		return
 	if not pause_enabled:
 		return
 	is_paused = !is_paused
@@ -253,6 +260,14 @@ func disable_all_controls() -> void:
 	virtual_joystick.hide()
 	virtual_joystick.set_process(false)
 	virtual_joystick.set_block_signals(true)
+	
+	# Also hide pause menu and disable pause button
+	pause_menu.visible = false
+	options.visible = false
+	pause.visible = false
+	pause.set_process(false)
+	pause.set_block_signals(true)
+	pause_enabled = false
 
 func _on_edit_pressed() -> void:
 	get_tree().change_scene_to_file("res://scene/controls_editor.tscn")

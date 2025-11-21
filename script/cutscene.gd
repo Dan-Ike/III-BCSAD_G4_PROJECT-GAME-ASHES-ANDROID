@@ -9,9 +9,12 @@ extends CanvasLayer
 @onready var summary_margin: MarginContainer = $SummaryContainer/SummaryPanel/SummaryMargin
 @onready var summary_v_box: VBoxContainer = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox
 @onready var summary_title: Label = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox/SummaryTitle
-@onready var summary_text: Label = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox/SummaryText
-@onready var skip_button: Button = $SkipButton
+#@onready var summary_text: Label = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox/SummaryText
+#@onready var skip_button: Button = $SkipButton
 @onready var continue_button: Button = $ContinueButton
+@onready var skip_button: TouchScreenButton = $buttons/Control/SkipButton
+@onready var summary_text: Label = $SummaryContainer2/SummaryText
+@onready var summary_container_2: Control = $SummaryContainer2
 
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
@@ -117,7 +120,7 @@ func _ready() -> void:
 	
 	skip_button.hide()
 	continue_button.hide()
-	summary_container.hide()
+	summary_container_2.hide()
 	text_container.hide()
 	text_container.modulate.a = 0.0
 	
@@ -129,7 +132,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			# Check if clicking on buttons - let them handle their own input
-			if skip_button.visible and skip_button.get_global_rect().has_point(event.position):
+			if skip_button.visible and skip_button.is_pressed():
 				return
 			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
 				return
@@ -229,6 +232,7 @@ func _process(delta: float) -> void:
 
 
 func start_cutscene(id: String = "") -> void:
+	Global.cutscene_playing = true
 	cutscene_id = id
 	
 	# Check cutscene preference
@@ -239,13 +243,21 @@ func start_cutscene(id: String = "") -> void:
 		if SaveManager.has_watched_cutscene(cutscene_id):
 			print("Cutscene already watched, skipping...")
 			# IMPORTANT: Don't pause if skipping
-			_unpause_player()  # ADD THIS LINE
+			_unpause_player()
 			proceed_to_game()
 			return
 	
 	# Only play cutscene music if we're actually showing the cutscene
 	MusicManager.play_song("menu")
 	print("Cutscene music started: boss")
+	
+	# DISCONNECT pause button signal to prevent accidental triggers
+	if player and player.has_node("../CanvasLayer"):
+		var touch_controls = player.get_node("../CanvasLayer")
+		if touch_controls and touch_controls.has_node("Control/Control6/pause"):
+			var pause_btn = touch_controls.get_node("Control/Control6/pause")
+			if pause_btn.pressed.is_connected(touch_controls._on_pause_pressed):
+				pause_btn.pressed.disconnect(touch_controls._on_pause_pressed)
 	
 	# PAUSE THE GAME
 	_pause_player()
@@ -390,6 +402,10 @@ func _start_text_fade_in() -> void:
 
 
 func complete_current_text() -> void:
+	# Don't allow interaction during transitions
+	if is_transitioning or waiting_for_text_delay:
+		return
+		
 	if is_typing:
 		# Complete typing instantly
 		displayed_text = current_text
@@ -405,6 +421,7 @@ func complete_current_text() -> void:
 			show_scene(current_scene_index, current_text_index + 1)
 		else:
 			# Moving to next scene - fade out text, then change background
+			is_transitioning = true  # Set this BEFORE starting fade
 			_start_text_fade_out()
 			
 			# Wait for fade out
@@ -424,20 +441,30 @@ func show_summary() -> void:
 	
 	await get_tree().create_timer(text_fade_duration).timeout
 	
-	summary_title.text = summary_data["title"]
+	#summary_title.text = summary_data["title"]
 	summary_text.text = summary_data["text"]
-	summary_container.show()
+	summary_container_2.show()
 	
 	continue_timer = 0.0
 
 
 func proceed_to_game() -> void:
+	Global.cutscene_playing = false
 	# Mark cutscene as watched if ID is provided
 	if cutscene_id != "":
 		SaveManager.mark_cutscene_watched(cutscene_id)
 	
 	# UNPAUSE THE GAME - Make sure this happens
-	get_tree().paused = false  # ADD THIS LINE FIRST
+	get_tree().paused = false
+	
+	# RECONNECT pause button signal
+	if player and player.has_node("../CanvasLayer"):
+		var touch_controls = player.get_node("../CanvasLayer")
+		if touch_controls and touch_controls.has_node("Control/Control6/pause"):
+			var pause_btn = touch_controls.get_node("Control/Control6/pause")
+			if not pause_btn.pressed.is_connected(touch_controls._on_pause_pressed):
+				pause_btn.pressed.connect(touch_controls._on_pause_pressed)
+	
 	_unpause_player()
 	
 	# Enable cameras in parent

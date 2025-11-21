@@ -20,6 +20,12 @@ func _ready() -> void:
 	var should_play_cutscene = _should_show_cutscene()
 	
 	if should_play_cutscene:
+		# Disable touch controls BEFORE starting cutscene
+		if player.has_node("../CanvasLayer"):
+			var touch_controls = player.get_node("../CanvasLayer")
+			if touch_controls:
+				touch_controls.disable_all_controls()
+		
 		# Start with cutscene - everything disabled
 		player_camera.enabled = false
 		camera_2d_2.enabled = true

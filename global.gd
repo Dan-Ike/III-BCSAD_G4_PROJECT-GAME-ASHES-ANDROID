@@ -58,6 +58,7 @@ var session: Dictionary = {}
 var session_token: String = ""  
 var refresh_token: String = ""   
 
+var cutscene_playing: bool = false
 
 func _ready() -> void:
 	var SupabaseScript = load("res://addons/supabase/Supabase/supabase.gd")

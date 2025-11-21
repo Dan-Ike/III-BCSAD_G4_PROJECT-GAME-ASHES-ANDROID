@@ -1,14 +1,21 @@
-[gd_scene load_steps=6 format=3 uid="uid://bletdowgl1r03"]
+[gd_scene load_steps=12 format=3 uid="uid://bletdowgl1r03"]
 
 [ext_resource type="Script" uid="uid://c30b4ipvsdq27" path="res://script/cutscene.gd" id="1_drs7p"]
+[ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="2_3l3ne"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="2_e7qxw"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_3d53y"]
+[ext_resource type="Texture2D" uid="uid://crmvccic0jtuh" path="res://art/components/Skip_Button.png" id="5_0cpi0"]
+[ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="5_3hlow"]
+[ext_resource type="Texture2D" uid="uid://cu2r0h3qvtrq2" path="res://art/components/BodyText_Background.png" id="6_i7q1p"]
+[ext_resource type="Texture2D" uid="uid://cla3sh000ayji" path="res://art/components/Skip_Button (1).png" id="6_wf4c6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8lxk"]
-bg_color = Color(0, 0, 0, 1)
+bg_color = Color(0.243137, 0.109804, 0.137255, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_drs7p"]
 bg_color = Color(0.299547, 0.299547, 0.299547, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3hlow"]
 
 [node name="Cutscene" type="CanvasLayer"]
 script = ExtResource("1_drs7p")
@@ -19,7 +26,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0.243137, 0.109804, 0.137255, 1)
 
 [node name="Background" type="TextureRect" parent="."]
 anchors_preset = 15
@@ -62,13 +69,116 @@ theme_override_constants/margin_bottom = 20
 [node name="TextLabel" type="Label" parent="TextContainer/TextMargin"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_3l3ne")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="buttons" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="buttons"]
+layout_mode = 1
+anchor_left = 0.88
+anchor_top = 0.075
+anchor_right = 0.88
+anchor_bottom = 0.075
+offset_left = -124.4
+offset_top = -36.0
+offset_right = 125.6
+offset_bottom = 36.0
+
+[node name="SkipButton" type="TouchScreenButton" parent="buttons/Control"]
+texture_normal = ExtResource("5_0cpi0")
+texture_pressed = ExtResource("6_wf4c6")
+
+[node name="SummaryContainer2" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="SummaryContainer2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("5_3hlow")
+
+[node name="TextureRect2" type="TextureRect" parent="SummaryContainer2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
+texture = ExtResource("6_i7q1p")
+
+[node name="Label" type="Label" parent="SummaryContainer2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_3d53y")
+theme_override_font_sizes/font_size = 32
+text = "Story Summary"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SummaryText" type="Label" parent="SummaryContainer2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.499
+anchor_top = 0.396
+anchor_right = 0.499
+anchor_bottom = 0.396
+offset_left = -221.3
+offset_top = -6.88002
+offset_right = 221.7
+offset_bottom = 7.11998
 theme_override_fonts/font = ExtResource("2_e7qxw")
 theme_override_font_sizes/font_size = 20
+text = "\"Summary here woohoo\""
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="SummaryContainer" type="CenterContainer" parent="."]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -109,6 +219,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="SkipButton" type="Button" parent="."]
+visible = false
 anchors_preset = -1
 anchor_left = 0.85
 anchor_top = 0.029
@@ -123,12 +234,18 @@ text = "Skip"
 
 [node name="ContinueButton" type="Button" parent="."]
 anchors_preset = -1
-anchor_left = 0.4
-anchor_top = 0.85
-anchor_right = 0.6
-anchor_bottom = 0.95
-offset_right = 8.0
-offset_bottom = 8.0
-theme_override_fonts/font = ExtResource("3_3d53y")
-theme_override_font_sizes/font_size = 18
-text = "Continue"
+anchor_left = 0.5
+anchor_top = 0.91
+anchor_right = 0.5
+anchor_bottom = 0.91
+offset_left = -137.5
+offset_top = -40.2
+offset_right = 137.5
+offset_bottom = 39.8
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_3l3ne")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/focus = SubResource("StyleBoxEmpty_3hlow")
+text = "Tap to Continue ..."
+flat = true

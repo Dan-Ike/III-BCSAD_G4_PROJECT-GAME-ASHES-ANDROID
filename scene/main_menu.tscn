@@ -1,10 +1,9 @@
-[gd_scene load_steps=38 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=40 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
 [ext_resource type="Texture2D" uid="uid://c2thoj84krhoy" path="res://art/components/Sample Only.png" id="2_by01r"]
 [ext_resource type="Texture2D" uid="uid://b276ynq2mgobf" path="res://art/components/Settings_PopUp.png" id="2_s7uu8"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_sepwh"]
-[ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="4_2atga"]
 [ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="5_ruj6x"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="5_sepwh"]
 [ext_resource type="Texture2D" uid="uid://cu2r0h3qvtrq2" path="res://art/components/BodyText_Background.png" id="6_xcvof"]
@@ -23,12 +22,14 @@
 [ext_resource type="Texture2D" uid="uid://k664q8g8knwc" path="res://art/components/Yes_Button (1).png" id="14_d5kma"]
 [ext_resource type="Texture2D" uid="uid://chd3n6h2cmyka" path="res://art/components/Unlock_Icon.png" id="14_unisd"]
 [ext_resource type="Texture2D" uid="uid://bep6y0l6n0g1q" path="res://art/components/Unlock_Icon (1).png" id="15_2nbnt"]
+[ext_resource type="Texture2D" uid="uid://lllew6fm2ivi" path="res://art/components/HalfBodyText_Background.png" id="16_pixcj"]
 [ext_resource type="Texture2D" uid="uid://blj24fd2jipo6" path="res://art/components/NewGame_Button.png" id="16_unisd"]
 [ext_resource type="Texture2D" uid="uid://bs1yivsoi7qtn" path="res://art/components/NewGame_Button (1).png" id="17_2nbnt"]
 [ext_resource type="Texture2D" uid="uid://cmqgcsrydcp2y" path="res://art/components/Continue_Button.png" id="18_s7uu8"]
 [ext_resource type="Texture2D" uid="uid://cu536mjny5ipf" path="res://art/components/Continue_Button (1).png" id="19_g7f83"]
 [ext_resource type="Texture2D" uid="uid://tu1rnodqye2s" path="res://art/components/ExitGame_Button.png" id="20_r3wny"]
 [ext_resource type="Texture2D" uid="uid://cna2tdbqoineb" path="res://art/components/ExitGame_Button (1).png" id="21_ruj6x"]
+[ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="24_xyo3m"]
 [ext_resource type="Texture2D" uid="uid://e4mt6s6fc4o0" path="res://art/components/PlayVideo_Button.png" id="30_kj8il"]
 [ext_resource type="Texture2D" uid="uid://8hxqohejfs5p" path="res://art/components/PlayVideo_Button (1).png" id="31_xyo3m"]
 
@@ -40,15 +41,18 @@ texture = ExtResource("2_s7uu8")
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_0iwki"]
 color = Color(0.980104, 0.87028, 0.863563, 1)
-thickness = 5
+thickness = 10
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_sepwh"]
 color = Color(1, 0.21268, 0.159696, 1)
-thickness = 5
+thickness = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xyo3m"]
+bg_color = Color(1, 0.211765, 0.160784, 1)
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_14wem"]
 color = Color(1, 0.211765, 0.160784, 1)
-thickness = 5
+thickness = 10
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_eq0s3"]
 
@@ -84,76 +88,75 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_g7f83")
 
 [node name="Settings" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -336.5
-offset_top = -252.0
-offset_right = 336.5
-offset_bottom = 252.0
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.501
-anchor_top = 0.115
-anchor_right = 0.501
-anchor_bottom = 0.115
-offset_left = -275.673
-offset_top = -53.96
-offset_right = 276.327
-offset_bottom = 54.04
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
 texture = ExtResource("5_ruj6x")
 
 [node name="TextureRect2" type="TextureRect" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.586
-anchor_right = 0.5
-anchor_bottom = 0.586
-offset_left = -352.0
-offset_top = -203.344
-offset_right = 348.0
-offset_bottom = 203.656
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
 texture = ExtResource("6_xcvof")
 
 [node name="Control" type="Control" parent="Settings"]
 layout_mode = 1
-anchor_left = 0.918
-anchor_top = 0.029
-anchor_right = 0.918
-anchor_bottom = 0.029
-offset_left = -32.814
-offset_top = -31.616
-offset_right = 33.186
-offset_bottom = 31.384
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
 
 [node name="back" type="TouchScreenButton" parent="Settings/Control"]
-scale = Vector2(1.3, 1.3)
+scale = Vector2(1.2, 1.2)
 texture_normal = ExtResource("7_mh7xh")
 texture_pressed = ExtResource("8_0d2hm")
 
 [node name="Label" type="Label" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.498
-anchor_top = 0.123
-anchor_right = 0.498
-anchor_bottom = 0.123
-offset_left = -336.654
-offset_top = -38.992
-offset_right = 336.346
-offset_bottom = 39.008
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 42
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
 text = "Settings"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -161,81 +164,85 @@ vertical_alignment = 1
 [node name="Label2" type="Label" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.316
+anchor_left = 0.337
 anchor_top = 0.455
-anchor_right = 0.316
+anchor_right = 0.337
 anchor_bottom = 0.455
-offset_left = -126.168
+offset_left = -125.9
 offset_top = -25.32
-offset_right = 126.082
+offset_right = 126.35
 offset_bottom = 24.88
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 28
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
 text = "Music"
 vertical_alignment = 1
 
 [node name="Label4" type="Label" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.31
+anchor_left = 0.336
 anchor_top = 0.574
-anchor_right = 0.31
+anchor_right = 0.336
 anchor_bottom = 0.574
-offset_left = -125.13
+offset_left = -125.2
 offset_top = -25.296
-offset_right = 124.684
+offset_right = 124.614
 offset_bottom = 24.904
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 28
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
 text = "SFX "
 vertical_alignment = 1
 
 [node name="Label3" type="Label" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.255
+anchor_left = 0.281
 anchor_top = 0.699
-anchor_right = 0.255
+anchor_right = 0.281
 anchor_bottom = 0.699
-offset_left = -87.115
+offset_left = -86.7
 offset_top = -25.296
-offset_right = 86.951
+offset_right = 87.366
 offset_bottom = 24.904
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
 text = "Control"
 vertical_alignment = 1
 
 [node name="Label5" type="Label" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.255
+anchor_left = 0.281
 anchor_top = 0.818
-anchor_right = 0.255
+anchor_right = 0.281
 anchor_bottom = 0.818
-offset_left = -87.115
+offset_left = -86.7
 offset_top = -25.272
-offset_right = 86.951
+offset_right = 87.366
 offset_bottom = 24.928
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
 text = "Cutscene"
 vertical_alignment = 1
 
 [node name="AudioControl" type="HSlider" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.539
-anchor_top = 0.446
-anchor_right = 0.539
-anchor_bottom = 0.446
-offset_left = -153.247
-offset_top = -7.78401
-offset_right = 153.753
-offset_bottom = 8.21599
+anchor_left = 0.586
+anchor_top = 0.492
+anchor_right = 0.586
+anchor_bottom = 0.492
+offset_left = -160.2
+offset_top = -24.76
+offset_right = 159.8
+offset_bottom = -8.76003
+theme_override_icons/grabber = ExtResource("8_0d2hm")
+theme_override_icons/grabber_highlight = ExtResource("8_0d2hm")
+theme_override_icons/grabber_disabled = ExtResource("8_0d2hm")
+theme_override_icons/tick = ExtResource("8_0d2hm")
 theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
-theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_xyo3m")
 max_value = 1.0
 step = 0.05
 value = 0.5
@@ -245,14 +252,14 @@ audio_bus_name = "Music"
 [node name="AudioSoundControl2" type="HSlider" parent="Settings"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.542
+anchor_left = 0.586
 anchor_top = 0.577
-anchor_right = 0.542
+anchor_right = 0.586
 anchor_bottom = 0.577
-offset_left = -153.266
-offset_top = -7.80801
-offset_right = 153.734
-offset_bottom = 8.19199
+offset_left = -160.2
+offset_top = -7.80798
+offset_right = 159.8
+offset_bottom = 8.19202
 theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
@@ -273,8 +280,8 @@ offset_left = -101.61
 offset_top = -23.28
 offset_right = 101.39
 offset_bottom = 23.72
-theme_override_fonts/font = ExtResource("3_sepwh")
-theme_override_font_sizes/font_size = 19
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
 selected = 0
 item_count = 2
 popup/item_0/text = "Button"
@@ -293,8 +300,8 @@ offset_left = -101.783
 offset_top = -23.296
 offset_right = 101.217
 offset_bottom = 23.704
-theme_override_fonts/font = ExtResource("3_sepwh")
-theme_override_font_sizes/font_size = 19
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
 selected = 0
 item_count = 2
 popup/item_0/text = "Play Once"
@@ -310,85 +317,83 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -336.5
-offset_top = -252.0
-offset_right = 336.5
-offset_bottom = 252.0
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="Exit"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.501
-anchor_top = 0.115
-anchor_right = 0.501
-anchor_bottom = 0.115
-offset_left = -275.673
-offset_top = -53.96
-offset_right = 276.327
-offset_bottom = 54.04
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
 texture = ExtResource("5_ruj6x")
 
 [node name="TextureRect2" type="TextureRect" parent="Exit"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
-anchor_top = 0.436
+anchor_top = 0.638
 anchor_right = 0.5
-anchor_bottom = 0.436
-offset_left = -351.5
-offset_top = -127.744
-offset_right = 348.5
-offset_bottom = 127.256
-texture = ExtResource("6_xcvof")
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
 
 [node name="Control" type="Control" parent="Exit"]
 layout_mode = 1
-anchor_left = 0.326
-anchor_top = 0.681
-anchor_right = 0.326
-anchor_bottom = 0.681
-offset_left = -97.398
-offset_top = -27.224
-offset_right = 97.602
-offset_bottom = 26.776
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
 
 [node name="cancel" type="TouchScreenButton" parent="Exit/Control"]
-scale = Vector2(0.77, 0.726027)
 texture_normal = ExtResource("11_pixcj")
 texture_pressed = ExtResource("12_5dp28")
 
 [node name="Control2" type="Control" parent="Exit"]
 layout_mode = 1
-anchor_left = 0.683
-anchor_top = 0.681
-anchor_right = 0.683
-anchor_bottom = 0.681
-offset_left = -97.159
-offset_top = -27.224
-offset_right = 96.841
-offset_bottom = 26.776
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
 
 [node name="exit" type="TouchScreenButton" parent="Exit/Control2"]
-scale = Vector2(0.77, 0.714286)
 texture_normal = ExtResource("13_lfhnn")
 texture_pressed = ExtResource("14_d5kma")
 
 [node name="Label" type="Label" parent="Exit"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.498
-anchor_top = 0.123
-anchor_right = 0.498
-anchor_bottom = 0.123
-offset_left = -336.654
-offset_top = -38.992
-offset_right = 336.346
-offset_bottom = 39.008
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 42
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
 text = "Exit Game"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -396,20 +401,38 @@ vertical_alignment = 1
 [node name="Label2" type="Label" parent="Exit"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.492
-anchor_top = 0.46
-anchor_right = 0.492
-anchor_bottom = 0.46
-offset_left = -244.616
-offset_top = -44.84
-offset_right = 244.384
-offset_bottom = 45.16
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 27
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
 text = "Are you sure you want to exit the
 game? "
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="Exit"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="Exit/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
 
 [node name="Unlock" type="Control" parent="."]
 visible = false
@@ -419,85 +442,83 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -336.5
-offset_top = -252.0
-offset_right = 336.5
-offset_bottom = 252.0
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="Unlock"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.501
-anchor_top = 0.115
-anchor_right = 0.501
-anchor_bottom = 0.115
-offset_left = -275.673
-offset_top = -53.96
-offset_right = 276.327
-offset_bottom = 54.04
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
 texture = ExtResource("5_ruj6x")
 
 [node name="TextureRect2" type="TextureRect" parent="Unlock"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
-anchor_top = 0.436
+anchor_top = 0.638
 anchor_right = 0.5
-anchor_bottom = 0.436
-offset_left = -351.5
-offset_top = -127.744
-offset_right = 348.5
-offset_bottom = 127.256
-texture = ExtResource("6_xcvof")
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
 
 [node name="Control" type="Control" parent="Unlock"]
 layout_mode = 1
-anchor_left = 0.326
-anchor_top = 0.681
-anchor_right = 0.326
-anchor_bottom = 0.681
-offset_left = -97.398
-offset_top = -27.224
-offset_right = 97.602
-offset_bottom = 26.776
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
 
 [node name="cancel" type="TouchScreenButton" parent="Unlock/Control"]
-scale = Vector2(0.77, 0.77)
 texture_normal = ExtResource("11_pixcj")
 texture_pressed = ExtResource("12_5dp28")
 
 [node name="Control2" type="Control" parent="Unlock"]
 layout_mode = 1
-anchor_left = 0.683
-anchor_top = 0.681
-anchor_right = 0.683
-anchor_bottom = 0.681
-offset_left = -97.159
-offset_top = -27.224
-offset_right = 96.841
-offset_bottom = 26.776
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
 
 [node name="yes" type="TouchScreenButton" parent="Unlock/Control2"]
-scale = Vector2(0.77, 0.77)
 texture_normal = ExtResource("13_lfhnn")
 texture_pressed = ExtResource("14_d5kma")
 
 [node name="Label" type="Label" parent="Unlock"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.498
-anchor_top = 0.123
-anchor_right = 0.498
-anchor_bottom = 0.123
-offset_left = -336.654
-offset_top = -38.992
-offset_right = 336.346
-offset_bottom = 39.008
+anchor_left = 0.5
+anchor_top = 0.159
+anchor_right = 0.5
+anchor_bottom = 0.159
+offset_left = -336.5
+offset_top = -48.466
+offset_right = 336.5
+offset_bottom = 48.534
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 42
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
 text = "Unlock Levels"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -506,34 +527,52 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.492
-anchor_top = 0.46
+anchor_top = 0.636
 anchor_right = 0.492
-anchor_bottom = 0.46
+anchor_bottom = 0.636
 offset_left = -244.616
-offset_top = -44.84
+offset_top = -44.864
 offset_right = 244.384
-offset_bottom = 45.16
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 25
+offset_bottom = 45.136
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
 text = "Are you sure you want to access all
 levels now?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Control3" type="Control" parent="Unlock"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_unlock" type="TouchScreenButton" parent="Unlock/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
 [node name="title" type="TextureRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.714
-anchor_top = 0.196
-anchor_right = 0.714
-anchor_bottom = 0.196
-offset_left = -273.92
-offset_top = -87.12
-offset_right = 273.08
-offset_bottom = 86.88
+anchor_left = 0.5
+anchor_top = 0.194
+anchor_right = 0.5
+anchor_bottom = 0.194
+offset_left = -403.0
+offset_top = -127.68
+offset_right = 397.0
+offset_bottom = 128.32
 texture = ExtResource("8_hmxu4")
 
 [node name="components" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -543,33 +582,35 @@ grow_vertical = 2
 
 [node name="Control" type="Control" parent="components"]
 layout_mode = 1
-anchor_left = 2.55
-anchor_top = 2.25
-anchor_right = 2.55
-anchor_bottom = 2.25
-offset_left = -3203.0
-offset_top = -1571.0
-offset_right = -3121.0
-offset_bottom = -1489.0
+anchor_left = 0.055
+anchor_top = 0.097
+anchor_right = 0.055
+anchor_bottom = 0.097
+offset_left = -50.4
+offset_top = -49.84
+offset_right = 49.6
+offset_bottom = 50.16
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="google" type="TouchScreenButton" parent="components/Control"]
-scale = Vector2(1.588, 1.62)
+scale = Vector2(2, 2)
 texture_normal = ExtResource("7_dclss")
 texture_pressed = ExtResource("9_dclss")
 
 [node name="Control2" type="Control" parent="components"]
 layout_mode = 1
-anchor_left = 0.08
-anchor_top = 0.125
-anchor_right = 0.08
-anchor_bottom = 0.125
-offset_left = -41.4
-offset_top = -41.0
-offset_right = 40.6
-offset_bottom = 41.0
+anchor_left = 0.055
+anchor_top = 0.097
+anchor_right = 0.055
+anchor_bottom = 0.097
+offset_left = -50.4
+offset_top = -49.84
+offset_right = 49.6
+offset_bottom = 50.16
 
 [node name="profile3" type="TouchScreenButton" parent="components/Control2"]
-scale = Vector2(1.58824, 1.62)
+scale = Vector2(2, 2)
 texture_normal = SubResource("ViewportTexture_eq0s3")
 
 [node name="profile" type="TextureRect" parent="components/Control2"]
@@ -579,115 +620,130 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -41.0
-offset_top = -41.0
-offset_right = 41.0
-offset_bottom = 41.0
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
 
 [node name="Control3" type="Control" parent="components"]
 layout_mode = 1
-anchor_left = 0.08
-anchor_top = 0.554
-anchor_right = 0.08
-anchor_bottom = 0.554
-offset_left = -41.4
-offset_top = -40.88
-offset_right = 40.6
-offset_bottom = 41.12
+anchor_left = 0.055
+anchor_top = 0.89
+anchor_right = 0.055
+anchor_bottom = 0.89
+offset_left = -50.4
+offset_top = -49.8
+offset_right = 49.6
+offset_bottom = 50.2
 
 [node name="settings" type="TouchScreenButton" parent="components/Control3"]
-scale = Vector2(1.62, 1.62)
+scale = Vector2(2, 2)
 texture_normal = ExtResource("10_ictww")
 texture_pressed = ExtResource("11_1o50l")
 
 [node name="Control4" type="Control" parent="components"]
 layout_mode = 1
-anchor_left = 0.08
-anchor_top = 0.706
-anchor_right = 0.08
-anchor_bottom = 0.706
-offset_left = -41.4
-offset_top = -41.32
-offset_right = 40.6
-offset_bottom = 40.68
+anchor_left = 0.055
+anchor_top = 0.726
+anchor_right = 0.055
+anchor_bottom = 0.726
+offset_left = -50.4
+offset_top = -49.72
+offset_right = 49.6
+offset_bottom = 50.28
 
 [node name="credits" type="TouchScreenButton" parent="components/Control4"]
-scale = Vector2(1.62, 1.62)
+scale = Vector2(2, 2)
 texture_normal = ExtResource("12_v0h3m")
 texture_pressed = ExtResource("13_sra1m")
 
 [node name="Control5" type="Control" parent="components"]
 layout_mode = 1
-anchor_left = 0.08
-anchor_top = 0.854
-anchor_right = 0.08
-anchor_bottom = 0.854
-offset_left = -41.4
-offset_top = -40.88
-offset_right = 40.6
-offset_bottom = 41.12
+anchor_left = 0.945
+anchor_top = 0.103
+anchor_right = 0.945
+anchor_bottom = 0.103
+offset_left = -49.6001
+offset_top = -50.16
+offset_right = 50.3999
+offset_bottom = 49.84
 
 [node name="unlockall" type="TouchScreenButton" parent="components/Control5"]
-scale = Vector2(1.62, 1.62)
+scale = Vector2(2, 2)
 texture_normal = ExtResource("14_unisd")
 texture_pressed = ExtResource("15_2nbnt")
 
-[node name="Mainbtn" type="Control" parent="."]
+[node name="version" type="Label" parent="components"]
 layout_mode = 1
-anchor_left = 0.707
-anchor_top = 0.644
-anchor_right = 0.707
-anchor_bottom = 0.644
-offset_left = -170.96
-offset_top = -191.68
-offset_right = 170.04
-offset_bottom = 192.32
+anchors_preset = -1
+anchor_left = 0.912
+anchor_top = 0.928
+anchor_right = 0.912
+anchor_bottom = 0.928
+offset_left = -84.3601
+offset_top = -27.16
+offset_right = 85.6399
+offset_bottom = 26.84
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 20
+text = "Version 01.00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Mainbtn" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Control" type="Control" parent="Mainbtn"]
 layout_mode = 1
-anchor_left = 0.512
-anchor_top = 0.152
-anchor_right = 0.512
-anchor_bottom = 0.152
-offset_left = -143.592
-offset_top = -42.368
-offset_right = 143.408
-offset_bottom = 42.632
+anchor_left = 0.498
+anchor_top = 0.529
+anchor_right = 0.498
+anchor_bottom = 0.529
+offset_left = -200.44
+offset_top = -59.88
+offset_right = 199.56
+offset_bottom = 60.12
 
 [node name="newgame" type="TouchScreenButton" parent="Mainbtn/Control"]
-scale = Vector2(1.31818, 1.30303)
+scale = Vector2(1.83, 1.83)
 texture_normal = ExtResource("16_unisd")
 texture_pressed = ExtResource("17_2nbnt")
 
 [node name="Control2" type="Control" parent="Mainbtn"]
 layout_mode = 1
-anchor_left = 0.512
-anchor_top = 0.439
-anchor_right = 0.512
-anchor_bottom = 0.439
-offset_left = -143.592
-offset_top = -42.576
-offset_right = 143.408
-offset_bottom = 42.424
+anchor_left = 0.5
+anchor_top = 0.71
+anchor_right = 0.5
+anchor_bottom = 0.71
+offset_left = -206.0
+offset_top = -61.2
+offset_right = 200.54
+offset_bottom = 60.96
 
 [node name="start_continue" type="TouchScreenButton" parent="Mainbtn/Control2"]
-scale = Vector2(1.31818, 1.30303)
+scale = Vector2(1.83, 1.83)
 texture_normal = ExtResource("18_s7uu8")
 texture_pressed = ExtResource("19_g7f83")
 
 [node name="Control3" type="Control" parent="Mainbtn"]
 layout_mode = 1
-anchor_left = 0.512
-anchor_top = 0.728
-anchor_right = 0.512
-anchor_bottom = 0.728
-offset_left = -143.592
-offset_top = -42.552
-offset_right = 143.408
-offset_bottom = 42.448
+anchor_left = 0.5
+anchor_top = 0.89
+anchor_right = 0.5
+anchor_bottom = 0.89
+offset_left = -203.0
+offset_top = -59.8
+offset_right = 197.0
+offset_bottom = 60.2
 
 [node name="exit" type="TouchScreenButton" parent="Mainbtn/Control3"]
-scale = Vector2(1.31818, 1.30303)
+scale = Vector2(1.83, 1.83)
 texture_normal = ExtResource("20_r3wny")
 texture_pressed = ExtResource("21_ruj6x")
 
@@ -699,85 +755,86 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -336.5
-offset_top = -252.0
-offset_right = 336.5
-offset_bottom = 252.0
+offset_left = -350.0
+offset_top = -285.0
+offset_right = 350.0
+offset_bottom = 245.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="Credits"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.501
-anchor_top = 0.115
-anchor_right = 0.501
-anchor_bottom = 0.115
-offset_left = -275.673
-offset_top = -53.96
-offset_right = 276.327
-offset_bottom = 54.04
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
 texture = ExtResource("5_ruj6x")
 
 [node name="TextureRect2" type="TextureRect" parent="Credits"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.575
-anchor_right = 0.5
-anchor_bottom = 0.575
-offset_left = -351.5
-offset_top = -197.8
-offset_right = 348.5
-offset_bottom = 198.2
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
 texture = ExtResource("6_xcvof")
 
 [node name="Control" type="Control" parent="Credits"]
 layout_mode = 1
-anchor_left = 0.503
-anchor_top = 0.849
-anchor_right = 0.503
-anchor_bottom = 0.849
-offset_left = -31.019
-offset_top = -27.896
-offset_right = 30.981
-offset_bottom = 28.104
+anchor_left = 0.5
+anchor_top = 0.887
+anchor_right = 0.5
+anchor_bottom = 0.887
+offset_left = -50.0
+offset_top = -50.11
+offset_right = 50.0
+offset_bottom = 49.89
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="play_credits" type="TouchScreenButton" parent="Credits/Control"]
-scale = Vector2(0.6, 0.566)
 texture_normal = ExtResource("30_kj8il")
 texture_pressed = ExtResource("31_xyo3m")
 
 [node name="Control2" type="Control" parent="Credits"]
 layout_mode = 1
-anchor_left = 0.957
-anchor_top = 0.251
-anchor_right = 0.957
-anchor_bottom = 0.251
-offset_left = -24.561
-offset_top = -22.504
-offset_right = 24.439
-offset_bottom = 22.496
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
 
 [node name="exit_credits" type="TouchScreenButton" parent="Credits/Control2"]
-scale = Vector2(1, 0.943)
+scale = Vector2(1.2, 1.2)
 texture_normal = ExtResource("7_mh7xh")
 texture_pressed = ExtResource("8_0d2hm")
 
 [node name="Label" type="Label" parent="Credits"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.498
-anchor_top = 0.123
-anchor_right = 0.498
-anchor_bottom = 0.123
-offset_left = -336.654
-offset_top = -38.992
-offset_right = 336.346
-offset_bottom = 39.008
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 42
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
 text = "Credits"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -786,15 +843,17 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
-anchor_top = 0.612
+anchor_top = 0.595
 anchor_right = 0.5
-anchor_bottom = 0.612
-offset_left = -243.0
-offset_top = -98.448
-offset_right = 251.0
-offset_bottom = 98.552
-theme_override_fonts/font = ExtResource("4_2atga")
-theme_override_font_sizes/font_size = 24
+anchor_bottom = 0.595
+offset_left = -234.5
+offset_top = -113.35
+offset_right = 234.5
+offset_bottom = 113.65
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
 text = "SiklabDevs, a team of four 3rd-year 
 Computer Science Major in
  Application Development students 
@@ -813,8 +872,10 @@ vertical_alignment = 1
 [connection signal="value_changed" from="Settings/AudioSoundControl2" to="Settings/AudioSoundControl2" method="_on_value_changed"]
 [connection signal="pressed" from="Exit/Control/cancel" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="Exit/Control2/exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="Exit/Control3/back_exit" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="Unlock/Control/cancel" to="." method="_on_cancel_unlock_pressed"]
 [connection signal="pressed" from="Unlock/Control2/yes" to="." method="_on_yes_pressed"]
+[connection signal="pressed" from="Unlock/Control3/back_unlock" to="." method="_on_cancel_unlock_pressed"]
 [connection signal="pressed" from="components/Control3/settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="components/Control4/credits" to="." method="_on_credits_pressed"]
 [connection signal="pressed" from="components/Control5/unlockall" to="." method="_on_unlockall_pressed"]
