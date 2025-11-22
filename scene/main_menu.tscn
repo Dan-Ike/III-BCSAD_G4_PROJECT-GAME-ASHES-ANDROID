@@ -311,6 +311,7 @@ popup/item_1/text = "Always"
 popup/item_1/id = 1
 
 [node name="Exit" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -558,7 +559,6 @@ texture_normal = ExtResource("7_mh7xh")
 texture_pressed = ExtResource("8_0d2hm")
 
 [node name="title" type="TextureRect" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -572,7 +572,6 @@ offset_bottom = 128.32
 texture = ExtResource("8_hmxu4")
 
 [node name="components" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -691,7 +690,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Mainbtn" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

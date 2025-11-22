@@ -69,28 +69,29 @@ func _process(delta: float) -> void:
 
 func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
 	if body is Player:
+		# Get time FIRST before stopping
+		var time_cleared = body._get_elapsed_time()
+		body.stop_level_timer()
+		
+		print("[Level] Player completed Floor %d, Level %d in %.2f seconds" % [Global.current_floor, Global.current_level, time_cleared])
+		
+		# Save progress
 		Global.gameStarted = true
-		Global.is_retrying_level = false  # Reset retry flag when advancing
+		Global.is_retrying_level = false
 		unlock_dash()
-		SaveManager.mark_level_completed(1, 1) 
+		SaveManager.mark_level_completed(1, 1)
 		SaveManager.advance_to_level(1, 2)
 		
-		var user_id = Global.get_current_user().get("id", "")
-		if user_id != "":
-			await SaveManager.sync_from_supabase(user_id)
+		# Disable touch controls
+		if touch_controls:
+			touch_controls.disable_all_controls()
 		
-		# Update Global to next level
-		Global.advance_level()
-		
-		touch_controls.disable_all_controls()
-		scene_transition_animation.play("fade_in")
-		await get_tree().create_timer(0.5).timeout
-		
-		# Show loading screen and load next level
-		if loading_screen:
-			loading_screen.start_loading("res://scene/floor_1_level_2.tscn")
-		else:
-			get_tree().change_scene_to_file("res://scene/floor_1_level_2.tscn")
+		# Show level completed screen
+		var game_over_scene = preload("res://scene/game_over.tscn")
+		var game_over = game_over_scene.instantiate()
+		get_tree().root.add_child(game_over)
+		if game_over.has_method("show_game_over"):
+			game_over.show_game_over(Global.current_floor, Global.current_level, time_cleared, true)
 
 func unlock_double_jump():
 	Global.can_double_jump = true

@@ -1,6 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://cmadrl6pxxblc"]
+[gd_scene load_steps=15 format=3 uid="uid://cmadrl6pxxblc"]
 
 [ext_resource type="Script" uid="uid://t2enims6ecpk" path="res://script/game_over.gd" id="1_8uq5u"]
+[ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="2_p3ufs"]
+[ext_resource type="Texture2D" uid="uid://cu2r0h3qvtrq2" path="res://art/components/BodyText_Background.png" id="3_0wuup"]
+[ext_resource type="Texture2D" uid="uid://c1l55auhvft0l" path="res://art/components/Close_Button.png" id="4_nhro7"]
+[ext_resource type="Texture2D" uid="uid://bp3pexm30n2y7" path="res://art/components/Close_Button (1).png" id="5_qbgy4"]
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="6_jy3q7"]
+[ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="7_46orx"]
+[ext_resource type="Texture2D" uid="uid://cavwbu6soat87" path="res://art/components/MainMenu_Button.png" id="8_jy3q7"]
+[ext_resource type="Texture2D" uid="uid://cdqlyi0e5ykan" path="res://art/components/MainMenu_Button (1).png" id="9_46orx"]
+[ext_resource type="Texture2D" uid="uid://16ur82ykvpbg" path="res://art/components/NextLevel_Button.png" id="10_jy3q7"]
+[ext_resource type="Texture2D" uid="uid://dshpliyp4ifpn" path="res://art/components/NextLevel_Button (1).png" id="11_46orx"]
+[ext_resource type="Texture2D" uid="uid://b1k2ika8beij6" path="res://art/components/Retry_Button.png" id="12_km567"]
+[ext_resource type="Texture2D" uid="uid://bi62pxfh5u2gn" path="res://art/components/Retry_Button (1).png" id="13_oytb5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8uq5u"]
 
@@ -9,6 +21,7 @@ process_mode = 3
 script = ExtResource("1_8uq5u")
 
 [node name="Overlay" type="ColorRect" parent="."]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -17,6 +30,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.431373)
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -97,6 +111,323 @@ process_mode = 3
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 text = "Main Menu"
+
+[node name="level_completed" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="level_completed"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("2_p3ufs")
+
+[node name="TextureRect2" type="TextureRect" parent="level_completed"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.598
+anchor_right = 0.5
+anchor_bottom = 0.598
+offset_left = -350.0
+offset_top = -222.94
+offset_right = 350.0
+offset_bottom = 223.06
+texture = ExtResource("3_0wuup")
+
+[node name="Control" type="Control" parent="level_completed"]
+visible = false
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
+
+[node name="back" type="TouchScreenButton" parent="level_completed/Control"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("4_nhro7")
+texture_pressed = ExtResource("5_qbgy4")
+
+[node name="Title" type="Label" parent="level_completed"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_jy3q7")
+theme_override_font_sizes/font_size = 32
+text = "Level Completed!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FloorLevel" type="Label" parent="level_completed"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.401
+anchor_right = 0.5
+anchor_bottom = 0.401
+offset_left = -116.0
+offset_top = -23.53
+offset_right = 122.0
+offset_bottom = 23.47
+theme_override_fonts/font = ExtResource("7_46orx")
+theme_override_font_sizes/font_size = 24
+text = "Floor 1 - Level 1
+Level Title"
+horizontal_alignment = 1
+
+[node name="Quote" type="Label" parent="level_completed"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.549
+anchor_right = 0.5
+anchor_bottom = 0.549
+offset_left = -202.0
+offset_top = -12.97
+offset_right = 198.0
+offset_bottom = 13.03
+theme_override_fonts/font = ExtResource("7_46orx")
+theme_override_font_sizes/font_size = 24
+text = "\"Git Gud\""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="TimeCleared" type="Label" parent="level_completed"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.709
+anchor_right = 0.5
+anchor_bottom = 0.709
+offset_left = -201.0
+offset_top = -12.77
+offset_right = 199.0
+offset_bottom = 13.23
+theme_override_fonts/font = ExtResource("7_46orx")
+theme_override_font_sizes/font_size = 24
+text = "Time Finished: 00:00:00"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Control2" type="Control" parent="level_completed"]
+layout_mode = 1
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
+
+[node name="main_menu" type="TouchScreenButton" parent="level_completed/Control2"]
+texture_normal = ExtResource("8_jy3q7")
+texture_pressed = ExtResource("9_46orx")
+
+[node name="Control3" type="Control" parent="level_completed"]
+layout_mode = 1
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
+
+[node name="next" type="TouchScreenButton" parent="level_completed/Control3"]
+texture_normal = ExtResource("10_jy3q7")
+texture_pressed = ExtResource("11_46orx")
+
+[node name="game_over" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="game_over"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("2_p3ufs")
+
+[node name="TextureRect2" type="TextureRect" parent="game_over"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.598
+anchor_right = 0.5
+anchor_bottom = 0.598
+offset_left = -350.0
+offset_top = -222.94
+offset_right = 350.0
+offset_bottom = 223.06
+texture = ExtResource("3_0wuup")
+
+[node name="Control" type="Control" parent="game_over"]
+visible = false
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
+
+[node name="back" type="TouchScreenButton" parent="game_over/Control"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("4_nhro7")
+texture_pressed = ExtResource("5_qbgy4")
+
+[node name="Title" type="Label" parent="game_over"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_jy3q7")
+theme_override_font_sizes/font_size = 32
+text = "You Died"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FloorLevel" type="Label" parent="game_over"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.401
+anchor_right = 0.5
+anchor_bottom = 0.401
+offset_left = -116.0
+offset_top = -23.53
+offset_right = 122.0
+offset_bottom = 23.47
+theme_override_fonts/font = ExtResource("7_46orx")
+theme_override_font_sizes/font_size = 24
+text = "Floor 1 - Level 1
+Level Title"
+horizontal_alignment = 1
+
+[node name="Quote" type="Label" parent="game_over"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.549
+anchor_right = 0.5
+anchor_bottom = 0.549
+offset_left = -202.0
+offset_top = -12.97
+offset_right = 198.0
+offset_bottom = 13.03
+theme_override_fonts/font = ExtResource("7_46orx")
+theme_override_font_sizes/font_size = 24
+text = "\"Git Gud\""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="TimeCleared" type="Label" parent="game_over"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.709
+anchor_right = 0.5
+anchor_bottom = 0.709
+offset_left = -201.0
+offset_top = -12.77
+offset_right = 199.0
+offset_bottom = 13.23
+theme_override_fonts/font = ExtResource("7_46orx")
+theme_override_font_sizes/font_size = 24
+text = "Time Survived: 00:00:00"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Control2" type="Control" parent="game_over"]
+layout_mode = 1
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
+
+[node name="main_menu" type="TouchScreenButton" parent="game_over/Control2"]
+texture_normal = ExtResource("8_jy3q7")
+texture_pressed = ExtResource("9_46orx")
+
+[node name="Control3" type="Control" parent="game_over"]
+layout_mode = 1
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
+
+[node name="retry" type="TouchScreenButton" parent="game_over/Control3"]
+texture_normal = ExtResource("12_km567")
+texture_pressed = ExtResource("13_oytb5")
 
 [connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/Retry" to="." method="_on_retry_pressed"]
 [connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBox/ButtonContainer/MainMenu" to="." method="_on_main_menu_pressed"]

@@ -8,7 +8,7 @@ enum EnemyType { PATROL, PERSISTENT }
 var edge_check_distance: float = 30.0  # How far ahead to check for edges
 # Add to variables section:
 var edge_check_cooldown: float = 0.0
-const EDGE_CHECK_INTERVAL: float = 0.1  # Check edges every 0.1 seconds
+const EDGE_CHECK_INTERVAL: float = 0.5  # Check edges every 0.1 seconds
 # Node references
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var detection_area: Area2D = $DetectionArea
@@ -69,6 +69,10 @@ const ATTACK_RANGE = 50.0
 var players_hit_this_attack: Array = []
 var is_attacking: bool = false
 var can_take_damage: bool = true
+
+var player_distance_cache: float = 0.0
+var distance_update_timer: float = 0.0
+const DISTANCE_UPDATE_INTERVAL: float = 0.15
 
 func _ready() -> void:
 	# Set up patrol bounds
@@ -132,19 +136,9 @@ func _check_edge_ahead() -> bool:
 	if not is_on_floor():
 		return false
 	
-	# Raycast downward from ahead of the enemy
-	var space_state = get_world_2d().direct_space_state
-	var check_position = global_position + Vector2(patrol_direction * edge_check_distance, 0)
-	var ray_end = check_position + Vector2(0, 50)  # Check 50 pixels down
-	
-	var query = PhysicsRayQueryParameters2D.create(check_position, ray_end)
-	query.exclude = [self]
-	query.collision_mask = 1  # Ground layer
-	
-	var result = space_state.intersect_ray(query)
-	
-	# If no ground found ahead, there's an edge
-	return result.is_empty()
+	# Use simpler collision check instead of raycast
+	var test_position = position + Vector2(patrol_direction * edge_check_distance, 20)
+	return not test_move(transform, Vector2(patrol_direction * edge_check_distance, 50))
 
 func _setup_navigation_patrol_bounds() -> void:
 	# Find NavigationRegion2D in parent
@@ -182,6 +176,13 @@ func _physics_process(delta: float) -> void:
 	# Update player reference
 	if not player and Global.playerBody:
 		player = Global.playerBody
+	
+	# Cache distance calculations
+	distance_update_timer -= delta
+	if distance_update_timer <= 0.0:
+		distance_update_timer = DISTANCE_UPDATE_INTERVAL
+		if player:
+			player_distance_cache = global_position.distance_to(player.global_position)
 	
 	# Update health bar
 	if health_bar:
@@ -302,7 +303,7 @@ func _state_chase(delta: float) -> void:
 	animated_sprite.play("run")
 	
 	var direction_to_player = sign(player.global_position.x - global_position.x)
-	var distance_to_player = global_position.distance_to(player.global_position)
+	var distance_to_player = player_distance_cache
 	
 	# Check if in attack range
 	if distance_to_player <= ATTACK_RANGE and can_attack:
@@ -320,7 +321,7 @@ func _state_attack_ready(delta: float) -> void:
 		change_state(State.CHASE)
 		return
 	
-	var distance_to_player = global_position.distance_to(player.global_position)
+	var distance_to_player = player_distance_cache
 	
 	# Player escaped range
 	if distance_to_player > ATTACK_RANGE: #+ 20:
@@ -383,14 +384,13 @@ func _perform_attack() -> void:
 	_enable_damage_area()
 	
 	# Check for damage during the attack
-	var damage_check_timer = 0.0
-	var attack_duration = 0.6
-	while damage_check_timer < attack_duration:
+# Check for damage during the attack (reduced frequency)
+	var damage_checks = 3  # Only check 3 times instead of every frame
+	for i in range(damage_checks):
 		if not is_instance_valid(self):
 			return
 		_check_damage_to_player()
-		await get_tree().process_frame
-		damage_check_timer += get_physics_process_delta_time()
+		await get_tree().create_timer(0.2).timeout
 	
 	_disable_damage_area()
 	is_attacking = false

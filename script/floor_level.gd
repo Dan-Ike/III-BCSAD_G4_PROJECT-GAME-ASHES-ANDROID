@@ -55,15 +55,15 @@ func _get_floor_number(floor_name: String) -> int:
 	return 1
 
 func _update_ui() -> void:
-	var level_name = levels[current_index]
 	var floor_number = _get_floor_number(Global.selected_floor)
 	var level_number = current_index + 1
 	
 	var is_unlocked = _is_level_unlocked(floor_number, level_number)
 	var is_completed = SaveManager.is_level_completed(floor_number, level_number)
-	var completion_text = " ✓" if is_completed else ""
+	var completion_text = "" if is_completed else ""
 	
-	level_label.text = level_name.capitalize() + completion_text
+	# Display label with nice formatting
+	level_label.text = "%s - Level %d%s" % [Global.selected_floor.capitalize(), level_number, completion_text]
 	
 	# Load unlock/lock image based on status
 	var image_suffix = "_unlock" if is_unlocked else "_lock"
