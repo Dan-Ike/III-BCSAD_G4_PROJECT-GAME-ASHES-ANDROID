@@ -150,9 +150,20 @@ func _ready() -> void:
 
 func _start_level_timer() -> void:
 	"""Start tracking time when level begins"""
+	# Don't start timer if cutscene is playing
+	if Global.cutscene_playing:
+		is_level_active = false
+		print("[Player] Timer NOT started - cutscene is playing")
+	else:
+		level_start_time = Time.get_ticks_msec() / 1000.0
+		is_level_active = true
+		print("[Player] Timer started at: ", level_start_time)
+
+func reset_level_timer() -> void:
+	"""Reset and start timer after cutscene ends"""
 	level_start_time = Time.get_ticks_msec() / 1000.0
 	is_level_active = true
-	print("[Player] Timer started at: ", level_start_time)
+	print("[Player] Timer reset and started at: ", level_start_time)
 
 func _get_elapsed_time() -> float:
 	"""Get time elapsed since level start"""

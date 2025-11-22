@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://bjg21ygjiqxou"]
+[gd_scene load_steps=55 format=3 uid="uid://bjg21ygjiqxou"]
 
 [ext_resource type="Script" uid="uid://b0xprnx4cxeld" path="res://script/touch_controls.gd" id="1_cx18e"]
 [ext_resource type="Texture2D" uid="uid://b5bnhc68juqkl" path="res://art/buttons_new/Left_Button.png" id="2_w2cpb"]
@@ -9,19 +9,33 @@
 [ext_resource type="Texture2D" uid="uid://cu0sn88ftr0d1" path="res://art/buttons_new/Dash_Button.png" id="6_qlw5r"]
 [ext_resource type="Script" uid="uid://c06whmj2kf2eb" path="res://script/audio_control.gd" id="7_nito4"]
 [ext_resource type="Texture2D" uid="uid://l0ackv2go2fa" path="res://art/buttons_new/Dash_Button (1).png" id="7_nr2pm"]
+[ext_resource type="Texture2D" uid="uid://bxiity851p2eq" path="res://art/components/Pause_Button.png" id="8_adyei"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="8_nr1lh"]
-[ext_resource type="Texture2D" uid="uid://c0mkv7s0ifai4" path="res://art/buttons/Pause_Icon.png" id="8_rijgt"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="9_fqcvx"]
-[ext_resource type="Texture2D" uid="uid://4shetylo1b0u" path="res://art/buttons/Pause_Icon (2).png" id="9_r10gs"]
+[ext_resource type="Texture2D" uid="uid://brdvvxf4wdmjj" path="res://art/components/Pause_Button (1).png" id="9_w2cpb"]
 [ext_resource type="Texture2D" uid="uid://vd3tj0r2tuuh" path="res://art/buttons_new/Light_Button (3).png" id="10_38dk4"]
 [ext_resource type="Texture2D" uid="uid://dymvk1ksssdax" path="res://art/MAIN MENU.png" id="10_kfhhv"]
+[ext_resource type="Texture2D" uid="uid://dfbfid87buti6" path="res://art/components/Settings_Icon.png" id="10_qlw5r"]
+[ext_resource type="Texture2D" uid="uid://wnsdl8twdpho" path="res://art/components/Settings_Icon (1).png" id="11_nr2pm"]
 [ext_resource type="Texture2D" uid="uid://fnf5df2gnran" path="res://art/buttons_new/Light_Button (4).png" id="11_rijgt"]
 [ext_resource type="Texture2D" uid="uid://dlkjug5hmf8in" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0001_pixel2_EmblemSpace.png" id="12_8eo88"]
 [ext_resource type="Script" uid="uid://3c5h4xu43s8c" path="res://script/health_bar_simple.gd" id="12_dpkfn"]
 [ext_resource type="Texture2D" uid="uid://b11j3qywssrq7" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border_solo.png" id="13_kir6f"]
 [ext_resource type="Texture2D" uid="uid://dxougw36vsnfr" path="res://art/Pixel Health Bar Asset Pack 1 by Adwit Rahman (2)/Pixel Health Bar Asset Pack 1 by Adwit Rahman/Pixel Health Bar 1/Pixel2_Healthbar_0002_pixel2_Border.png" id="14_kir6f"]
 [ext_resource type="Script" uid="uid://wml8y6wat2q6" path="res://script/health_bar_advanced.gd" id="15_lf1wj"]
+[ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="15_r10gs"]
+[ext_resource type="Texture2D" uid="uid://lllew6fm2ivi" path="res://art/components/HalfBodyText_Background.png" id="16_5vxk1"]
+[ext_resource type="Texture2D" uid="uid://c1l55auhvft0l" path="res://art/components/Close_Button.png" id="17_qjhx1"]
 [ext_resource type="Script" uid="uid://cfdrnhnjcgj7x" path="res://script/health_bar_boss.gd" id="17_raqan"]
+[ext_resource type="Texture2D" uid="uid://bp3pexm30n2y7" path="res://art/components/Close_Button (1).png" id="18_hg4c8"]
+[ext_resource type="Texture2D" uid="uid://cnmemeukqeinv" path="res://art/components/Restart_Button.png" id="20_qjhx1"]
+[ext_resource type="Texture2D" uid="uid://dfnwfrox13ajb" path="res://art/components/Restart_Button (1).png" id="21_hg4c8"]
+[ext_resource type="Texture2D" uid="uid://e4mt6s6fc4o0" path="res://art/components/PlayVideo_Button.png" id="22_rjj2c"]
+[ext_resource type="Texture2D" uid="uid://8hxqohejfs5p" path="res://art/components/PlayVideo_Button (1).png" id="23_jstce"]
+[ext_resource type="Texture2D" uid="uid://b8fgydgt8gb6h" path="res://art/components/Home_Button.png" id="24_fwkwx"]
+[ext_resource type="Texture2D" uid="uid://codp6dgkluef5" path="res://art/components/Home_Button (1).png" id="25_bxufd"]
+[ext_resource type="Texture2D" uid="uid://cu2r0h3qvtrq2" path="res://art/components/BodyText_Background.png" id="35_fwkwx"]
+[ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="36_bxufd"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_genjj"]
 
@@ -85,6 +99,21 @@ bg_color = Color(0.341235, 0.341235, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lf1wj"]
 bg_color = Color(0.752941, 0.752941, 0.752941, 1)
 
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_5cq61"]
+color = Color(0.980104, 0.87028, 0.863563, 1)
+thickness = 10
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_p5f4l"]
+color = Color(1, 0.21268, 0.159696, 1)
+thickness = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y3unk"]
+bg_color = Color(1, 0.211765, 0.160784, 1)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_8u61t"]
+color = Color(1, 0.211765, 0.160784, 1)
+thickness = 10
+
 [node name="TouchControls" type="CanvasLayer"]
 script = ExtResource("1_cx18e")
 
@@ -93,6 +122,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -2.0
+offset_right = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -189,21 +220,38 @@ action = "dash"
 
 [node name="Control6" type="Control" parent="Control"]
 layout_mode = 1
-anchor_left = 0.937
-anchor_top = 0.104
-anchor_right = 0.937
-anchor_bottom = 0.104
-offset_left = -50.3601
-offset_top = -50.88
-offset_right = 51.6399
-offset_bottom = 51.12
+anchor_left = 0.947
+anchor_top = 0.1
+anchor_right = 0.947
+anchor_bottom = 0.1
+offset_left = -50.16
+offset_top = -50.0
+offset_right = 49.84
+offset_bottom = 50.0
 
 [node name="pause" type="TouchScreenButton" parent="Control/Control6"]
 process_mode = 3
-position = Vector2(2.00016, 8)
-scale = Vector2(0.919999, 1.0119)
-texture_normal = ExtResource("8_rijgt")
-texture_pressed = ExtResource("9_r10gs")
+scale = Vector2(2, 2)
+texture_normal = ExtResource("8_adyei")
+texture_pressed = ExtResource("9_w2cpb")
+action = "pause"
+
+[node name="Control8" type="Control" parent="Control"]
+layout_mode = 1
+anchor_left = 0.859
+anchor_top = 0.1
+anchor_right = 0.859
+anchor_bottom = 0.1
+offset_left = -49.52
+offset_top = -50.0
+offset_right = 50.48
+offset_bottom = 50.0
+
+[node name="settings" type="TouchScreenButton" parent="Control/Control8"]
+process_mode = 3
+scale = Vector2(2, 2)
+texture_normal = ExtResource("10_qlw5r")
+texture_pressed = ExtResource("11_nr2pm")
 action = "pause"
 
 [node name="Control7" type="Control" parent="Control"]
@@ -241,16 +289,124 @@ offset_bottom = 149.96
 process_mode = 3
 visible = false
 layout_mode = 3
-anchor_left = 0.496
-anchor_top = 0.494
-anchor_right = 0.496
-anchor_bottom = 0.494
-offset_left = -293.88
-offset_top = -220.68
-offset_right = 295.12
-offset_bottom = 220.32
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+
+[node name="TextureRect" type="TextureRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("15_r10gs")
+
+[node name="TextureRect2" type="TextureRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_5vxk1")
+
+[node name="Label" type="Label" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 32
+text = "Pause"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="PauseMenu"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="PauseMenu/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("17_qjhx1")
+texture_pressed = ExtResource("18_hg4c8")
+
+[node name="Control4" type="Control" parent="PauseMenu"]
+layout_mode = 1
+anchor_left = 0.306
+anchor_top = 0.701
+anchor_right = 0.306
+anchor_bottom = 0.701
+offset_left = -50.2
+offset_top = -50.174
+offset_right = 49.8
+offset_bottom = 49.826
+
+[node name="retry" type="TouchScreenButton" parent="PauseMenu/Control4"]
+scale = Vector2(2, 2)
+texture_normal = ExtResource("20_qjhx1")
+texture_pressed = ExtResource("21_hg4c8")
+
+[node name="Control5" type="Control" parent="PauseMenu"]
+layout_mode = 1
+anchor_left = 0.494
+anchor_top = 0.701
+anchor_right = 0.494
+anchor_bottom = 0.701
+offset_left = -49.8
+offset_top = -50.174
+offset_right = 50.2
+offset_bottom = 49.826
+
+[node name="resume" type="TouchScreenButton" parent="PauseMenu/Control5"]
+texture_normal = ExtResource("22_rjj2c")
+texture_pressed = ExtResource("23_jstce")
+
+[node name="Control6" type="Control" parent="PauseMenu"]
+layout_mode = 1
+anchor_left = 0.681
+anchor_top = 0.701
+anchor_right = 0.681
+anchor_bottom = 0.701
+offset_left = -49.7
+offset_top = -50.174
+offset_right = 50.3
+offset_bottom = 49.826
+
+[node name="main_menu" type="TouchScreenButton" parent="PauseMenu/Control6"]
+scale = Vector2(2, 2)
+texture_normal = ExtResource("24_fwkwx")
+texture_pressed = ExtResource("25_bxufd")
 
 [node name="Panel" type="Panel" parent="PauseMenu"]
+visible = false
 z_index = -1
 layout_mode = 1
 anchors_preset = 15
@@ -342,18 +498,21 @@ text = "Exit
 flat = true
 
 [node name="MainMenu" type="Sprite2D" parent="PauseMenu"]
+visible = false
 z_index = -1
 position = Vector2(295.5, 188)
 scale = Vector2(0.0955015, 0.125615)
 texture = ExtResource("10_kfhhv")
 
 [node name="MainMenu2" type="Sprite2D" parent="PauseMenu"]
+visible = false
 z_index = -1
 position = Vector2(295.5, 278)
 scale = Vector2(0.0955015, 0.125615)
 texture = ExtResource("10_kfhhv")
 
 [node name="MainMenu3" type="Sprite2D" parent="PauseMenu"]
+visible = false
 z_index = -1
 position = Vector2(297, 365)
 scale = Vector2(0.0626844, 0.125615)
@@ -736,6 +895,196 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_kir6f")
 value = 100.0
 show_percentage = false
 
+[node name="Settings" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("15_r10gs")
+
+[node name="TextureRect2" type="TextureRect" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
+texture = ExtResource("35_fwkwx")
+
+[node name="Control" type="Control" parent="Settings"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
+
+[node name="back" type="TouchScreenButton" parent="Settings/Control"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("17_qjhx1")
+texture_pressed = ExtResource("18_hg4c8")
+
+[node name="Label" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("9_fqcvx")
+theme_override_font_sizes/font_size = 32
+text = "Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.337
+anchor_top = 0.455
+anchor_right = 0.337
+anchor_bottom = 0.455
+offset_left = -125.9
+offset_top = -25.32
+offset_right = 126.35
+offset_bottom = 24.88
+theme_override_fonts/font = ExtResource("36_bxufd")
+theme_override_font_sizes/font_size = 32
+text = "Music"
+vertical_alignment = 1
+
+[node name="Label4" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.336
+anchor_top = 0.574
+anchor_right = 0.336
+anchor_bottom = 0.574
+offset_left = -125.2
+offset_top = -25.296
+offset_right = 124.614
+offset_bottom = 24.904
+theme_override_fonts/font = ExtResource("36_bxufd")
+theme_override_font_sizes/font_size = 32
+text = "SFX "
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.281
+anchor_top = 0.699
+anchor_right = 0.281
+anchor_bottom = 0.699
+offset_left = -86.7
+offset_top = -25.296
+offset_right = 87.366
+offset_bottom = 24.904
+theme_override_fonts/font = ExtResource("36_bxufd")
+theme_override_font_sizes/font_size = 32
+text = "Control"
+vertical_alignment = 1
+
+[node name="AudioControl" type="HSlider" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.586
+anchor_top = 0.492
+anchor_right = 0.586
+anchor_bottom = 0.492
+offset_left = -160.2
+offset_top = -24.76
+offset_right = 159.8
+offset_bottom = -8.76003
+theme_override_icons/grabber = ExtResource("18_hg4c8")
+theme_override_icons/grabber_highlight = ExtResource("18_hg4c8")
+theme_override_icons/grabber_disabled = ExtResource("18_hg4c8")
+theme_override_icons/tick = ExtResource("18_hg4c8")
+theme_override_styles/slider = SubResource("StyleBoxLine_5cq61")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_p5f4l")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_y3unk")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("7_nito4")
+audio_bus_name = "Music"
+
+[node name="AudioSoundControl2" type="HSlider" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.586
+anchor_top = 0.577
+anchor_right = 0.586
+anchor_bottom = 0.577
+offset_left = -160.2
+offset_top = -7.80798
+offset_right = 159.8
+offset_bottom = 8.19202
+theme_override_styles/slider = SubResource("StyleBoxLine_5cq61")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_p5f4l")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_8u61t")
+max_value = 1.0
+step = 0.05
+value = 0.5
+script = ExtResource("7_nito4")
+audio_bus_name = "SFX"
+
+[node name="ControlChoice" type="OptionButton" parent="Settings"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.57
+anchor_top = 0.695
+anchor_right = 0.57
+anchor_bottom = 0.695
+offset_left = -101.61
+offset_top = -23.28
+offset_right = 101.39
+offset_bottom = 23.72
+theme_override_fonts/font = ExtResource("36_bxufd")
+theme_override_font_sizes/font_size = 32
+selected = 0
+item_count = 2
+popup/item_0/text = "Button"
+popup/item_0/id = 0
+popup/item_1/text = "Joystick"
+popup/item_1/id = 1
+
+[connection signal="pressed" from="Control/Control8/settings" to="." method="_on_option_pressed"]
+[connection signal="pressed" from="PauseMenu/Control3/back_exit" to="." method="_on_pause_pressed"]
+[connection signal="pressed" from="PauseMenu/Control4/retry" to="." method="_on_retry_pressed"]
+[connection signal="pressed" from="PauseMenu/Control6/main_menu" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/option" to="." method="_on_option_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="PauseMenu/Panel/exit" to="." method="_on_exit_pressed"]
@@ -743,3 +1092,6 @@ show_percentage = false
 [connection signal="pressed" from="Options/edit" to="." method="_on_edit_pressed"]
 [connection signal="value_changed" from="Options/AudioControl" to="Options/AudioControl" method="_on_value_changed"]
 [connection signal="value_changed" from="Options/AudioSoundControl2" to="Options/AudioSoundControl2" method="_on_value_changed"]
+[connection signal="pressed" from="Settings/Control/back" to="." method="_on_option_pressed"]
+[connection signal="value_changed" from="Settings/AudioControl" to="Settings/AudioControl" method="_on_value_changed"]
+[connection signal="value_changed" from="Settings/AudioSoundControl2" to="Settings/AudioSoundControl2" method="_on_value_changed"]

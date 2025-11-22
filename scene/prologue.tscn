@@ -1,13 +1,24 @@
-[gd_scene load_steps=12 format=3 uid="uid://bletdowgl1r03"]
+[gd_scene load_steps=21 format=3 uid="uid://bletdowgl1r03"]
 
 [ext_resource type="Script" uid="uid://c30b4ipvsdq27" path="res://script/cutscene.gd" id="1_drs7p"]
 [ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="2_3l3ne"]
 [ext_resource type="FontFile" uid="uid://dk3lsqxh1ie8c" path="res://fonts/retro_pixel/Retro Pixel.otf" id="2_e7qxw"]
+[ext_resource type="Texture2D" uid="uid://b276ynq2mgobf" path="res://art/components/Settings_PopUp.png" id="2_i7q1p"]
 [ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="3_3d53y"]
+[ext_resource type="Texture2D" uid="uid://lllew6fm2ivi" path="res://art/components/HalfBodyText_Background.png" id="4_tinto"]
 [ext_resource type="Texture2D" uid="uid://crmvccic0jtuh" path="res://art/components/Skip_Button.png" id="5_0cpi0"]
 [ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="5_3hlow"]
+[ext_resource type="Texture2D" uid="uid://cwmdsdedyclcy" path="res://art/components/No_Button.png" id="5_bghw5"]
 [ext_resource type="Texture2D" uid="uid://cu2r0h3qvtrq2" path="res://art/components/BodyText_Background.png" id="6_i7q1p"]
 [ext_resource type="Texture2D" uid="uid://cla3sh000ayji" path="res://art/components/Skip_Button (1).png" id="6_wf4c6"]
+[ext_resource type="Texture2D" uid="uid://bv4mrlxp1b66i" path="res://art/components/No_Button (1).png" id="6_xh66l"]
+[ext_resource type="Texture2D" uid="uid://0l76ral1xui1" path="res://art/components/Yes_Button.png" id="7_s6juk"]
+[ext_resource type="Texture2D" uid="uid://k664q8g8knwc" path="res://art/components/Yes_Button (1).png" id="8_brs5v"]
+[ext_resource type="Texture2D" uid="uid://c1l55auhvft0l" path="res://art/components/Close_Button.png" id="11_uqk6j"]
+[ext_resource type="Texture2D" uid="uid://bp3pexm30n2y7" path="res://art/components/Close_Button (1).png" id="12_b3beo"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1b644"]
+texture = ExtResource("2_i7q1p")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8lxk"]
 bg_color = Color(0.243137, 0.109804, 0.137255, 1)
@@ -19,6 +30,16 @@ bg_color = Color(0.299547, 0.299547, 0.299547, 1)
 
 [node name="Cutscene" type="CanvasLayer"]
 script = ExtResource("1_drs7p")
+
+[node name="bg2" type="Panel" parent="."]
+visible = false
+z_index = -1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_1b644")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -46,6 +67,130 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="skipCutscene" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="skipCutscene"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("5_3hlow")
+
+[node name="TextureRect2" type="TextureRect" parent="skipCutscene"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("4_tinto")
+
+[node name="Control" type="Control" parent="skipCutscene"]
+layout_mode = 1
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
+
+[node name="cancel" type="TouchScreenButton" parent="skipCutscene/Control"]
+texture_normal = ExtResource("5_bghw5")
+texture_pressed = ExtResource("6_xh66l")
+
+[node name="Control2" type="Control" parent="skipCutscene"]
+layout_mode = 1
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
+
+[node name="exit" type="TouchScreenButton" parent="skipCutscene/Control2"]
+texture_normal = ExtResource("7_s6juk")
+texture_pressed = ExtResource("8_brs5v")
+
+[node name="Label" type="Label" parent="skipCutscene"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_3d53y")
+theme_override_font_sizes/font_size = 32
+text = "Skip Cutscene"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="skipCutscene"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_3l3ne")
+theme_override_font_sizes/font_size = 22
+text = "Are you sure you'd like to
+skip this part?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="skipCutscene"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="skipCutscene/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("11_uqk6j")
+texture_pressed = ExtResource("12_b3beo")
 
 [node name="TextContainer" type="PanelContainer" parent="."]
 anchors_preset = -1
@@ -102,6 +247,7 @@ texture_normal = ExtResource("5_0cpi0")
 texture_pressed = ExtResource("6_wf4c6")
 
 [node name="SummaryContainer2" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -218,20 +364,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="SkipButton" type="Button" parent="."]
-visible = false
-anchors_preset = -1
-anchor_left = 0.85
-anchor_top = 0.029
-anchor_right = 0.965
-anchor_bottom = 0.107
-offset_top = 0.119999
-offset_right = -0.200073
-offset_bottom = -0.0400085
-theme_override_fonts/font = ExtResource("3_3d53y")
-theme_override_font_sizes/font_size = 16
-text = "Skip"
-
 [node name="ContinueButton" type="Button" parent="."]
 anchors_preset = -1
 anchor_left = 0.5
@@ -249,3 +381,8 @@ theme_override_font_sizes/font_size = 24
 theme_override_styles/focus = SubResource("StyleBoxEmpty_3hlow")
 text = "Tap to Continue ..."
 flat = true
+
+[connection signal="pressed" from="skipCutscene/Control/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="skipCutscene/Control2/exit" to="." method="_on_skip_pressed"]
+[connection signal="pressed" from="skipCutscene/Control3/back_exit" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="buttons/Control/SkipButton" to="." method="_on_skip_button_pressed"]

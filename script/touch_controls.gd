@@ -9,10 +9,10 @@ extends CanvasLayer
 @onready var pause_menu: Control = $PauseMenu
 @onready var option: Button = $PauseMenu/Panel/option
 @onready var exit: Button = $PauseMenu/Panel/exit
-@onready var resume: Button = $PauseMenu/Panel/resume
-@onready var options: Panel = $Options
+#@onready var resume: Button = $PauseMenu/Panel/resume
+#@onready var options: Panel = $Options
 @onready var virtual_joystick: VirtualJoystick = $"Control/Virtual Joystick"
-@onready var control_choice: OptionButton = $Options/ControlChoice
+#@onready var control_choice: OptionButton = $Options/ControlChoice
 @onready var edit: Button = $Options/edit
 @onready var shine: TouchScreenButton = $Control/Control7/shine
 
@@ -22,8 +22,22 @@ extends CanvasLayer
 @onready var hud_boss: Control = $HUDBoss
 @onready var health_bar_boss: Control = $HUDBoss/HealthBarBoss
 
+@onready var back_exit: TouchScreenButton = $PauseMenu/Control3/back_exit
+@onready var retry: TouchScreenButton = $PauseMenu/Control4/retry
+@onready var resume: TouchScreenButton = $PauseMenu/Control5/resume
+@onready var main_menu: TouchScreenButton = $PauseMenu/Control6/main_menu
+
+@onready var back: TouchScreenButton = $Settings/Control/back
+@onready var settings: Control = $Settings
+@onready var control_choice: OptionButton = $Settings/ControlChoice
+
+
 var is_paused := false
 var pause_enabled: bool = true
+
+func delayed_action(delay: float, action: Callable) -> void:
+	await get_tree().create_timer(delay).timeout
+	action.call()
 
 func _on_control_type_changed() -> void:
 	if not is_paused:
@@ -38,7 +52,7 @@ func _ready() -> void:
 	Global.control_type_changed.connect(_on_control_type_changed)
 	
 	# Always process pause-related nodes
-	for node in [pause, pause_menu, option, exit, options]:
+	for node in [pause, pause_menu, option, exit, settings]:
 		node.process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	# Connect signals
@@ -55,7 +69,7 @@ func _ready() -> void:
 	right.released.connect(_on_right_released)
 
 	pause_menu.visible = false
-	options.visible = false
+	settings.visible = false
 	
 	
 	control_choice.clear()
@@ -193,6 +207,7 @@ func _update_controls_visibility() -> void:
 	dash.visible = Global.touchdash
 	shine.visible = Global.touchshine
 	pause.visible = pause_enabled
+	settings.visible = false
 
 func hide_for_editor() -> void:
 	self.visible = false
@@ -210,34 +225,61 @@ func _hide_all_controls() -> void:
 # PAUSE MENU HANDLERS
 # ---------------------------
 func _on_pause_pressed() -> void:
-	# BLOCK pause completely during cutscenes
-	if Global.cutscene_playing:
-		return
-	# Don't allow pause if controls are disabled
-	if not self.visible:
-		return
-	if not pause_enabled:
-		return
-	is_paused = !is_paused
-	get_tree().paused = is_paused
-	pause_menu.visible = is_paused
-	options.visible = false
-	if is_paused:
-		_hide_all_controls()
-	else:
-		_update_controls_visibility()
+	delayed_action(0.2, func():
+		# BLOCK pause completely during cutscenes
+		if Global.cutscene_playing:
+			return
+		# Don't allow pause if controls are disabled
+		if not self.visible:
+			return
+		if not pause_enabled:
+			return
+		is_paused = !is_paused
+		get_tree().paused = is_paused
+		pause_menu.visible = is_paused
+		settings.visible = false
+		if is_paused:
+			_hide_all_controls()
+		else:
+			_update_controls_visibility()
+	)
 
 func _on_resume_pressed() -> void:
-	_on_pause_pressed()
+	delayed_action(0.2, func():
+		_on_pause_pressed()
+	)
 
 func _on_exit_pressed() -> void:
-	get_tree().paused = false 
-	MusicManager.stop_song()
-	get_tree().change_scene_to_file("res://scene/main_menu.tscn")
+	delayed_action(0.2, func():
+		get_tree().paused = false 
+		MusicManager.stop_song()
+		get_tree().change_scene_to_file("res://scene/main_menu.tscn")
+	)
 
 func _on_option_pressed() -> void:
-	pause_menu.visible = false
-	options.visible = true
+	delayed_action(0.2, func():
+		# BLOCK pause completely during cutscenes
+		if Global.cutscene_playing:
+			return
+		# Don't allow pause if controls are disabled
+		if not self.visible:
+			return
+		if not pause_enabled:
+			return
+		is_paused = !is_paused
+		get_tree().paused = is_paused
+		pause_menu.visible = is_paused
+		settings.visible = true
+		pause_menu.visible = false
+		if is_paused:
+			_hide_all_controls()
+		else:
+			_update_controls_visibility()
+	)
+	
+	
+	#pause_menu.visible = false
+	#options.visible = true
 
 func disable_pause() -> void:
 	pause_enabled = false
@@ -263,7 +305,7 @@ func disable_all_controls() -> void:
 	
 	# Also hide pause menu and disable pause button
 	pause_menu.visible = false
-	options.visible = false
+	settings.visible = false
 	pause.visible = false
 	pause.set_process(false)
 	pause.set_block_signals(true)
@@ -271,3 +313,21 @@ func disable_all_controls() -> void:
 
 func _on_edit_pressed() -> void:
 	get_tree().change_scene_to_file("res://scene/controls_editor.tscn")
+
+
+func _on_retry_pressed() -> void:
+	delayed_action(0.2, func():
+	
+		# Set retry flag BEFORE reloading
+		Global.set_retrying(true)
+		Global.is_retrying_level = true
+		
+		# Unpause and reload current scene
+		get_tree().paused = false
+		is_paused = false
+		pause_menu.visible = false
+		settings.visible = false
+		
+		# Reload the current scene (this will reset everything including timer)
+		get_tree().reload_current_scene()
+	)

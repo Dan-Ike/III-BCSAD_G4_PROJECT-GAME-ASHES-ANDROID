@@ -88,6 +88,7 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_g7f83")
 
 [node name="Settings" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -310,7 +311,6 @@ popup/item_1/text = "Always"
 popup/item_1/id = 1
 
 [node name="Exit" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

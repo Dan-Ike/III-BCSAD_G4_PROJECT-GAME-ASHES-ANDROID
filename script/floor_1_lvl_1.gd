@@ -7,6 +7,7 @@ extends Node2D
 @onready var cutscene: CanvasLayer = $Cutscene
 @onready var player: Player = $player
 @onready var loading_screen: CanvasLayer = $loading  
+@onready var touch_controls: CanvasLayer = $TouchControls
 
 func _ready() -> void:
 	# Set current floor and level in Global
@@ -81,7 +82,7 @@ func _on_floor_1_lvl_2_body_entered(body: Node2D) -> void:
 		# Update Global to next level
 		Global.advance_level()
 		
-		body.touch_controls.disable_all_controls() 
+		touch_controls.disable_all_controls()
 		scene_transition_animation.play("fade_in")
 		await get_tree().create_timer(0.5).timeout
 		

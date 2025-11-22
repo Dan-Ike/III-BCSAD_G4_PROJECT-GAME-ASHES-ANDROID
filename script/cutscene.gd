@@ -15,6 +15,14 @@ extends CanvasLayer
 @onready var skip_button: TouchScreenButton = $buttons/Control/SkipButton
 @onready var summary_text: Label = $SummaryContainer2/SummaryText
 @onready var summary_container_2: Control = $SummaryContainer2
+@onready var bg_2: Panel = $bg2
+@onready var color_rect: ColorRect = $ColorRect
+
+@onready var skip_cutscene: Control = $skipCutscene
+@onready var cancel: TouchScreenButton = $skipCutscene/Control/cancel
+@onready var exit: TouchScreenButton = $skipCutscene/Control2/exit
+@onready var back_exit: TouchScreenButton = $skipCutscene/Control3/back_exit
+
 
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
@@ -87,8 +95,9 @@ var typing_timer = 0.0
 var skip_timer = 0.0
 var show_skip_after = 5.0
 var continue_timer = 0.0
-var show_continue_after = 5.0
+var show_continue_after = 3.0
 var in_summary = false
+var cutscene_paused = false
 var is_transitioning = false
 
 # Fade transition
@@ -118,17 +127,21 @@ func _ready() -> void:
 	if level_node.has_node("player"):
 		player = level_node.get_node("player")
 	
+	skip_cutscene.visible = false
+	bg_2.visible = false
 	skip_button.hide()
 	continue_button.hide()
 	summary_container_2.hide()
 	text_container.hide()
 	text_container.modulate.a = 0.0
 	
-	skip_button.pressed.connect(_on_skip_pressed)
 	continue_button.pressed.connect(_on_continue_pressed)
 
 func _input(event: InputEvent) -> void:
 	"""Handle screen clicks anywhere"""
+	if cutscene_paused: 
+		return
+	
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			# Check if clicking on buttons - let them handle their own input
@@ -146,6 +159,14 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
+	if in_summary and not continue_button.visible:
+		continue_timer += delta
+		if continue_timer >= show_continue_after:
+			continue_button.show()
+	
+	if cutscene_paused:
+		return
+	
 	# Handle fade transitions for background
 	if fading_out or fading_in:
 		fade_timer += delta
@@ -200,7 +221,7 @@ func _process(delta: float) -> void:
 				text_container.modulate.a = 1.0
 	
 	# Handle Enter key to advance
-	if Input.is_action_just_pressed("ui_accept"):  # Enter key
+	if Input.is_action_just_pressed("ui_accept") and not cutscene_paused:  # Enter key
 		if in_summary:
 			if continue_button.visible:
 				proceed_to_game()
@@ -225,10 +246,7 @@ func _process(delta: float) -> void:
 		if skip_timer >= show_skip_after:
 			skip_button.show()
 	
-	if in_summary and not continue_button.visible:
-		continue_timer += delta
-		if continue_timer >= show_continue_after:
-			continue_button.show()
+
 
 
 func start_cutscene(id: String = "") -> void:
@@ -433,6 +451,8 @@ func complete_current_text() -> void:
 
 func show_summary() -> void:
 	background.visible = false
+	color_rect.visible = false
+	bg_2.visible = true
 	in_summary = true
 	
 	# Fade out text container
@@ -441,15 +461,23 @@ func show_summary() -> void:
 	
 	await get_tree().create_timer(text_fade_duration).timeout
 	
+	text_container.visible = false
+	
 	#summary_title.text = summary_data["title"]
 	summary_text.text = summary_data["text"]
 	summary_container_2.show()
 	
-	continue_timer = 0.0
-
+	continue_timer = 0.0 
 
 func proceed_to_game() -> void:
 	Global.cutscene_playing = false
+	
+	var level_node = get_parent()
+	if level_node.has_node("player"):
+		var player = level_node.get_node("player")
+		if player.has_method("reset_level_timer"):
+			player.reset_level_timer()
+	
 	# Mark cutscene as watched if ID is provided
 	if cutscene_id != "":
 		SaveManager.mark_cutscene_watched(cutscene_id)
@@ -468,7 +496,8 @@ func proceed_to_game() -> void:
 	_unpause_player()
 	
 	# Enable cameras in parent
-	var level_node = get_parent()
+	
+	#var level_node = get_parent()
 	if level_node.has_node("player/Camera2D"):
 		level_node.get_node("player/Camera2D").enabled = true
 	if level_node.has_node("player/Camera2D2"):
@@ -497,11 +526,32 @@ func _on_summary_container_input(event: InputEvent) -> void:
 			if in_summary and continue_button.visible:
 				proceed_to_game()
 
+func delayed_action(delay: float, action: Callable) -> void:
+	await get_tree().create_timer(delay).timeout
+	action.call()
 
 func _on_skip_pressed() -> void:
-	background.visible = false
-	show_summary()
+	delayed_action(0.2, func():
+		#cutscene_paused = true
+		background.visible = false
+		#text_container.visible = false
+		show_summary()
+	)
 
 
 func _on_continue_pressed() -> void:
 	proceed_to_game()
+
+
+func _on_cancel_pressed() -> void:
+	delayed_action(0.2, func():
+		cutscene_paused = false  
+		skip_cutscene.visible = false 
+	)
+
+
+func _on_skip_button_pressed() -> void:
+	delayed_action(0.2, func():
+		cutscene_paused = true
+		skip_cutscene.visible = true
+	)
