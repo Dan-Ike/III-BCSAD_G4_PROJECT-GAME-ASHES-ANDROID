@@ -9,10 +9,23 @@ extends CanvasLayer
 @onready var summary_margin: MarginContainer = $SummaryContainer/SummaryPanel/SummaryMargin
 @onready var summary_v_box: VBoxContainer = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox
 @onready var summary_title: Label = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox/SummaryTitle
-@onready var summary_text: Label = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox/SummaryText
-@onready var skip_button: Button = $SkipButton
+#@onready var summary_text: Label = $SummaryContainer/SummaryPanel/SummaryMargin/SummaryVBox/SummaryText
+#@onready var skip_button: Button = $SkipButton
 @onready var continue_button: Button = $ContinueButton
+@onready var skip_button: TouchScreenButton = $buttons/Control/SkipButton
+@onready var summary_text: Label = $SummaryContainer2/SummaryText
+@onready var summary_container_2: Control = $SummaryContainer2
+@onready var bg_2: Panel = $bg2
+@onready var color_rect: ColorRect = $ColorRect
 
+@onready var skip_cutscene: Control = $skipCutscene
+@onready var cancel: TouchScreenButton = $skipCutscene/Control/cancel
+@onready var exit: TouchScreenButton = $skipCutscene/Control2/exit
+@onready var back_exit: TouchScreenButton = $skipCutscene/Control3/back_exit
+
+signal cutscene_finished
+
+# Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f01 - new.png",
@@ -52,6 +65,7 @@ var summary_data = {
 }
 
 
+
 # State variables
 var current_scene_index = 0
 var current_text_index = 0
@@ -64,8 +78,9 @@ var typing_timer = 0.0
 var skip_timer = 0.0
 var show_skip_after = 5.0
 var continue_timer = 0.0
-var show_continue_after = 5.0
+var show_continue_after = 3.0
 var in_summary = false
+var cutscene_paused = false
 var is_transitioning = false
 
 # Fade transition
@@ -89,52 +104,53 @@ var player: Player = null
 var cutscene_id: String = ""
 
 func _ready() -> void:
+	# Find player reference
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	
-	# IMPORTANT: Set buttons to process even when paused
-	skip_button.process_mode = Node.PROCESS_MODE_ALWAYS
-	continue_button.process_mode = Node.PROCESS_MODE_ALWAYS
-	
 	var level_node = get_parent()
 	if level_node.has_node("player"):
 		player = level_node.get_node("player")
 	
+	skip_cutscene.visible = false
+	bg_2.visible = false
 	skip_button.hide()
 	continue_button.hide()
-	summary_container.hide()
+	summary_container_2.hide()
 	text_container.hide()
 	text_container.modulate.a = 0.0
 	
-	skip_button.pressed.connect(_on_skip_pressed)
 	continue_button.pressed.connect(_on_continue_pressed)
-	
-	# Start hidden and inactive
-	visible = false
-	set_process(false)
-	set_process_input(false)
 
 func _input(event: InputEvent) -> void:
-	"""Handle screen clicks anywhere - only when this cutscene is active"""
-	# Don't process input if this cutscene isn't visible/active
-	if not visible:
+	"""Handle screen clicks anywhere"""
+	if cutscene_paused: 
 		return
-		
+	
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			# Check if clicking on buttons - let them handle it
-			if skip_button.visible and skip_button.get_global_rect().has_point(event.position):
+			# Check if clicking on buttons - let them handle their own input
+			if skip_button.visible and skip_button.is_pressed():
 				return
 			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
 				return
 			
+			# Anywhere else on screen advances text
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
-				get_tree().root.set_input_as_handled()
 			elif in_summary and continue_button.visible:
 				proceed_to_game()
-				get_tree().root.set_input_as_handled()
+			
+			get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
+	if in_summary and not continue_button.visible:
+		continue_timer += delta
+		if continue_timer >= show_continue_after:
+			continue_button.show()
+	
+	if cutscene_paused:
+		return
+	
+	# Handle fade transitions for background
 	if fading_out or fading_in:
 		fade_timer += delta
 		var progress = clamp(fade_timer / fade_duration, 0.0, 1.0)
@@ -143,11 +159,13 @@ func _process(delta: float) -> void:
 			background.modulate.a = 1.0 - progress
 			if progress >= 1.0:
 				fading_out = false
+				# Load new background
 				if next_background_path != "":
 					var texture = load(next_background_path)
 					if texture:
 						background.texture = texture
 						current_background_path = next_background_path
+				# Start fading in
 				fading_in = true
 				fade_timer = 0.0
 		
@@ -158,13 +176,17 @@ func _process(delta: float) -> void:
 				is_transitioning = false
 				background.modulate.a = 1.0
 	
+	# Handle text delay before showing
 	if waiting_for_text_delay:
 		text_delay_timer += delta
 		if text_delay_timer >= text_delay_duration:
 			waiting_for_text_delay = false
 			text_delay_timer = 0.0
+			# Start showing text container with fade in
+			# Make sure to use current_text which was set in show_scene
 			_start_text_fade_in()
 	
+	# Handle fade transitions for text container
 	if text_fading_out or text_fading_in:
 		text_fade_timer += delta
 		var progress = clamp(text_fade_timer / text_fade_duration, 0.0, 1.0)
@@ -182,7 +204,7 @@ func _process(delta: float) -> void:
 				text_container.modulate.a = 1.0
 	
 	# Handle Enter key to advance
-	if Input.is_action_just_pressed("ui_accept"):  # Enter key
+	if Input.is_action_just_pressed("ui_accept") and not cutscene_paused:  # Enter key
 		if in_summary:
 			if continue_button.visible:
 				proceed_to_game()
@@ -207,19 +229,12 @@ func _process(delta: float) -> void:
 		if skip_timer >= show_skip_after:
 			skip_button.show()
 	
-	if in_summary and not continue_button.visible:
-		continue_timer += delta
-		if continue_timer >= show_continue_after:
-			continue_button.show()
+
 
 
 func start_cutscene(id: String = "") -> void:
+	Global.cutscene_playing = true
 	cutscene_id = id
-	
-	# Make this cutscene active
-	visible = true
-	set_process(true)
-	set_process_input(true)
 	
 	# Check cutscene preference
 	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
@@ -228,16 +243,27 @@ func start_cutscene(id: String = "") -> void:
 	if cutscene_pref == "play_once" and cutscene_id != "":
 		if SaveManager.has_watched_cutscene(cutscene_id):
 			print("Cutscene already watched, skipping...")
-			# Don't play any music here - let the floor handle it
+			# IMPORTANT: Don't pause if skipping
+			_unpause_player()
 			proceed_to_game()
 			return
 	
 	# Only play cutscene music if we're actually showing the cutscene
-	MusicManager.play_song("gameover")
-	print("Cutscene music started: gameover")
+	MusicManager.play_song("menu")
+	print("Cutscene music started: boss")
+	
+	# DISCONNECT pause button signal to prevent accidental triggers
+	if player and player.has_node("../CanvasLayer"):
+		var touch_controls = player.get_node("../CanvasLayer")
+		if touch_controls and touch_controls.has_node("Control/Control6/pause"):
+			var pause_btn = touch_controls.get_node("Control/Control6/pause")
+			if pause_btn.pressed.is_connected(touch_controls._on_pause_pressed):
+				pause_btn.pressed.disconnect(touch_controls._on_pause_pressed)
+	
 	# PAUSE THE GAME
 	_pause_player()
-	get_tree().paused = true  
+	get_tree().paused = true
+	
 	if cutscene_data.size() > 0:
 		show_scene(0, 0)
 
@@ -274,12 +300,8 @@ func _unpause_player() -> void:
 				touch_controls.set_block_signals(false)  
 
 
+
 func show_scene(scene_index: int, text_index: int) -> void:
-	# Don't show new scenes if we're already in summary
-	if in_summary:
-		print("Already in summary, ignoring show_scene call")
-		return
-		
 	if scene_index >= cutscene_data.size():
 		show_summary()
 		return
@@ -334,10 +356,6 @@ func show_scene(scene_index: int, text_index: int) -> void:
 			# Wait for both transitions before showing text
 			await get_tree().create_timer(fade_duration * 2).timeout
 			
-			# Check again if we're still not in summary before continuing
-			if in_summary:
-				return
-			
 			# Delay before showing first text of new scene with fade
 			waiting_for_text_delay = true
 			text_delay_timer = 0.0
@@ -385,6 +403,10 @@ func _start_text_fade_in() -> void:
 
 
 func complete_current_text() -> void:
+	# Don't allow interaction during transitions
+	if is_transitioning or waiting_for_text_delay:
+		return
+		
 	if is_typing:
 		# Complete typing instantly
 		displayed_text = current_text
@@ -400,6 +422,7 @@ func complete_current_text() -> void:
 			show_scene(current_scene_index, current_text_index + 1)
 		else:
 			# Moving to next scene - fade out text, then change background
+			is_transitioning = true  # Set this BEFORE starting fade
 			_start_text_fade_out()
 			
 			# Wait for fade out
@@ -410,54 +433,34 @@ func complete_current_text() -> void:
 
 
 func show_summary() -> void:
-	print("show_summary called!")
-	
-	# Stop all cutscene playback
-	is_typing = false
-	is_transitioning = false
-	waiting_for_text_delay = false
-	
 	background.visible = false
-	text_container.hide()
+	color_rect.visible = false
+	bg_2.visible = true
 	in_summary = true
+	
+	# Fade out text container
+	_start_text_fade_out()
 	skip_button.hide()
 	
-	# Show summary immediately without waiting
-	summary_title.text = summary_data["title"]
-	summary_text.text = summary_data["text"]
-	summary_container.show()
-	summary_container.modulate.a = 1.0
+	await get_tree().create_timer(text_fade_duration).timeout
 	
-	continue_timer = 0.0
-	print("Summary displayed, waiting for continue button...")
-
+	text_container.visible = false
+	
+	#summary_title.text = summary_data["title"]
+	summary_text.text = summary_data["text"]
+	summary_container_2.show()
+	
+	continue_timer = 0.0 
 
 func proceed_to_game() -> void:
-	print("proceed_to_game called - Continue button pressed!")
+	Global.cutscene_playing = false
 	
 	# Mark cutscene as watched if ID is provided
 	if cutscene_id != "":
 		SaveManager.mark_cutscene_watched(cutscene_id)
 	
-	# Deactivate this cutscene
-	visible = false
-	set_process(false)
-	set_process_input(false)
-	
-	# UNPAUSE THE GAME FIRST
-	get_tree().paused = false
-	_unpause_player()
-	
-	# Call the boss level's retry function
-	var level_node = get_parent()
-	if level_node and level_node.has_method("_retry_boss_fight"):
-		print("Calling _retry_boss_fight()...")
-		level_node._retry_boss_fight()
-	else:
-		print("Warning: Level node doesn't have _retry_boss_fight method!")
-		# Fallback - reload scene
-		Global.is_retrying_level = true
-		get_tree().reload_current_scene()
+	# Just remove the cutscene overlay - game over screen is already underneath
+	queue_free()
 
 func _on_text_container_input(event: InputEvent) -> void:
 	"""Handle clicks on text container"""
@@ -466,6 +469,7 @@ func _on_text_container_input(event: InputEvent) -> void:
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
 
+
 func _on_summary_container_input(event: InputEvent) -> void:
 	"""Handle clicks on summary container"""
 	if event is InputEventMouseButton:
@@ -473,23 +477,32 @@ func _on_summary_container_input(event: InputEvent) -> void:
 			if in_summary and continue_button.visible:
 				proceed_to_game()
 
+func delayed_action(delay: float, action: Callable) -> void:
+	await get_tree().create_timer(delay).timeout
+	action.call()
+
 func _on_skip_pressed() -> void:
-	print("Skip button pressed!")
-	# Stop any ongoing typing or transitions
-	is_typing = false
-	is_transitioning = false
-	waiting_for_text_delay = false
-	fading_out = false
-	fading_in = false
-	text_fading_out = false
-	text_fading_in = false
-	
-	# Hide current elements
-	background.visible = false
-	text_container.hide()
-	
-	show_summary()
+	delayed_action(0.2, func():
+		#cutscene_paused = true
+		background.visible = false
+		#text_container.visible = false
+		show_summary()
+	)
+
 
 func _on_continue_pressed() -> void:
-	print("Continue button pressed!")
 	proceed_to_game()
+
+
+func _on_cancel_pressed() -> void:
+	delayed_action(0.2, func():
+		cutscene_paused = false  
+		skip_cutscene.visible = false 
+	)
+
+
+func _on_skip_button_pressed() -> void:
+	delayed_action(0.2, func():
+		cutscene_paused = true
+		skip_cutscene.visible = true
+	)

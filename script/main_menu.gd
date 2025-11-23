@@ -52,6 +52,12 @@ func delayed_action(delay: float, action: Callable) -> void:
 	await get_tree().create_timer(delay).timeout
 	action.call()
 
+func _input(event: InputEvent) -> void:
+	if profile.visible and (event is InputEventScreenTouch or event is InputEventMouseButton):
+		if event.is_pressed():
+			var profile_rect = profile.get_global_rect()
+			if profile_rect.has_point(event.position):
+				_on_profile_pressed()
 
 func _ready() -> void:
 	if OS.has_feature("web"):
@@ -94,7 +100,7 @@ func _ready() -> void:
 	cutscene_choice.item_selected.connect(_on_cutscene_choice_selected)
 	
 	google.pressed.connect(_on_google_pressed)
-	profile.gui_input.connect(_on_profile_click)
+	#profile.pressed.connect(_on_profile_pressed)
 	
 	var shader = Shader.new()
 	shader.code = """
@@ -124,8 +130,9 @@ void fragment() {
 		_load_session()
 	else:
 		google.visible = false
+		google.set_process_input(false)  # Disable google button input
 		profile.visible = true
-		_load_cached_profile_image()  # Load from cache first
+		_load_cached_profile_image()
 		
 	if OS.has_feature("Android"):
 		_create_debug_label()
@@ -137,6 +144,7 @@ void fragment() {
 		get_tree().root.connect("focus_entered", _on_app_focus_gained)
 	
 	_update_start_button_text()
+	_update_newgame_button_visibility()
 #	_update_newgame_button_visibility()
 
 
@@ -408,11 +416,11 @@ func _start_google_oauth_flow():
 	OS.shell_open(oauth_url)
 
 func _on_unlockall_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		# Check if user is logged in
-		if Global.get_current_user().size() > 0:
-			_show_error("Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
-			return
+		#if Global.get_current_user().size() > 0:
+		#	_show_error("Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
+		#	return
 		
 		unlock.visible = true
 		main_btns.visible = false
@@ -421,6 +429,8 @@ func _on_unlockall_pressed() -> void:
 		components.visible = false
 		title.visible = false
 		version.visible = false
+		
+		transition_in([bg_2, unlock])
 	)
 	
 
@@ -453,34 +463,53 @@ func _unlock_all_content() -> void:
 	print("All content unlocked locally")
 
 func _update_newgame_button_visibility() -> void:
-	var has_progress = SaveManager.data["progress"]["completed_levels"].size() > 0
 	var current_floor = SaveManager.data["progress"]["current_floor"]
 	var current_level = SaveManager.data["progress"]["current_level"]
-	var is_past_first_level = (current_floor > 1) or (current_floor == 1 and current_level > 1)
+	var has_progress = (current_floor > 1) or (current_floor == 1 and current_level >= 2)
 	
-	var should_show = has_progress or is_past_first_level
-	
-#	newgame.modulate.a = 1.0 if should_show else 0.0  
-#	newgame.mouse_filter = Control.MOUSE_FILTER_STOP if should_show else Control.MOUSE_FILTER_IGNORE
-	
-	#main_menu_4.modulate.a = 1.0 if should_show else 0.0
+	# Continue button always visible at full opacity
+	start_continue.visible = true
 
 func _on_newgame_pressed() -> void:
+	# Small delay to show button press visual feedback
+	await get_tree().create_timer(0.15).timeout
+	
 	# Check if user is logged in
 	if Global.get_current_user().size() > 0:
 		_show_error("Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
 		return
 	
-	var dlg := ConfirmationDialog.new()
-	dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
-	dlg.confirmed.connect(func():
-		_reset_local_save()
-		_show_info("Save progress erased. Starting new game...")
-		await get_tree().create_timer(1.0).timeout
-		_on_start_pressed()
-	)
-	add_child(dlg)
-	dlg.popup_centered()
+	var current_floor = SaveManager.data["progress"]["current_floor"]
+	var current_level = SaveManager.data["progress"]["current_level"]
+	var has_progress = (current_floor > 1) or (current_floor == 1 and current_level >= 2)
+	
+	# If no progress, just start the game directly
+	if not has_progress:
+		Global.is_retrying_level = false
+		slide_in_transition("res://scene/floor.tscn")
+	else:
+		# If there's progress, show confirmation dialog
+		var dlg := ConfirmationDialog.new()
+		dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
+		dlg.confirmed.connect(func():
+			_reset_local_save()
+			_show_info("Save progress erased. Starting new game...")
+			await get_tree().create_timer(1.0).timeout
+			Global.is_retrying_level = false
+			slide_in_transition("res://scene/floor.tscn")
+		)
+		# Force button back to normal state
+		var reset_button = func():
+			# Toggle visibility to force redraw
+			newgame.visible = false
+			await get_tree().process_frame
+			newgame.visible = true
+		
+		dlg.canceled.connect(reset_button)
+		dlg.close_requested.connect(reset_button)
+		
+		add_child(dlg)
+		dlg.popup_centered()
 
 func _reset_local_save() -> void:
 	# Reset SaveManager data to defaults
@@ -832,6 +861,7 @@ func _session_invalid() -> void:
 	_clear_session_file()
 	Global.clear_session()
 	google.visible = true
+	google.set_process_input(true)
 	profile.visible = false
 
 func _process(_delta: float) -> void:
@@ -1131,6 +1161,7 @@ func _background_sync(user_id: String) -> void:
 
 func _handle_login_failure() -> void:
 	google.visible = true
+	google.set_process_input(true)
 	profile.visible = false
 	_update_profile_placeholder()
 
@@ -1176,6 +1207,7 @@ func _on_refresh_token_response(result, response_code, headers, body):
 
 func _handle_refresh_failure():
 	google.visible = true
+	google.set_process_input(true)
 	profile.visible = false
 	_clear_session_file()
 	Global.clear_session()
@@ -1261,9 +1293,8 @@ func _update_profile_placeholder():
 	img.fill(Color(0.2, 0.6, 1.0))
 	profile.texture = ImageTexture.create_from_image(img)
 
-func _on_profile_click(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if Global.get_current_user().size() > 0:
+func _on_profile_pressed() -> void:
+	if Global.get_current_user().size() > 0:
 			var dlg := ConfirmationDialog.new()
 			dlg.dialog_text = "Do you want to log out?"
 			dlg.confirmed.connect(func():
@@ -1275,6 +1306,7 @@ func _on_profile_click(event: InputEvent) -> void:
 					print("Cached profile image deleted")
 				
 				google.visible = true
+				google.set_process_input(true)
 				profile.visible = false
 				_update_profile_placeholder()
 				
@@ -1308,7 +1340,11 @@ func _on_exit_pressed() -> void:
 		get_tree().quit()
 
 func _on_back_pressed() -> void:
-	_ready()
+	transition_out(func():
+		_ready()
+		
+		transition_in([background, main_btns, components, title, version])
+	)
 
 func _show_error(msg: String) -> void:
 	var dlg := AcceptDialog.new()
@@ -1326,7 +1362,7 @@ func _show_info(msg: String) -> void:
 
 
 func _on_settings_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		main_btns.visible = false
 		background.visible = false
 		bg_2.visible = true
@@ -1335,30 +1371,38 @@ func _on_settings_pressed() -> void:
 		title.visible = false
 		credits.visible = false
 		version.visible = false
+		
+		transition_in([bg_2, settings])
 	)
 
 
 func _on_cancel_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		_ready()
+		
+		transition_in([background, main_btns, components, title, version])
 	)
 
 
 func _on_yes_pressed() -> void:
-	delayed_action(0.2, func():
-		_unlock_all_content()
+	transition_out(func():
 		_ready()
+		_unlock_all_content()
+		
+		transition_in([background, main_btns, components, title, version])
 	)
 
 
 func _on_cancel_unlock_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		_ready()
+		
+		transition_in([background, main_btns, components, title, version])
 	)
 
 
 func _on_exit_btn_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		main_btns.visible = false
 		background.visible = false
 		bg_2.visible = true
@@ -1367,28 +1411,50 @@ func _on_exit_btn_pressed() -> void:
 		title.visible = false  
 		credits.visible = false
 		version.visible = false
+		
+		transition_in([bg_2, exit])
 	)
 
 
 func _on_back_settings_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		_ready()
+		
+		transition_in([background, main_btns, components, title, version])
 	)
-
 
 func _on_start_continue_pressed() -> void:
-	delayed_action(0.2, func():
-		Global.is_retrying_level = false
+	# Small delay to show button press visual feedback
+	await get_tree().create_timer(0.15).timeout
+	
+	var current_floor = SaveManager.data["progress"]["current_floor"]
+	var current_level = SaveManager.data["progress"]["current_level"]
+	var has_progress = (current_floor > 1) or (current_floor == 1 and current_level >= 2)
+	
+	# Only allow continue if there's actual progress
+	if not has_progress:
+		var dlg := AcceptDialog.new()
+		dlg.dialog_text = "No progress to continue.\nPlease start a new game first!"
+		dlg.title = "Info"
 		
-		if has_node("LoadingScreen"):
-			get_node("LoadingScreen").start_loading("res://scene/floor.tscn")
-		else:
-			get_tree().change_scene_to_file("res://scene/floor.tscn")
-	)
-
+		# Force button back to normal state when dialog closes
+		var reset_button = func():
+			start_continue.visible = false
+			await get_tree().process_frame
+			start_continue.visible = true
+		
+		dlg.confirmed.connect(reset_button)
+		dlg.close_requested.connect(reset_button)
+		
+		add_child(dlg)
+		dlg.popup_centered()
+		return
+	
+	Global.is_retrying_level = false
+	slide_in_transition("res://scene/floor.tscn")
 
 func _on_credits_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		main_btns.visible = false
 		background.visible = false
 		bg_2.visible = true
@@ -1396,10 +1462,65 @@ func _on_credits_pressed() -> void:
 		credits.visible = true
 		title.visible = false  
 		version.visible = false
+		
+		transition_in([bg_2, credits])
 	)
 
 
 func _on_exit_credits_pressed() -> void:
-	delayed_action(0.2, func():
+	transition_out(func():
 		_ready()
+		
+		transition_in([background, main_btns, components, title, version])
 	)
+
+func transition_out(callback: Callable) -> void:
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	
+	# Fade out current visible elements
+	if main_btns.visible:
+		tween.parallel().tween_property(main_btns, "modulate:a", 0.0, 0.3)
+	if components.visible:
+		tween.parallel().tween_property(components, "modulate:a", 0.0, 0.3)
+	if background.visible:
+		tween.parallel().tween_property(background, "modulate:a", 0.0, 0.3)
+	if title.visible:
+		tween.parallel().tween_property(title, "modulate:a", 0.0, 0.3)
+	
+	tween.tween_callback(callback)
+
+func transition_in(nodes: Array) -> void:
+	for node in nodes:
+		node.modulate.a = 0.0
+	
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	
+	for node in nodes:
+		tween.parallel().tween_property(node, "modulate:a", 1.0, 0.3)
+
+func slide_in_transition(scene_path: String) -> void:
+	# Preload the next scene
+	var next_scene = load(scene_path).instantiate()
+	
+	# Position it off-screen to the right
+	next_scene.position.x = get_viewport_rect().size.x
+	next_scene.z_index = 100  # Make sure it's on top
+	get_tree().root.add_child(next_scene)
+	
+	# Create the slide animation
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	
+	# Slide next scene in from the right (current scene stays in place)
+	tween.tween_property(next_scene, "position:x", 0.0, 0.5)
+	
+	await tween.finished
+	
+	# Clean up and switch scenes properly
+	get_tree().current_scene = next_scene
+	queue_free()

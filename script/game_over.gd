@@ -169,8 +169,6 @@ func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_
 
 func _on_next_pressed() -> void:
 	delayed_action(0.2, func():
-		#print("[GameOver] Next level pressed")
-		
 		MusicManager.stop_song()
 		visible = false
 		get_tree().paused = false
@@ -178,6 +176,12 @@ func _on_next_pressed() -> void:
 		# Get current floor and level from Global
 		var current_floor = Global.current_floor
 		var current_level = Global.current_level
+		
+		# If boss level (3-3), go to main menu instead of next level
+		if current_floor == 3 and current_level == 3:
+			Global.reset_progress()
+			get_tree().change_scene_to_file("res://scene/main_menu.tscn")
+			return
 		
 		# Determine next level
 		var next_floor = current_floor
@@ -192,12 +196,9 @@ func _on_next_pressed() -> void:
 		# Build the scene path dynamically
 		var next_scene_path = "res://scene/floor_%d_level_%d.tscn" % [next_floor, next_level]
 		
-		#print("[GameOver] Loading next scene: ", next_scene_path)
-		
-		# Load the next scene directly (no need to call advance_level since we already did it)
+		# Load the next scene
 		get_tree().change_scene_to_file(next_scene_path)
 	)
-
 func delayed_action(delay: float, action: Callable) -> void:
 	await get_tree().create_timer(delay).timeout
 	action.call()

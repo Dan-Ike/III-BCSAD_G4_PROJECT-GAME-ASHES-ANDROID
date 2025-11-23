@@ -171,6 +171,10 @@ func _get_elapsed_time() -> float:
 		return 0.0
 	return (Time.get_ticks_msec() / 1000.0) - level_start_time
 
+func get_level_time() -> float:
+	"""Public function to get elapsed time for other scripts"""
+	return _get_elapsed_time()
+
 func stop_level_timer() -> void:
 	"""Stop timer when level ends"""
 	is_level_active = false
@@ -739,11 +743,15 @@ func handle_death_animation() -> void:
 	await get_tree().create_timer(0.5).timeout
 	$Camera2D.zoom = Vector2(4, 4)
 	await get_tree().create_timer(1.0).timeout
+	
+	# Check if we're in boss level - let boss level handle game over
 	var parent_level = get_parent()
 	if parent_level and parent_level.has_method("_on_player_died"):
 		if "ending_playing" in parent_level and parent_level.ending_playing:
+			print("[Player] Boss level will handle game over screen")
 			return  
 	
+	# Normal levels - show game over as usual
 	Global.playerAlive = false
 	var died_on_floor = Global.current_floor
 	var died_on_level = Global.current_level

@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=35 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
 [ext_resource type="Texture2D" uid="uid://c2thoj84krhoy" path="res://art/components/Sample Only.png" id="2_by01r"]
@@ -38,23 +38,6 @@ texture = ExtResource("2_by01r")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g7f83"]
 texture = ExtResource("2_s7uu8")
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_0iwki"]
-color = Color(0.980104, 0.87028, 0.863563, 1)
-thickness = 10
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_sepwh"]
-color = Color(1, 0.21268, 0.159696, 1)
-thickness = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xyo3m"]
-bg_color = Color(1, 0.211765, 0.160784, 1)
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_14wem"]
-color = Color(1, 0.211765, 0.160784, 1)
-thickness = 10
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_eq0s3"]
 
 [node name="main_menu" type="Control"]
 layout_mode = 3
@@ -230,20 +213,13 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.586
-anchor_top = 0.492
+anchor_top = 0.46
 anchor_right = 0.586
-anchor_bottom = 0.492
+anchor_bottom = 0.46
 offset_left = -160.2
-offset_top = -24.76
+offset_top = -7.79999
 offset_right = 159.8
-offset_bottom = -8.76003
-theme_override_icons/grabber = ExtResource("8_0d2hm")
-theme_override_icons/grabber_highlight = ExtResource("8_0d2hm")
-theme_override_icons/grabber_disabled = ExtResource("8_0d2hm")
-theme_override_icons/tick = ExtResource("8_0d2hm")
-theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
-theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
-theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_xyo3m")
+offset_bottom = 8.19998
 max_value = 1.0
 step = 0.05
 value = 0.5
@@ -261,9 +237,6 @@ offset_left = -160.2
 offset_top = -7.80798
 offset_right = 159.8
 offset_bottom = 8.19202
-theme_override_styles/slider = SubResource("StyleBoxLine_0iwki")
-theme_override_styles/grabber_area = SubResource("StyleBoxLine_sepwh")
-theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_14wem")
 max_value = 1.0
 step = 0.05
 value = 0.5
@@ -607,10 +580,6 @@ offset_left = -50.4
 offset_top = -49.84
 offset_right = 49.6
 offset_bottom = 50.16
-
-[node name="profile3" type="TouchScreenButton" parent="components/Control2"]
-scale = Vector2(2, 2)
-texture_normal = SubResource("ViewportTexture_eq0s3")
 
 [node name="profile" type="TextureRect" parent="components/Control2"]
 layout_mode = 1
