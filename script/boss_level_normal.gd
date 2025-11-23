@@ -7,6 +7,7 @@ extends Node2D
 @onready var good_ending: CanvasLayer = $good_ending
 @onready var advanced_enemy: CharacterBody2D = $AdvancedEnemy
 @onready var player: Player = $player
+@onready var floor_title: CanvasLayer = $FloorTitle
 
 var boss_defeated: bool = false
 var player_defeated: bool = false
@@ -64,6 +65,7 @@ func _ready() -> void:
 		# Show and start cutscene with unique ID
 		before_boss_normal.visible = true
 		before_boss_normal.start_cutscene("floor_3_level_2_prologue")
+		
 	else:
 		# Skip cutscene - go straight to gameplay
 		player_camera.enabled = true

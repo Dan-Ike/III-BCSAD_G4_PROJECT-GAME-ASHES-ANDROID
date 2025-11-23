@@ -149,6 +149,7 @@ func _ready() -> void:
 	_start_level_timer()
 
 func _start_level_timer() -> void:
+	is_level_active = false
 	"""Start tracking time when level begins"""
 	# Don't start timer if cutscene is playing
 	if Global.cutscene_playing:

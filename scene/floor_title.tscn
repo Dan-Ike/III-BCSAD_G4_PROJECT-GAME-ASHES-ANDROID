@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://dewu6l5j8fknm"]
+
+[ext_resource type="FontFile" uid="uid://b3rp4e5tkfkst" path="res://fonts/press_start_2p/PressStart2P.ttf" id="1_5wjsi"]
+[ext_resource type="Script" uid="uid://cpjrd53bvj754" path="res://script/floor_title.gd" id="1_s13wy"]
+
+[node name="FloorTitle" type="CanvasLayer"]
+script = ExtResource("1_s13wy")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.243137, 0.109804, 0.137255, 1)
+
+[node name="FloorLevel" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -267.0
+offset_top = -49.0
+offset_right = 267.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_5wjsi")
+theme_override_font_sizes/font_size = 20
+text = "Floor 1 - Level 1
+Level Tile"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -298,6 +298,8 @@ offset_left = -350.0
 offset_top = -187.0
 offset_right = 350.0
 offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="PauseMenu"]
 layout_mode = 1

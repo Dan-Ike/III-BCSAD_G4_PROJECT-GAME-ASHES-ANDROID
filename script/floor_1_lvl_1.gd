@@ -8,44 +8,52 @@ extends Node2D
 @onready var player: Player = $player
 @onready var loading_screen: CanvasLayer = $loading  
 @onready var touch_controls: CanvasLayer = $TouchControls
+@onready var floor_title: CanvasLayer = $FloorTitle
 
 func _ready() -> void:
-	# Set current floor and level in Global
 	Global.set_floor_level(1, 1)
 	
-	# Hide loading screen initially (it was shown during scene load)
 	if loading_screen:
 		loading_screen.visible = false
 	
-	# Check if cutscene should play
 	var should_play_cutscene = _should_show_cutscene()
 	
 	if should_play_cutscene:
-		# Disable touch controls BEFORE starting cutscene
 		if player.has_node("../CanvasLayer"):
-			var touch_controls = player.get_node("../CanvasLayer")
-			if touch_controls:
-				touch_controls.disable_all_controls()
+			var touch_controls_node = player.get_node("../CanvasLayer")
+			if touch_controls_node:
+				touch_controls_node.disable_all_controls()
 		
-		# Start with cutscene - everything disabled
 		player_camera.enabled = false
 		camera_2d_2.enabled = true
-		
-		# Show and start cutscene with unique ID
 		cutscene.visible = true
 		cutscene.start_cutscene("floor_1_level_1_prologue")
-	else:
-		# Skip cutscene - go straight to gameplay
-		get_tree().paused = false 
-		player_camera.enabled = true
-		camera_2d_2.enabled = true
-		MusicManager.play_song("level1")
 		
-		# Remove cutscene node
-		if cutscene:
-			cutscene.queue_free()
+		# Wait for cutscene to finish, then show floor title
+		await cutscene.cutscene_finished
+		_show_floor_title_then_start()
+	else:
+		# No cutscene - show floor title immediately
+		_show_floor_title_then_start()
 	
 	Global.set_retrying(false)
+
+func _show_floor_title_then_start() -> void:
+	# Show floor title (pauses game)
+	floor_title.show_title()
+	await floor_title.title_finished
+	
+	# Now start gameplay
+	get_tree().paused = false
+	player_camera.enabled = true
+	camera_2d_2.enabled = true
+	MusicManager.play_song("level1")
+	
+	# Start player timer AFTER floor title finishes
+	player.reset_level_timer()
+	
+	if cutscene:
+		cutscene.queue_free()
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""

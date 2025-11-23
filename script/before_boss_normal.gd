@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal cutscene_finished
+
 @onready var background: TextureRect = $Background
 @onready var text_container: PanelContainer = $TextContainer
 @onready var text_margin: MarginContainer = $TextContainer/TextMargin
@@ -188,7 +190,7 @@ var cutscene_id: String = ""
 
 func _ready() -> void:
 	# Find player reference
-	process_mode = Node.PROCESS_MODE_ALWAYS
+	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	var level_node = get_parent()
 	if level_node.has_node("player"):
 		player = level_node.get_node("player")
@@ -316,7 +318,6 @@ func _process(delta: float) -> void:
 
 
 func start_cutscene(id: String = "") -> void:
-	Global.cutscene_playing = true
 	cutscene_id = id
 	
 	# Check cutscene preference
@@ -325,15 +326,19 @@ func start_cutscene(id: String = "") -> void:
 	# If "play_once" mode and cutscene already played, skip it
 	if cutscene_pref == "play_once" and cutscene_id != "":
 		if SaveManager.has_watched_cutscene(cutscene_id):
-			print("Cutscene already watched, skipping...")
-			# IMPORTANT: Don't pause if skipping
-			_unpause_player()
-			proceed_to_game()
+			print("[Cutscene] Already watched, skipping...")
+			# Emit signal immediately and remove cutscene
+			cutscene_finished.emit()
+			queue_free()
 			return
 	
-	# Only play cutscene music if we're actually showing the cutscene
+	# Actually play the cutscene
+	print("[Cutscene] Starting cutscene playback")
+	Global.cutscene_playing = true
+	
+	# Play cutscene music
 	MusicManager.play_song("menu")
-	print("Cutscene music started: boss")
+	print("Cutscene music started: menu")
 	
 	# DISCONNECT pause button signal to prevent accidental triggers
 	if player and player.has_node("../CanvasLayer"):

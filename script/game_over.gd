@@ -24,6 +24,17 @@ extends CanvasLayer
 @onready var main_menu_2: TouchScreenButton = $game_over/Control2/main_menu
 @onready var retry: TouchScreenButton = $game_over/Control3/retry
 
+var level_titles = {
+	"1_1": "Deep Abyss",
+	"1_2": "Deep Abyss 2",
+	"1_3": "TBD",
+	"2_1": "TBD",
+	"2_2": "TBD",
+	"2_3": "TBD",
+	"3_1": "TBD",
+	"3_2": "TBD",
+	"3_3": "TBD"
+}
 
 #quotes for game over
 var quotes = {
@@ -123,7 +134,9 @@ func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_
 		game_over.visible = false
 		
 		# Update labels for level completed
-		floor_level.text = "Floor %d - Level %d" % [floor_num, level_num]
+		var title_key = "%d_%d" % [floor_num, level_num]
+		var level_title = level_titles.get(title_key, "Unknown Level")
+		floor_level.text = "Floor %d - Level %d\n\"%s\"" % [floor_num, level_num, level_title]
 		
 		var minutes = int(time_taken) / 60
 		var seconds = int(time_taken) % 60
@@ -149,7 +162,9 @@ func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_
 		MusicManager.play_song("gameover")
 		
 		# Update labels for game over
-		floor_level_2.text = "Floor %d - Level %d" % [floor_num, level_num]
+		var title_key = "%d_%d" % [floor_num, level_num]
+		var level_title = level_titles.get(title_key, "Unknown Level")
+		floor_level_2.text = "Floor %d - Level %d\n\"%s\"" % [floor_num, level_num, level_title]
 		
 		var minutes = int(time_taken) / 60
 		var seconds = int(time_taken) % 60
