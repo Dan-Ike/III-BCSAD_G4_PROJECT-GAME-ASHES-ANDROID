@@ -539,8 +539,6 @@ func proceed_to_game() -> void:
 	_unpause_player()
 	
 	# Enable cameras in parent
-	
-	#var level_node = get_parent()
 	if level_node.has_node("player/Camera2D"):
 		level_node.get_node("player/Camera2D").enabled = true
 	if level_node.has_node("player/Camera2D2"):
@@ -550,9 +548,11 @@ func proceed_to_game() -> void:
 	MusicManager.play_song("level1")
 	print("Switching to level music: level1")
 	
+	# **EMIT THE SIGNAL BEFORE REMOVING THE CUTSCENE**
+	cutscene_finished.emit()
+	
 	# Remove cutscene
 	queue_free()
-
 
 func _on_text_container_input(event: InputEvent) -> void:
 	"""Handle clicks on text container"""

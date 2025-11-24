@@ -22,6 +22,7 @@ extends Node2D
 @onready var navigation_region_2d: NavigationRegion2D = $NavigationRegion2D
 @onready var camera_2d_2: Camera2D = $player/Camera2D2
 @onready var before_2_1: CanvasLayer = $before_2_1
+@onready var floor_title: CanvasLayer = $FloorTitle
 
 var torch_list: Array[Torch] = []
 var indicator_list: Array[ColorRect] = []
@@ -35,34 +36,55 @@ func _ready() -> void:
 	Global.set_floor_level(2, 1)
 	player_camera.enabled = false
 	camera_2d_2.enabled = true
-	#unlock_double_jump()
-	#unlock_shine()
+	
 	if scene_transition_animation:
 		scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 		scene_transition_animation.play("fade_out")
-	#MusicManager.play_song("level1") #lvl1 muna 
+	
 	_setup_torch_system()
 	_update_soul_light_state()
+	
 	if floor_2_lvl_2:
 		floor_2_lvl_2.body_entered.connect(_on_floor_2_lvl_2_body_entered)
-	#print("[Floor 2-1] Torch puzzle initialized - Light all 5 torches to proceed!")
+	
 	var should_play_cutscene = _should_show_cutscene()
 	
 	if should_play_cutscene:
+		if player.has_node("../CanvasLayer"):
+			var touch_controls_node = player.get_node("../CanvasLayer")
+			if touch_controls_node:
+				touch_controls_node.disable_all_controls()
+		
 		player_camera.enabled = false
 		camera_2d_2.enabled = true
 		before_2_1.visible = true
 		before_2_1.start_cutscene("floor_2_level_1_prologue")
-	else:
-		get_tree().paused = false  
-		player_camera.enabled = true
-		camera_2d_2.enabled = true
-		MusicManager.play_song("level2")
 		
-		if before_2_1:
-			before_2_1.queue_free()
+		# Wait for cutscene to finish, then show floor title
+		await before_2_1.cutscene_finished
+		_show_floor_title_then_start()
+	else:
+		# No cutscene - show floor title immediately
+		_show_floor_title_then_start()
+	
 	Global.set_retrying(false)
 
+func _show_floor_title_then_start() -> void:
+	# Show floor title (pauses game)
+	floor_title.show_title()
+	await floor_title.title_finished
+	
+	# Now start gameplay
+	get_tree().paused = false
+	player_camera.enabled = true
+	camera_2d_2.enabled = true
+	MusicManager.play_song("level2")
+	
+	# Start player timer AFTER floor title finishes
+	player.reset_level_timer()
+	
+	if before_2_1:
+		before_2_1.queue_free()
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""
@@ -173,23 +195,33 @@ func _on_puzzle_incomplete() -> void:
 	#print("[Floor 2-1] ✗ Puzzle incomplete - Exit blocked")
 
 func _on_floor_2_lvl_2_body_entered(body: Node2D) -> void:
-	#"""Handle player attempting to exit"""
 	if not (body is Player):
 		return
+	
 	if exit_blocked or not all_torches_lit:
-		#print("[Floor 2-1] Cannot proceed - Light all torches first! (%d/5)" % _count_lit_torches())
 		return
-	#print("[Floor 2-1] Proceeding to Floor 2 Level 2...")
+	
+	# Get time FIRST before stopping
+	var time_cleared = body._get_elapsed_time()
+	body.stop_level_timer()
+	
+	print("[Level] Player completed Floor %d, Level %d in %.2f seconds" % [Global.current_floor, Global.current_level, time_cleared])
+	
+	# Save progress
 	SaveManager.mark_level_completed(2, 1)
 	SaveManager.advance_to_level(2, 2)
-	Global.advance_level()
 	unlock_shine()
+	
+	# Disable touch controls
 	if body.touch_controls:
 		body.touch_controls.disable_all_controls()
-	if scene_transition_animation:
-		scene_transition_animation.play("fade_in")
-	await get_tree().create_timer(0.5).timeout
-	get_tree().change_scene_to_file("res://scene/floor_2_level_2.tscn")
+	
+	# Show level completed screen
+	var game_over_scene = preload("res://scene/game_over.tscn")
+	var game_over = game_over_scene.instantiate()
+	get_tree().root.add_child(game_over)
+	if game_over.has_method("show_game_over"):
+		game_over.show_game_over(Global.current_floor, Global.current_level, time_cleared, true)
 
 func _count_lit_torches() -> int:
 	#"""Helper to count currently lit torches"""

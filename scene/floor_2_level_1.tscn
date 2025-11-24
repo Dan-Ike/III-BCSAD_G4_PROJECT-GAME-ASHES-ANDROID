@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://7u2b7wqcgjdi"]
+[gd_scene load_steps=56 format=3 uid="uid://7u2b7wqcgjdi"]
 
 [ext_resource type="Script" uid="uid://bkxj4rm42sjs1" path="res://script/testflr_2_lvl_1.gd" id="1_w1861"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_7fund"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dogiokehlidko" path="res://scene/torch.tscn" id="4_oakjt"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="5_w1861"]
 [ext_resource type="PackedScene" uid="uid://cqeev4lpf6ncp" path="res://scene/before_2_1.tscn" id="6_7fund"]
+[ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="7_pqfmk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_7fund")
@@ -1474,9 +1475,11 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("5_w1861")]
-visible = false
 
 [node name="before_2_1" parent="." instance=ExtResource("6_7fund")]
+visible = false
+
+[node name="FloorTitle" parent="." instance=ExtResource("7_pqfmk")]
 visible = false
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

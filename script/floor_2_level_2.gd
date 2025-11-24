@@ -33,12 +33,29 @@ var correct_sequence: Array[int] = [0, 1, 2, 3, 4]  # Indices for torch, torch_2
 var current_sequence: Array[int] = []
 var is_checking_sequence: bool = false
 var extinguish_timer: Timer
+@onready var floor_title: CanvasLayer = $FloorTitle
+
+func _show_floor_title_then_start() -> void:
+	# Show floor title (pauses game)
+	floor_title.show_title()
+	await floor_title.title_finished
+	
+	# Now start gameplay
+	get_tree().paused = false
+	player_camera.enabled = true
+	camera_2d_2.enabled = true
+	MusicManager.play_song("level1")
+	
+	# Start player timer AFTER floor title finishes
+	player.reset_level_timer()
 
 func _ready() -> void:
 	Global.set_floor_level(2, 2)
 	player_camera.enabled = false
 	camera_2d_2.enabled = true
 	unlock_shine()
+	
+	_show_floor_title_then_start()
 	
 	if scene_transition_animation:
 		scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
@@ -223,24 +240,31 @@ func _on_floor_3_level_1_body_entered(body: Node2D) -> void:
 		return
 	
 	if exit_blocked or not all_torches_lit:
-		print("[Floor 2-1] Cannot proceed - Complete the sequence first!")
+		print("[Floor 2-2] Cannot proceed - Complete the sequence first!")
 		return
 	
-	print("[Floor 2-1] Proceeding to Floor 3 Level 1...")
+	# Get time FIRST before stopping
+	var time_cleared = body._get_elapsed_time()
+	body.stop_level_timer()
+	
+	print("[Level] Player completed Floor %d, Level %d in %.2f seconds" % [Global.current_floor, Global.current_level, time_cleared])
+	
+	# Save progress
 	SaveManager.mark_level_completed(2, 2)
-	SaveManager.advance_to_level(3, 1)
-	Global.advance_level()
+	SaveManager.advance_to_level(2, 3)
 	unlock_shine()
 	unlock_attack()
 	
+	# Disable touch controls
 	if body.touch_controls:
 		body.touch_controls.disable_all_controls()
 	
-	if scene_transition_animation:
-		scene_transition_animation.play("fade_in")
-	
-	await get_tree().create_timer(0.5).timeout
-	get_tree().change_scene_to_file("res://scene/floor_3_level_1.tscn")
+	# Show level completed screen
+	var game_over_scene = preload("res://scene/game_over.tscn")
+	var game_over = game_over_scene.instantiate()
+	get_tree().root.add_child(game_over)
+	if game_over.has_method("show_game_over"):
+		game_over.show_game_over(Global.current_floor, Global.current_level, time_cleared, true)
 
 func unlock_attack():
 	Global.touchatk = true

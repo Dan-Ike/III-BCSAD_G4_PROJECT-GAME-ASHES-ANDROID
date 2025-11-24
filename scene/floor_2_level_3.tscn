@@ -1,10 +1,11 @@
-[gd_scene load_steps=162 format=3 uid="uid://bx3ov4aot6hyi"]
+[gd_scene load_steps=163 format=3 uid="uid://bx3ov4aot6hyi"]
 
 [ext_resource type="Script" uid="uid://c0ifc8g3fldjl" path="res://script/floor_2_level_3.gd" id="1_dtog8"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_18mkg"]
 [ext_resource type="PackedScene" uid="uid://bsiqip3vsfyy2" path="res://scene/player.tscn" id="3_knhsy"]
 [ext_resource type="PackedScene" uid="uid://dogiokehlidko" path="res://scene/torch.tscn" id="4_lr5kc"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="5_e8xfo"]
+[ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="6_7rvsu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_18mkg")
@@ -1447,5 +1448,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("5_e8xfo")]
+
+[node name="FloorTitle" parent="." instance=ExtResource("6_7rvsu")]
 
 [connection signal="body_entered" from="floor3lvl1" to="." method="_on_floor_3_lvl_1_body_entered"]

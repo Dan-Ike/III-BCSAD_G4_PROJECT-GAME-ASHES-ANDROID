@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://hyj4g0oxvv2k"]
+[gd_scene load_steps=69 format=3 uid="uid://hyj4g0oxvv2k"]
 
 [ext_resource type="Script" uid="uid://dqi167rq0ectf" path="res://script/floor_3_level_1.gd" id="1_u2qvc"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_l8b3l"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://bi8ubakecr1c3" path="res://scene/canine.tscn" id="19_pqwcw"]
 [ext_resource type="PackedScene" uid="uid://bwqxv1ufecym4" path="res://scene/hell_knight.tscn" id="20_qkfkd"]
 [ext_resource type="PackedScene" uid="uid://d0kturq8grqmg" path="res://scene/advanced_enemy.tscn" id="21_dqmrn"]
+[ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="22_qkfkd"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l8b3l"]
 texture = ExtResource("2_l8b3l")
@@ -2126,6 +2127,9 @@ position = Vector2(3154, -370)
 [node name="AdvancedEnemy" parent="." instance=ExtResource("21_dqmrn")]
 position = Vector2(4421, -77)
 enemy_type = 2
+
+[node name="FloorTitle" parent="." instance=ExtResource("22_qkfkd")]
+visible = false
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor3lvl2" to="." method="_on_floor_3_lvl_2_body_entered"]

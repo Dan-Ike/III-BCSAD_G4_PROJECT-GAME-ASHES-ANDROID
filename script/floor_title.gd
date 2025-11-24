@@ -31,10 +31,11 @@ func _ready() -> void:
 		color_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	
 	visible = false
-	_update_floor_level_display()
+	#_update_floor_level_display()
 
 func show_title() -> void:
 	print("[FloorTitle] Starting floor title display")
+	_update_floor_level_display()  # Move it here!
 	visible = true
 	get_tree().paused = true
 	
@@ -79,12 +80,13 @@ func _fade_out(duration: float) -> void:
 			floor_level.modulate.a = alpha
 
 func _update_floor_level_display() -> void:
-	var scene_name = get_tree().current_scene.name
-	var current_floor = _extract_floor_number(scene_name)
-	var current_level = _extract_level_number(scene_name)
+	var current_floor = Global.current_floor
+	var current_level = Global.current_level
 	var title_key = "%d_%d" % [current_floor, current_level]
 	var level_title = level_titles.get(title_key, "Unknown Level")
+	
 	floor_level.text = "Floor %d - Level %d\n\"%s\"" % [current_floor, current_level, level_title]
+	print("[FloorTitle] Updated display to Floor %d, Level %d: %s" % [current_floor, current_level, level_title])
 
 func _extract_floor_number(scene_name: String) -> int:
 	var parts = scene_name.split("_")

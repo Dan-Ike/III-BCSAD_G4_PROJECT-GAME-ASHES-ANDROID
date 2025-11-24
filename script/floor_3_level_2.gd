@@ -5,6 +5,22 @@ extends Node2D
 @onready var scene_transition_animation = $SceneTransitionAnimation/AnimationPlayer
 @onready var spike_collision = $spike_collision
 @onready var before_3_1: CanvasLayer = $before_3_1
+@onready var floor_title: CanvasLayer = $FloorTitle
+@onready var player: Player = $player
+
+func _show_floor_title_then_start() -> void:
+	# Show floor title (pauses game)
+	floor_title.show_title()
+	await floor_title.title_finished
+	
+	# Now start gameplay
+	get_tree().paused = false
+	player_camera.enabled = true
+	camera_2d_2.enabled = true
+	MusicManager.play_song("level3")  # Changed from level1
+	
+	# Start player timer AFTER floor title finishes
+	player.reset_level_timer()
 
 func _ready() -> void:
 	Global.set_floor_level(3, 2)
@@ -13,26 +29,9 @@ func _ready() -> void:
 	scene_transition_animation.play("fade_out")
 	player_camera.enabled = false
 	camera_2d_2.enabled = true
-	#MusicManager.play_song("level1") #change to sa music level1.3 pag may nahanap na bagay
-		# Check if cutscene should play
-	#var should_play_cutscene = _should_show_cutscene()
 	
-	#if should_play_cutscene:
-		# Start with cutscene - everything disabled
-	player_camera.enabled = false
-	camera_2d_2.enabled = true
-		# Don't stop or play music here - let cutscene handle it
-		
-		# Show and start cutscene with unique ID
-#		before_3_1.visible = true
-#		before_3_1.start_cutscene("floor_3_level_1_prologue")
-	#else:
-		# Skip cutscene - go straight to gameplay
-	get_tree().paused = false 
-	player_camera.enabled = true
-	camera_2d_2.enabled = true
-	MusicManager.play_song("level3")
-		
+	_show_floor_title_then_start()
+	
 	Global.set_retrying(false)
 
 
@@ -58,22 +57,28 @@ func _process(delta: float) -> void:
 
 func _on_floor_3_lvl_2_body_entered(body: Node2D) -> void:
 	if body is Player:
-		# Stop player's timer
-		var completion_time = body._get_elapsed_time()
+		# Get time FIRST before stopping
+		var time_cleared = body._get_elapsed_time()
 		body.stop_level_timer()
 		
-		print("[Level] Completed in: ", completion_time, " seconds")
+		print("[Level] Player completed Floor %d, Level %d in %.2f seconds" % [Global.current_floor, Global.current_level, time_cleared])
 		
+		# Save progress
 		Global.gameStarted = true
-		SaveManager.mark_level_completed(3, 3)  
-		SaveManager.advance_to_level(3, 3)      
-		Global.advance_level()
+		SaveManager.mark_level_completed(3, 2)
+		SaveManager.advance_to_level(3, 3)
 		unlock_attack()
-		body.touch_controls.disable_all_controls() 
-		scene_transition_animation.play("fade_in")
-		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://scene/floor_3_level_3.tscn")
 		
+		# Disable touch controls
+		body.touch_controls.disable_all_controls()
+		
+		# Show level completed screen
+		var game_over_scene = preload("res://scene/game_over.tscn")
+		var game_over = game_over_scene.instantiate()
+		get_tree().root.add_child(game_over)
+		if game_over.has_method("show_game_over"):
+			game_over.show_game_over(Global.current_floor, Global.current_level, time_cleared, true)
+
 
 func _on_spike_collision_body_entered(body: Node2D) -> void:
 	if body is Player and body.can_take_damage:

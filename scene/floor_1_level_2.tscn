@@ -1,4 +1,4 @@
-[gd_scene load_steps=147 format=3 uid="uid://du2iqu3871vyo"]
+[gd_scene load_steps=148 format=3 uid="uid://du2iqu3871vyo"]
 
 [ext_resource type="Script" uid="uid://bm5hiyjwtbwgi" path="res://script/floor_1_lvl_2.gd" id="1_57eg5"]
 [ext_resource type="Texture2D" uid="uid://b8c2ojddu2yre" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Background/Bright/Background.png" id="2_ikqoc"]
@@ -57,6 +57,7 @@
 [ext_resource type="PackedScene" uid="uid://b115ta3cgft87" path="res://scene/scene_transition_animation.tscn" id="55_du2o0"]
 [ext_resource type="PackedScene" uid="uid://bsiqip3vsfyy2" path="res://scene/player.tscn" id="56_a2x1i"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="57_dg7ln"]
+[ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="58_x8b18"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_a3oia"]
 texture = ExtResource("2_ikqoc")
@@ -9685,5 +9686,8 @@ offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("57_dg7ln")]
 
-[connection signal="body_entered" from="floor1lvl3" to="." method="_on_floor_2_lvl_1_body_entered"]
+[node name="FloorTitle" parent="." instance=ExtResource("58_x8b18")]
+visible = false
+
+[connection signal="body_entered" from="floor1lvl3" to="." method="_on_floor_1_lvl_3_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

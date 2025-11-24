@@ -386,3 +386,4 @@ flat = true
 [connection signal="pressed" from="skipCutscene/Control2/exit" to="." method="_on_skip_pressed"]
 [connection signal="pressed" from="skipCutscene/Control3/back_exit" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="buttons/Control/SkipButton" to="." method="_on_skip_button_pressed"]
+[connection signal="pressed" from="ContinueButton" to="." method="_on_continue_pressed"]

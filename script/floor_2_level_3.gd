@@ -20,6 +20,7 @@ extends Node2D
 @onready var _6: ColorRect = $"6"
 @onready var _7: ColorRect = $"7"
 @onready var _5: ColorRect = $"5"
+@onready var floor_title: CanvasLayer = $FloorTitle
 
 @onready var floor_3_lvl_1: Area2D = $floor3lvl1
 @export var min_brightness: float = 0.2
@@ -50,6 +51,7 @@ func _ready() -> void:
 	#MusicManager.play_song("level1") #lvl1 muna 
 	_setup_torch_system()
 	_update_soul_light_state()
+	_show_floor_title_then_start()
 	if floor_3_lvl_1:
 		floor_3_lvl_1.body_entered.connect(_on_floor_3_lvl_1_body_entered)
 	#print("[Floor 2-1] Torch puzzle initialized - Light all 5 torches to proceed!")
@@ -61,6 +63,20 @@ func _ready() -> void:
 	MusicManager.play_song("level2")
 	
 	Global.set_retrying(false)
+
+func _show_floor_title_then_start() -> void:
+	# Show floor title (pauses game)
+	floor_title.show_title()
+	await floor_title.title_finished
+	
+	# Now start gameplay
+	get_tree().paused = false
+	player_camera.enabled = true
+	camera_2d_2.enabled = true
+	MusicManager.play_song("level1")
+	
+	# Start player timer AFTER floor title finishes
+	player.reset_level_timer()
 
 func unlock_double_jump():
 	Global.can_double_jump = true
@@ -157,24 +173,33 @@ func _on_puzzle_incomplete() -> void:
 	#print("[Floor 2-1] ✗ Puzzle incomplete - Exit blocked")
 
 func _on_floor_3_lvl_1_body_entered(body: Node2D) -> void:
-	#"""Handle player attempting to exit"""
 	if not (body is Player):
 		return
+	
 	if exit_blocked or not all_torches_lit:
-		#print("[Floor 2-1] Cannot proceed - Light all torches first! (%d/5)" % _count_lit_torches())
 		return
-	#print("[Floor 2-1] Proceeding to Floor 2 Level 2...")
+	
+	# Get time FIRST before stopping
+	var time_cleared = body._get_elapsed_time()
+	body.stop_level_timer()
+	
+	print("[Level] Player completed Floor %d, Level %d in %.2f seconds" % [Global.current_floor, Global.current_level, time_cleared])
+	
+	# Save progress
 	SaveManager.mark_level_completed(2, 3)
 	SaveManager.advance_to_level(3, 1)
-	Global.advance_level()
 	Global.advance_floor()
-	#unlock_shine()
+	
+	# Disable touch controls
 	if body.touch_controls:
 		body.touch_controls.disable_all_controls()
-	#if scene_transition_animation:
-	#	scene_transition_animation.play("fade_in")
-	await get_tree().create_timer(0.5).timeout
-	get_tree().change_scene_to_file("res://scene/floor_3_level_1.tscn")
+	
+	# Show level completed screen
+	var game_over_scene = preload("res://scene/game_over.tscn")
+	var game_over = game_over_scene.instantiate()
+	get_tree().root.add_child(game_over)
+	if game_over.has_method("show_game_over"):
+		game_over.show_game_over(Global.current_floor, Global.current_level, time_cleared, true)
 
 func _count_lit_torches() -> int:
 	#"""Helper to count currently lit torches"""

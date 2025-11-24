@@ -1,17 +1,17 @@
 extends Node2D
+
 @onready var player_camera = $player/Camera2D
 @onready var camera_2d_2 = $player/Camera2D2
 @onready var scene_transition_animation = $SceneTransitionAnimation/AnimationPlayer
-@onready var before_boss_normal: CanvasLayer = $before_boss_normal
-@onready var bad_ending: CanvasLayer = $bad_ending
-@onready var good_ending: CanvasLayer = $good_ending
 @onready var advanced_enemy: CharacterBody2D = $AdvancedEnemy
 @onready var player: Player = $player
 @onready var floor_title: CanvasLayer = $FloorTitle
+@onready var before_boss_normal: CanvasLayer = $before_boss_normal
+@onready var bad_ending: CanvasLayer = $bad_ending
+@onready var good_ending: CanvasLayer = $good_ending
 
 var boss_defeated: bool = false
 var player_defeated: bool = false
-var ending_playing: bool = false
 
 func _ready() -> void:
 	Global.set_floor_level(3, 3)
@@ -19,105 +19,156 @@ func _ready() -> void:
 	unlock_dash()
 	unlock_double_jump()
 	unlock_shine()
-	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
-	scene_transition_animation.play("fade_out")
 	
 	# Reset flags on scene load
 	boss_defeated = false
 	player_defeated = false
-	ending_playing = false
 	
-	# Hide all ending cutscenes initially
 	if bad_ending:
 		bad_ending.visible = false
 	if good_ending:
 		good_ending.visible = false
 	
-	# Connect to boss death signal - make sure to disconnect first if reconnecting
+	# Start fade in animation FIRST
+	if scene_transition_animation:
+		scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
+		scene_transition_animation.play("fade_out")
+	
+	# Connect to boss death signal
 	if advanced_enemy:
-		# Disconnect if already connected (safety check for hot reload)
 		if advanced_enemy.tree_exited.is_connected(_on_boss_defeated):
 			advanced_enemy.tree_exited.disconnect(_on_boss_defeated)
 		advanced_enemy.tree_exited.connect(_on_boss_defeated)
-		
-		# Make sure boss is enabled and can take damage
 		advanced_enemy.set_physics_process(true)
 		advanced_enemy.set_process(true)
 	
 	if player:
-		# Disconnect if already connected (safety check)
 		if player.player_died.is_connected(_on_player_died):
 			player.player_died.disconnect(_on_player_died)
 		player.player_died.connect(_on_player_died)
-		
-		# Make sure player is enabled
 		player.set_physics_process(true)
 		player.set_process_input(true)
 	
-	# Check if cutscene should play
-	var should_play_cutscene = false #_should_show_cutscene()
+	# --- CUTSCENE / GAME START LOGIC ---
+	var should_play_cutscene = _should_show_cutscene()
 	
 	if should_play_cutscene:
-		# Start with cutscene - cameras for cutscene mode
+		print("[Boss Level] Playing before_boss_normal cutscene...")
+		
+		# Pause scene components that shouldn't move during cutscene
 		player_camera.enabled = false
-		camera_2d_2.enabled = true
+		floor_title.visible = false 
 		
-		# Show and start cutscene with unique ID
 		before_boss_normal.visible = true
-		before_boss_normal.start_cutscene("floor_3_level_2_prologue")
+		before_boss_normal.start_cutscene("floor_3_level_3_prologue")
 		
+		# Wait for cutscene to finish, then show floor title
+		await before_boss_normal.cutscene_finished
+		
+		# Check if the level state changed while waiting (e.g., player skipped, then quit/died)
+		if not boss_defeated and not player_defeated:
+			_show_floor_title_then_start()
+		else:
+			# Cleanup if something happened during the wait (just in case)
+			if before_boss_normal and is_instance_valid(before_boss_normal):
+				before_boss_normal.queue_free()
 	else:
-		# Skip cutscene - go straight to gameplay
-		player_camera.enabled = true
-		camera_2d_2.enabled = true
-		get_tree().paused = false
-		MusicManager.play_song("boss")
-		_show_boss_health_bar() 
-		
-		# Remove cutscene node since we're not using it
-		if before_boss_normal:
-			before_boss_normal.queue_free()
+		# No cutscene - show floor title immediately
+		_show_floor_title_then_start()
 	
 	Global.set_retrying(false)
+
+
+func _should_show_ending_cutscene(ending_type: String) -> bool:
+	"""Determine if ending cutscene should play"""
+	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
+	
+	if cutscene_pref == null:
+		cutscene_pref = "play_once"
+	
+	var cutscene_id = "floor_3_level_3_" + ending_type + "_ending"
+	
+	if cutscene_pref == "always":
+		return true
+	elif cutscene_pref == "play_once":
+		return not SaveManager.has_watched_cutscene(cutscene_id)
+	
+	return false
+
+func _should_show_cutscene() -> bool:
+	"""Determine if cutscene should play based on user preference and retry status"""
+	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
+	
+	if cutscene_pref == null:
+		cutscene_pref = "play_once"
+	
+	if cutscene_pref == "always":
+		# Always play cutscene unless retrying (re-entering after death)
+		return not Global.is_retrying_level
+	elif cutscene_pref == "play_once":
+		# Only play if never watched before
+		return not SaveManager.has_watched_cutscene("floor_3_level_3_prologue")
+	
+	return false
+
+func _show_floor_title_then_start() -> void:
+	# Show floor title (pauses game)
+	floor_title.show_title()
+	await floor_title.title_finished
+	
+	# Now transition to full gameplay
+	_start_gameplay()
+
+func _start_gameplay() -> void:
+	"""Handles unpausing, enabling cameras/music, and starting the boss encounter."""
+	get_tree().paused = false
+	player_camera.enabled = true
+	camera_2d_2.enabled = true
+	MusicManager.play_song("boss")
+	
+	# Start player timer AFTER floor title finishes
+	if player:
+		player.reset_level_timer()
+	
+	# Show boss health bar after delay
+	_show_boss_health_bar()
+	
+	# Clean up cutscene node if it exists
+	if before_boss_normal and is_instance_valid(before_boss_normal):
+		before_boss_normal.queue_free()
 
 func _show_boss_health_bar() -> void:
 	"""Show the boss health bar after 3 seconds"""
 	print("[Boss Level] Attempting to show boss health bar...")
 	
-	# Wait a frame to ensure everything is loaded
+	# Wait for scene to be ready
 	await get_tree().process_frame
 	
-	# Find TouchControls in the current scene tree
+	# Find TouchControls
 	var touch_controls = get_tree().get_first_node_in_group("touch_controls")
 	
-	# If not found by group, try finding by type
 	if not touch_controls:
 		touch_controls = get_node_or_null("TouchControls")
 	
-	# Last resort: search through all CanvasLayer nodes
 	if not touch_controls:
 		for node in get_tree().get_nodes_in_group(""):
-			if node.name == "TouchControls" or node.get_script() and node.get_script().resource_path.contains("touch_controls"):
+			if node.name == "TouchControls":
 				touch_controls = node
 				break
 	
 	if not touch_controls:
-		print("[Boss Level] ERROR: TouchControls not found in scene tree!")
+		print("[Boss Level] ERROR: TouchControls not found!")
 		return
 	
 	print("[Boss Level] TouchControls found!")
 	
-	# Access hud_boss and health_bar_boss directly
-	if not touch_controls.hud_boss:
-		print("[Boss Level] ERROR: hud_boss not found!")
-		return
-	
-	if not touch_controls.health_bar_boss:
-		print("[Boss Level] ERROR: health_bar_boss not found!")
+	if not touch_controls.hud_boss or not touch_controls.health_bar_boss:
+		print("[Boss Level] ERROR: Boss health bar components not found!")
 		return
 	
 	print("[Boss Level] Found boss health bar components!")
 	
+	# Wait 3 seconds then show
 	await get_tree().create_timer(3.0).timeout
 	touch_controls.hud_boss.visible = true
 	touch_controls.health_bar_boss.visible = true
@@ -130,182 +181,124 @@ func unlock_double_jump():
 func unlock_attack():
 	Global.touchatk = true
 	SaveManager.unlock_ability("attack")
-	var controls = get_tree().root.get_node("TouchControls")
+	var controls = get_tree().root.get_node_or_null("TouchControls")
 	if controls:
 		controls.show_attack_button()
 
 func unlock_shine():
 	Global.unlock_shine()
-	print("[Floor 2-1] Shine ability unlocked!")
+	print("[Boss Level] Shine ability unlocked!")
 
 func unlock_dash():
 	Global.touchdash = true
 	SaveManager.unlock_ability("dash")
-	var controls = get_tree().root.get_node("TouchControls")
+	var controls = get_tree().root.get_node_or_null("TouchControls")
 	if controls:
 		controls.show_dash_button()
 
-func _should_show_cutscene() -> bool:
-	"""Determine if cutscene should play based on user preference"""
-	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
-	
-	# Default to "play_once" if not set
-	if cutscene_pref == null:
-		cutscene_pref = "play_once"
-	
-	if cutscene_pref == "always":
-		# Always play cutscene when entering this level (but not on retry/death)
-		return not Global.is_retrying_level
-	elif cutscene_pref == "play_once":
-		# Only play if never watched before
-		return not SaveManager.has_watched_cutscene("before_boss_normal")
-	
-	return false
-
 func _on_boss_defeated() -> void:
 	"""Called when boss is defeated/killed"""
-	if boss_defeated or ending_playing:
+	if boss_defeated:
 		return
 	
 	boss_defeated = true
-	ending_playing = true
 	
-	print("[Boss Level] Boss defeated! Playing good ending...")
-	
-	# Disable player controls
+	print("[Boss Level] Boss defeated!")
+
+	# GET TIME FIRST before stopping timer
+	var time_cleared = 0.0
+	if player and player.has_method("get_level_time"):
+		time_cleared = player.get_level_time()
+
+	# THEN disable player controls
 	if player:
 		player.stop_level_timer()
 		player.set_physics_process(false)
 		player.set_process_input(false)
 		player.velocity = Vector2.ZERO
-	
+
 	# Mark level as completed
 	SaveManager.mark_level_completed(3, 3)
 	
-	# ALWAYS show level completed screen first (it will be underneath)
-	_show_level_completed()
-	
-	# Wait a frame to ensure game over screen is rendered
-	await get_tree().process_frame
-	
-	# Check if we should play the good ending cutscene ON TOP
+	# Check if we should play good ending cutscene
 	var should_play_ending = _should_show_ending_cutscene("good")
 	
 	if should_play_ending:
-		# Play good ending cutscene on top of level completed screen
+		print("[Boss Level] Playing good ending cutscene...")
 		good_ending.visible = true
-		good_ending.start_cutscene("floor_3_level_2_good_ending")
-	else:
-		# Cutscene already watched, just show level completed
-		ending_playing = false
+		good_ending.start_cutscene("floor_3_level_3_good_ending")
+		
+		# Wait for cutscene to finish (Relies on the cutscene emitting the signal)
+		await good_ending.cutscene_finished
+	
+	# Now show level completed screen AFTER cutscene
+	await get_tree().process_frame
+	
+	var game_over_scene = preload("res://scene/game_over.tscn")
+	var game_over_screen = game_over_scene.instantiate()
+	get_tree().root.add_child(game_over_screen)
+	
+	if game_over_screen.has_method("show_game_over"):
+		game_over_screen.show_game_over(3, 3, time_cleared, true)
 
 func _on_player_died() -> void:
 	"""Called when player dies to the boss"""
-	if player_defeated or ending_playing:
+	if player_defeated:
 		return
 	
 	player_defeated = true
-	ending_playing = true
 	
-	print("[Boss Level] Player died! Checking bad ending cutscene...")
-	
+	print("[Boss Level] Player died!")
+
+	# GET TIME FIRST before waiting
+	var time_survived = 0.0
+	if player and player.has_method("get_level_time"):
+		time_survived = player.get_level_time()
+
 	# Wait for death animation
 	await get_tree().create_timer(1.5).timeout
-	
-	# Safety check
+
 	if not is_inside_tree():
 		return
 	
-	# Check if we should play the bad ending cutscene
+	# Check if we should play bad ending cutscene
 	var should_play_ending = _should_show_ending_cutscene("bad")
 	
 	if should_play_ending:
-		# FIRST show game over screen (it will be underneath)
-		_show_game_over()
+		print("[Boss Level] Playing bad ending cutscene...")
 		
-		# Wait a frame to ensure game over screen is rendered
-		await get_tree().process_frame
-		
-		# Make sure other cutscenes are hidden
-		if before_boss_normal:
+		# Hide other cutscenes if visible
+		if before_boss_normal and is_instance_valid(before_boss_normal):
 			before_boss_normal.visible = false
-		if good_ending:
+		if good_ending and is_instance_valid(good_ending):
 			good_ending.visible = false
 		
-		# Play bad ending cutscene ON TOP of game over screen
 		bad_ending.visible = true
-		bad_ending.start_cutscene("floor_3_level_2_bad_ending")
-	else:
-		# Let the normal game over screen play (player script handles it)
-		ending_playing = false
-
-func _retry_boss_fight() -> void:
-	"""Retry the boss fight after bad ending"""
-	print("[Boss Level] Retrying boss fight...")
+		bad_ending.start_cutscene("floor_3_level_3_bad_ending")
+		
+		# Wait for cutscene to finish
+		await bad_ending.cutscene_finished
+		
+	# Now show game over screen AFTER cutscene
+	await get_tree().process_frame# Wait one frame
 	
-	# Reset flags
-	boss_defeated = false
-	player_defeated = false
-	ending_playing = false
+	var game_over_scene = preload("res://scene/game_over.tscn")
+	var game_over_screen = game_over_scene.instantiate()
+	get_tree().root.add_child(game_over_screen)
 	
-	# Set retry flag
-	Global.is_retrying_level = true
-	get_tree().paused = false
-	
-	# Fade and reload
-	scene_transition_animation.play("fade_in")
-	await scene_transition_animation.animation_finished
-	get_tree().reload_current_scene()
-
-func _should_show_ending_cutscene(ending_type: String) -> bool:
-	"""Determine if ending cutscene should play based on user preference"""
-	var cutscene_pref = SaveManager.get_setting("cutscene_preference")
-	
-	# Default to "play_once" if not set
-	if cutscene_pref == null:
-		cutscene_pref = "play_once"
-	
-	var cutscene_id = "floor_3_level_2_" + ending_type + "_ending"
-	
-	if cutscene_pref == "always":
-		# Always play ending cutscenes
-		return true
-	elif cutscene_pref == "play_once":
-		# Only play if never watched before
-		return not SaveManager.has_watched_cutscene(cutscene_id)
-	
-	return false
-
-func _return_to_main_menu() -> void:
-	"""Return to main menu after good ending"""
-	# Safety check for tree
-	if not is_inside_tree():
-		return
-	
-	get_tree().paused = false
-	scene_transition_animation.play("fade_in")
-	await get_tree().create_timer(1.0).timeout
-	
-	# Check again before changing scene
-	if is_inside_tree():
-		get_tree().change_scene_to_file("res://scene/main_menu.tscn")
+	if game_over_screen.has_method("show_game_over"):
+		game_over_screen.show_game_over(3, 3, time_survived, false)
 
 func _process(delta: float) -> void:
 	pass
 
-func _show_level_completed() -> void:
-	"""Show level completed screen (will be underneath cutscene if any)"""
+func _show_level_completed_with_time(time_taken: float) -> void:
+	"""Show level completed screen"""
 	if not is_inside_tree():
 		return
 	
-	# Get player's time
-	var time_taken = 0.0
-	if player and player.has_method("get_level_time"):
-		time_taken = player.get_level_time()
-	
 	get_tree().paused = false
 	
-	# Find or create GameOver screen
 	var game_over_screen = get_tree().root.get_node_or_null("GameOver")
 	if not game_over_screen:
 		var game_over_scene = preload("res://scene/game_over.tscn")
@@ -315,19 +308,13 @@ func _show_level_completed() -> void:
 	if game_over_screen.has_method("show_game_over"):
 		game_over_screen.show_game_over(3, 3, time_taken, true)
 
-func _show_game_over() -> void:
-	"""Show game over screen (will be underneath cutscene if any)"""
+func _show_game_over_with_time(time_taken: float) -> void:
+	"""Show game over screen"""
 	if not is_inside_tree():
 		return
 	
-	# Get player's time
-	var time_taken = 0.0
-	if player and player.has_method("get_level_time"):
-		time_taken = player.get_level_time()
-	
 	get_tree().paused = false
 	
-	# Find or create GameOver screen
 	var game_over_screen = get_tree().root.get_node_or_null("GameOver")
 	if not game_over_screen:
 		var game_over_scene = preload("res://scene/game_over.tscn")
@@ -336,6 +323,3 @@ func _show_game_over() -> void:
 	
 	if game_over_screen.has_method("show_game_over"):
 		game_over_screen.show_game_over(3, 3, time_taken, false)
-	"""Called when bad ending cutscene finishes"""
-	print("[Boss Level] Bad ending finished, showing game over")
-	_show_game_over()
