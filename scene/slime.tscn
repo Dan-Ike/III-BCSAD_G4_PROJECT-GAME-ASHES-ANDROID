@@ -418,6 +418,15 @@ height = 31.999
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_mpwno")
+enemy_type = null
+health = null
+health_min = null
+health_max = null
+damage = null
+patrol_speed = null
+chase_speed = null
+use_navigation_bounds = null
+manual_patrol_distance = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vq0y3")

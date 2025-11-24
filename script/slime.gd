@@ -4,11 +4,26 @@ class_name Slime
 enum EnemyType { PATROL, PERSISTENT }
 @export var enemy_type: EnemyType = EnemyType.PATROL
 
-# Edge Detection
-var edge_check_distance: float = 30.0  # How far ahead to check for edges
-# Add to variables section:
-var edge_check_cooldown: float = 0.0
-const EDGE_CHECK_INTERVAL: float = 0.5  # Check edges every 0.1 seconds
+# Navigation system (replaces edge checking)
+var navigation_agent: NavigationAgent2D
+var patrol_center: Vector2
+var patrol_target: Vector2
+
+# Jump system
+var jump_velocity: float = -400.0
+var can_jump: bool = true
+var jump_cooldown: float = 0.5
+var jump_check_distance: float = 50.0
+
+# Smooth velocity
+var target_velocity_x: float = 0.0
+var velocity_smoothing: float = 10.0
+
+# Performance optimization
+var path_update_timer: float = 0.0
+const PATH_UPDATE_INTERVAL: float = 0.25
+var cached_next_position: Vector2 = Vector2.ZERO
+
 # Node references
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var detection_area: Area2D = $DetectionArea
@@ -75,6 +90,10 @@ var distance_update_timer: float = 0.0
 const DISTANCE_UPDATE_INTERVAL: float = 0.15
 
 func _ready() -> void:
+	_setup_navigation()
+	patrol_center = global_position
+	_generate_new_patrol_target()
+	
 	# Set up patrol bounds
 	if use_navigation_bounds:
 		_setup_navigation_patrol_bounds()
@@ -132,13 +151,42 @@ func _ready() -> void:
 	#print("[Enemy] Patrol bounds: Left=", patrol_left_bound, " Right=", patrol_right_bound)
 	#print("[Enemy] Starting direction: ", "RIGHT" if patrol_direction > 0 else "LEFT")
 
-func _check_edge_ahead() -> bool:
-	if not is_on_floor():
+# Setup navigation
+func _setup_navigation() -> void:
+	navigation_agent = NavigationAgent2D.new()
+	add_child(navigation_agent)
+	navigation_agent.path_desired_distance = 10.0
+	navigation_agent.target_desired_distance = 20.0
+	navigation_agent.max_speed = chase_speed
+	navigation_agent.avoidance_enabled = false
+
+func _generate_new_patrol_target() -> void:
+	var rand_x = randf_range(patrol_left_bound, patrol_right_bound)
+	patrol_target = Vector2(rand_x, global_position.y)
+
+# Jump system
+func _should_jump_obstacle(direction: Vector2) -> bool:
+	if not can_jump or not is_on_floor():
 		return false
 	
-	# Use simpler collision check instead of raycast
-	var test_position = position + Vector2(patrol_direction * edge_check_distance, 20)
-	return not test_move(transform, Vector2(patrol_direction * edge_check_distance, 50))
+	var space_state = get_world_2d().direct_space_state
+	var check_pos = global_position + Vector2(direction.x * jump_check_distance, 0)
+	
+	var query = PhysicsRayQueryParameters2D.create(global_position, check_pos)
+	query.exclude = [self]
+	query.collision_mask = 1
+	
+	var result = space_state.intersect_ray(query)
+	return not result.is_empty()
+
+func _perform_jump() -> void:
+	if can_jump and is_on_floor():
+		velocity.y = jump_velocity
+		can_jump = false
+		
+		await get_tree().create_timer(jump_cooldown).timeout
+		if is_instance_valid(self):
+			can_jump = true
 
 func _setup_navigation_patrol_bounds() -> void:
 	# Find NavigationRegion2D in parent
@@ -179,6 +227,7 @@ func _physics_process(delta: float) -> void:
 	
 	# Cache distance calculations
 	distance_update_timer -= delta
+	path_update_timer -= delta
 	if distance_update_timer <= 0.0:
 		distance_update_timer = DISTANCE_UPDATE_INTERVAL
 		if player:
@@ -225,97 +274,92 @@ func _physics_process(delta: float) -> void:
 		State.DEAD:
 			_state_dead(delta)
 	
+	velocity.x = lerp(velocity.x, target_velocity_x, velocity_smoothing * delta)
+
 	move_and_slide()
 	_update_sprite_direction()
 
 func _state_idle(delta: float) -> void:
 	animated_sprite.play("idle")
-	velocity.x = move_toward(velocity.x, 0, patrol_speed * delta * 5.0)
+	target_velocity_x = 0.0
 	
 	patrol_timer -= delta
 	if patrol_timer <= 0:
+		_generate_new_patrol_target()
 		change_state(State.PATROL)
 
 func _state_patrol(delta: float) -> void:
 	animated_sprite.play("run")
 	
-	# Check for edges ahead (with cooldown to reduce lag)
-	edge_check_cooldown -= delta
-	if edge_check_cooldown <= 0.0:
-		edge_check_cooldown = EDGE_CHECK_INTERVAL
+	# Only update path periodically
+	if path_update_timer <= 0.0:
+		path_update_timer = PATH_UPDATE_INTERVAL
+		navigation_agent.target_position = patrol_target
 		
-		if _check_edge_ahead():
-			patrol_direction *= -1
-			facing_direction = patrol_direction
-			patrol_timer = PATROL_WAIT_TIME
-			change_state(State.IDLE)
-			return
+		if not navigation_agent.is_navigation_finished():
+			cached_next_position = navigation_agent.get_next_path_position()
 	
-	# Check if reached left boundary
-	if patrol_direction < 0 and global_position.x <= patrol_left_bound:
-		patrol_direction = 1
-		facing_direction = 1
+	if not navigation_agent.is_navigation_finished():
+		var direction = (cached_next_position - global_position).normalized()
+		
+		# Only check for jumps occasionally
+		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * patrol_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+	else:
+		# Reached patrol target, generate new one
 		patrol_timer = PATROL_WAIT_TIME
 		change_state(State.IDLE)
-		return
 	
-	# Check if reached right boundary
-	if patrol_direction > 0 and global_position.x >= patrol_right_bound:
-		patrol_direction = -1
-		facing_direction = -1
-		patrol_timer = PATROL_WAIT_TIME
-		change_state(State.IDLE)
-		return
-	
-	# Check for walls
-	if is_on_wall():
-		patrol_direction *= -1
-		facing_direction = patrol_direction
-		patrol_timer = PATROL_WAIT_TIME
-		change_state(State.IDLE)
-		return
-	
-	# Move in patrol direction
-	velocity.x = patrol_direction * patrol_speed
-	facing_direction = patrol_direction
-	
-	# If player detected, chase immediately
+	# Switch to chase if player detected
 	if is_player_in_detection and player and not player.dead:
 		change_state(State.CHASE)
 
 func _state_chase(delta: float) -> void:
-	# Check if player is valid
 	if not player or not is_instance_valid(player) or player.dead:
-		#print("[Enemy] Player invalid/dead, returning to patrol")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
 	
-	# PATROL type: Return to patrol if player leaves detection
 	if enemy_type == EnemyType.PATROL and not is_player_in_detection:
-		#print("[Enemy] PATROL type and player left detection, returning")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
-	
-	# PERSISTENT type: Always chase until player dies
 	
 	animated_sprite.play("run")
 	
-	var direction_to_player = sign(player.global_position.x - global_position.x)
 	var distance_to_player = player_distance_cache
 	
-	# Check if in attack range
 	if distance_to_player <= ATTACK_RANGE and can_attack:
 		change_state(State.ATTACK_READY)
 		return
 	
-	# Move toward player
-	velocity.x = direction_to_player * chase_speed
-	facing_direction = direction_to_player
+	# Only update path periodically
+	if path_update_timer <= 0.0:
+		path_update_timer = PATH_UPDATE_INTERVAL
+		navigation_agent.target_position = player.global_position
+		
+		if not navigation_agent.is_navigation_finished():
+			cached_next_position = navigation_agent.get_next_path_position()
+	
+	if not navigation_agent.is_navigation_finished():
+		var direction = (cached_next_position - global_position).normalized()
+		
+		# Only check jumps occasionally
+		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * chase_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+	else:
+		var direction = (player.global_position - global_position).normalized()
+		target_velocity_x = direction.x * chase_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
 
 func _state_attack_ready(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
+	target_velocity_x = 0.0
 	
 	if not player or player.dead:
 		change_state(State.CHASE)
@@ -339,7 +383,7 @@ func _state_attack_ready(delta: float) -> void:
 	_perform_attack()
 
 func _state_attacking(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
+	target_velocity_x = 0.0
 
 func _state_hurt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
@@ -436,21 +480,27 @@ func _check_damage_to_player() -> void:
 func _return_to_patrol() -> void:
 	animated_sprite.play("run")
 	
-	# Calculate distance to return position
-	var distance_to_return = global_position.distance_to(return_position)
+	# Only update path periodically
+	if path_update_timer <= 0.0:
+		path_update_timer = PATH_UPDATE_INTERVAL
+		navigation_agent.target_position = return_position
+		
+		if not navigation_agent.is_navigation_finished():
+			cached_next_position = navigation_agent.get_next_path_position()
 	
-	# If close enough to return position, resume patrol
-	if distance_to_return < 50:
+	if not navigation_agent.is_navigation_finished():
+		var direction = (cached_next_position - global_position).normalized()
+		
+		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * patrol_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+	else:
 		is_returning_to_patrol = false
-		patrol_direction = 1 if randf() > 0.5 else -1  # Random direction
+		patrol_direction = 1 if randf() > 0.5 else -1
+		_generate_new_patrol_target()
 		change_state(State.PATROL)
-		#print("[Enemy] Reached return position, resuming patrol")
-		return
-	
-	# Move toward return position
-	var direction_to_return = sign(return_position.x - global_position.x)
-	velocity.x = direction_to_return * patrol_speed
-	facing_direction = direction_to_return
 
 func _update_sprite_direction() -> void:
 	if facing_direction != 0:

@@ -1,6 +1,5 @@
 [gd_scene load_steps=66 format=3 uid="uid://deg8bpd778fxa"]
 
-[ext_resource type="Script" uid="uid://dqi167rq0ectf" path="res://script/floor_3_level_1.gd" id="1_diarm"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_fi1ph"]
 [ext_resource type="Texture2D" uid="uid://das3f5afy426v" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Items/000_0019_star1.png" id="3_k6qwl"]
 [ext_resource type="Texture2D" uid="uid://3qlyxsdiwac4" path="res://art/floor3/Tileset/vegetation.png" id="4_4pco0"]
@@ -1299,8 +1298,12 @@ size = Vector2(96, 64)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3q3sg"]
 size = Vector2(80, 48)
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_635j4"]
+vertices = PackedVector2Array(1861, -537.047, 729.57, -542.953, 722.43, -708.117, 1861, -721.867)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(720, -533, 712, -718, 1871, -732, 1871, -527)])
+
 [node name="floor_3_level_1" type="Node2D"]
-script = ExtResource("1_diarm")
 metadata/_edit_vertical_guides_ = [288.0]
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
@@ -1335,16 +1338,6 @@ collision_mask = 2
 position = Vector2(-1370, 238)
 shape = SubResource("RectangleShape2D_eepwo")
 debug_color = Color(0.999132, 0, 0.122649, 0.42)
-
-[node name="Control" type="Control" parent="."]
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TouchControls" parent="Control" instance=ExtResource("14_1dnb8")]
-visible = false
 
 [node name="StaticBody2D2" type="StaticBody2D" parent="."]
 
@@ -1507,6 +1500,21 @@ position = Vector2(2661, -1001)
 
 [node name="Canine5" parent="." instance=ExtResource("18_c72so")]
 position = Vector2(1269, -578)
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_635j4")
+
+[node name="NavigationRegion2D2" type="NavigationRegion2D" parent="."]
+position = Vector2(2225, 29)
+navigation_polygon = SubResource("NavigationPolygon_635j4")
+
+[node name="NavigationRegion2D3" type="NavigationRegion2D" parent="."]
+position = Vector2(1780, -396)
+navigation_polygon = SubResource("NavigationPolygon_635j4")
+
+[node name="NavigationRegion2D4" type="NavigationRegion2D" parent="."]
+position = Vector2(2756, -390)
+navigation_polygon = SubResource("NavigationPolygon_635j4")
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor3lvl2" to="." method="_on_floor_3_lvl_2_body_entered"]

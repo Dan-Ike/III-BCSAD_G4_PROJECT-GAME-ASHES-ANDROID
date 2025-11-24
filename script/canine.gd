@@ -1,15 +1,8 @@
 extends CharacterBody2D
 class_name Canine
-# Enemy Type
 enum EnemyType { PATROL, PERSISTENT }
 @export var enemy_type: EnemyType = EnemyType.PATROL
 
-# Edge Detection
-var edge_check_distance: float = 30.0  # How far ahead to check for edges
-# Add to variables section:
-var edge_check_cooldown: float = 0.0
-const EDGE_CHECK_INTERVAL: float = 0.5  # Check edges every 0.5 seconds
-# Node references
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var detection_area: Area2D = $DetectionArea
 @onready var patrol_area: Area2D = $PatrolArea
@@ -18,29 +11,36 @@ const EDGE_CHECK_INTERVAL: float = 0.5  # Check edges every 0.5 seconds
 @onready var hitbox: Area2D = $Hitbox
 @onready var health_bar: ProgressBar = $HealthBar
 
-# Stats
 @export var health: int = 100
 @export var health_min: int = 0
 @export var health_max: int = 100
 @export var damage: int = 10
 
-# Movement
 @export var patrol_speed: float = 50.0
 @export var chase_speed: float = 120.0
 const GRAVITY = 980.0
 
-# Patrol
+# Navigation system (like AdvancedEnemy)
+var navigation_agent: NavigationAgent2D
+var patrol_center: Vector2
+var patrol_target: Vector2
+
 var patrol_direction: int = 1
 var patrol_left_bound: float = 0.0
 var patrol_right_bound: float = 0.0
-@export var use_navigation_bounds: bool = true  # Auto-detect navigation bounds
-@export var manual_patrol_distance: float = 500.0  # Used if not using navigation bounds
+@export var use_navigation_bounds: bool = true
+@export var manual_patrol_distance: float = 500.0
 var patrol_timer: float = 0.0
 const PATROL_WAIT_TIME = 1.0
 var is_returning_to_patrol: bool = false
 var return_position: Vector2
 
-# States
+# Jump system (like AdvancedEnemy)
+var jump_velocity: float = -400.0
+var can_jump: bool = true
+var jump_cooldown: float = 0.5
+var jump_check_distance: float = 50.0
+
 enum State {
 	IDLE,
 	PATROL,
@@ -54,7 +54,6 @@ enum State {
 var current_state: State = State.PATROL
 var previous_state: State = State.PATROL
 
-# Combat
 var player: CharacterBody2D = null
 var is_player_in_detection: bool = false
 var is_player_in_attack_range: bool = false
@@ -62,10 +61,10 @@ var facing_direction: int = 1
 var can_attack: bool = true
 var attack_cooldown: float = 0.0
 const ATTACK_COOLDOWN_TIME = 1.5
-const ATTACK_TELEGRAPH_TIME = 0.5  # Delay before attack
+const ATTACK_TELEGRAPH_TIME = 0.5
+const ATTACK_DURATION_TIME = 0.5
 const ATTACK_RANGE = 20.0
 
-# Damage tracking
 var players_hit_this_attack: Array = []
 var is_attacking: bool = false
 var can_take_damage: bool = true
@@ -74,95 +73,86 @@ var player_distance_cache: float = 0.0
 var distance_update_timer: float = 0.0
 const DISTANCE_UPDATE_INTERVAL: float = 0.15
 
+# Smooth velocity
+var target_velocity_x: float = 0.0
+var velocity_smoothing: float = 10.0
+
+# Performance optimization
+var path_update_timer: float = 0.0
+const PATH_UPDATE_INTERVAL: float = 0.25  # Update path 4 times per second instead of 60
+var cached_next_position: Vector2 = Vector2.ZERO
+
 func _ready() -> void:
-	# Set up patrol bounds
+	# Setup navigation agent (like AdvancedEnemy)
+	_setup_navigation()
+	
 	if use_navigation_bounds:
 		_setup_navigation_patrol_bounds()
 	else:
-		# Manual patrol distance from spawn point
 		patrol_left_bound = global_position.x - manual_patrol_distance
 		patrol_right_bound = global_position.x + manual_patrol_distance
 	
+	patrol_center = global_position
 	return_position = global_position
-	
-	# Start patrol randomly
 	patrol_direction = 1 if randf() > 0.5 else -1
+	_generate_new_patrol_target()
 	change_state(State.PATROL)
 	
-	# IMPORTANT: Connect detection areas AFTER scene is ready
 	await get_tree().process_frame
 	
 	if detection_area:
-		# Set detection area to detect Layer 2 (where player is)
-		detection_area.collision_mask = 2  # Layer 2 only
-		
-		# Make sure it's not already connected
+		detection_area.collision_mask = 2
 		if not detection_area.body_entered.is_connected(_on_detection_area_entered):
 			detection_area.body_entered.connect(_on_detection_area_entered)
 		if not detection_area.body_exited.is_connected(_on_detection_area_exited):
 			detection_area.body_exited.connect(_on_detection_area_exited)
-		#print("[Enemy] Detection area connected - Mask set to Layer 2")
-	else:
-		pass
-		#print("[Enemy] ERROR: No DetectionArea found!")
 	
 	if attack_area:
-		attack_area.collision_mask = 2  # Also set attack area to Layer 2
+		attack_area.collision_mask = 2
 		if not attack_area.body_entered.is_connected(_on_attack_area_entered):
 			attack_area.body_entered.connect(_on_attack_area_entered)
 		if not attack_area.body_exited.is_connected(_on_attack_area_exited):
 			attack_area.body_exited.connect(_on_attack_area_exited)
 	
 	if hitbox:
-		# Hitbox detects player's damage area
 		if not hitbox.area_entered.is_connected(_on_hitbox_area_entered):
 			hitbox.area_entered.connect(_on_hitbox_area_entered)
 	
-	# Disable damage area initially
 	_disable_damage_area()
-	
-	# Register with Global
-	Global.slimeDamageZone = hitbox
 	
 	if health_bar:
 		health_bar.max_value = health_max
 		health_bar.value = health
-	
-	#print("[Enemy] Initialized as ", "PATROL" if enemy_type == EnemyType.PATROL else "PERSISTENT")
-	#print("[Enemy] Patrol bounds: Left=", patrol_left_bound, " Right=", patrol_right_bound)
-	#print("[Enemy] Starting direction: ", "RIGHT" if patrol_direction > 0 else "LEFT")
 
-func _check_edge_ahead() -> bool:
-	if not is_on_floor():
-		return false
-	
-	# Use simpler collision check instead of raycast
-	var test_position = position + Vector2(patrol_direction * edge_check_distance, 20)
-	return not test_move(transform, Vector2(patrol_direction * edge_check_distance, 50))
+# Setup navigation like AdvancedEnemy
+func _setup_navigation() -> void:
+	navigation_agent = NavigationAgent2D.new()
+	add_child(navigation_agent)
+	navigation_agent.path_desired_distance = 10.0
+	navigation_agent.target_desired_distance = 20.0
+	navigation_agent.max_speed = chase_speed
+	navigation_agent.avoidance_enabled = false
+
+func _generate_new_patrol_target() -> void:
+	# Generate random patrol point within bounds
+	var rand_x = randf_range(patrol_left_bound, patrol_right_bound)
+	patrol_target = Vector2(rand_x, global_position.y)
 
 func _setup_navigation_patrol_bounds() -> void:
-	# Find NavigationRegion2D in parent
 	var nav_region = get_parent()
 	
 	while nav_region and not nav_region is NavigationRegion2D:
 		nav_region = nav_region.get_parent()
 	
 	if nav_region and nav_region is NavigationRegion2D:
-		# Get the navigation polygon bounds
 		var nav_poly = nav_region.navigation_polygon
 		if nav_poly:
 			var bounds = nav_poly.get_bounds()
-			
-			# Convert to global coordinates
-			patrol_left_bound = nav_region.global_position.x + bounds.position.x + 50  # Add padding
-			patrol_right_bound = nav_region.global_position.x + bounds.end.x - 50  # Add padding
-			
-			#print("[Enemy] Found NavigationRegion2D bounds: ", bounds)
+			patrol_left_bound = nav_region.global_position.x + bounds.position.x + 50
+			patrol_right_bound = nav_region.global_position.x + bounds.end.x - 50
 		else:
-			#print("[Enemy] WARNING: NavigationRegion2D has no navigation_polygon!")
 			_use_fallback_patrol()
 	else:
-		#print("[Enemy] WARNING: No NavigationRegion2D found! Using fallback patrol.")
 		_use_fallback_patrol()
 
 func _use_fallback_patrol() -> void:
@@ -173,37 +163,38 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEAD:
 		return
 	
-	# Update player reference
 	if not player and Global.playerBody:
 		player = Global.playerBody
 	
-	# Cache distance calculations
+	# Cache distance updates
 	distance_update_timer -= delta
 	if distance_update_timer <= 0.0:
 		distance_update_timer = DISTANCE_UPDATE_INTERVAL
-		if player:
+		if player and is_instance_valid(player):
 			player_distance_cache = global_position.distance_to(player.global_position)
 	
-	# Update health bar
+	# Cache path updates
+	path_update_timer -= delta
+	
 	if health_bar:
 		health_bar.value = health
 	
-	# Update cooldowns
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 		if attack_cooldown <= 0:
 			can_attack = true
 	
-	# Apply gravity
+	# Gravity
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	else:
 		if velocity.y > 0:
 			velocity.y = 0
 	
-	# Handle returning to patrol (outside state machine)
+	# Handle returning to patrol
 	if is_returning_to_patrol and current_state != State.HURT and current_state != State.DEAD:
-		_return_to_patrol()
+		_return_to_patrol(delta)
+		velocity.x = lerp(velocity.x, target_velocity_x, velocity_smoothing * delta)
 		move_and_slide()
 		_update_sprite_direction()
 		return
@@ -225,124 +216,142 @@ func _physics_process(delta: float) -> void:
 		State.DEAD:
 			_state_dead(delta)
 	
+	# Smooth velocity application
+	velocity.x = lerp(velocity.x, target_velocity_x, velocity_smoothing * delta)
+	
 	move_and_slide()
 	_update_sprite_direction()
 
 func _state_idle(delta: float) -> void:
 	animated_sprite.play("idle")
-	velocity.x = move_toward(velocity.x, 0, patrol_speed * delta * 5.0)
+	target_velocity_x = 0.0
 	
 	patrol_timer -= delta
 	if patrol_timer <= 0:
+		_generate_new_patrol_target()
 		change_state(State.PATROL)
 
 func _state_patrol(delta: float) -> void:
 	animated_sprite.play("run")
 	
-	# Check for edges ahead (with cooldown to reduce lag)
-	edge_check_cooldown -= delta
-	if edge_check_cooldown <= 0.0:
-		edge_check_cooldown = EDGE_CHECK_INTERVAL
+	# Only update path periodically, not every frame
+	if path_update_timer <= 0.0:
+		path_update_timer = PATH_UPDATE_INTERVAL
+		navigation_agent.target_position = patrol_target
 		
-		if _check_edge_ahead():
-			patrol_direction *= -1
-			facing_direction = patrol_direction
-			patrol_timer = PATROL_WAIT_TIME
-			change_state(State.IDLE)
-			return
+		if not navigation_agent.is_navigation_finished():
+			cached_next_position = navigation_agent.get_next_path_position()
 	
-	# Check if reached left boundary
-	if patrol_direction < 0 and global_position.x <= patrol_left_bound:
-		patrol_direction = 1
-		facing_direction = 1
+	if not navigation_agent.is_navigation_finished():
+		var direction = (cached_next_position - global_position).normalized()
+		
+		# Only check for jumps occasionally, not every frame
+		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * patrol_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+	else:
+		# Reached patrol target, generate new one
 		patrol_timer = PATROL_WAIT_TIME
 		change_state(State.IDLE)
-		return
 	
-	# Check if reached right boundary
-	if patrol_direction > 0 and global_position.x >= patrol_right_bound:
-		patrol_direction = -1
-		facing_direction = -1
-		patrol_timer = PATROL_WAIT_TIME
-		change_state(State.IDLE)
-		return
-	
-	# Check for walls
-	if is_on_wall():
-		patrol_direction *= -1
-		facing_direction = patrol_direction
-		patrol_timer = PATROL_WAIT_TIME
-		change_state(State.IDLE)
-		return
-	
-	# Move in patrol direction
-	velocity.x = patrol_direction * patrol_speed
-	facing_direction = patrol_direction
-	
-	# If player detected, chase immediately
+	# Switch to chase if player detected
 	if is_player_in_detection and player and not player.dead:
 		change_state(State.CHASE)
 
 func _state_chase(delta: float) -> void:
-	# Check if player is valid
-	if not player or not is_instance_valid(player) or player.dead:
-		#print("[Enemy] Player invalid/dead, returning to patrol")
+	if not player or not is_instance_valid(player) or (player.has_method("is_dead") and player.is_dead()):
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
 	
-	# PATROL type: Return to patrol if player leaves detection
 	if enemy_type == EnemyType.PATROL and not is_player_in_detection:
-		#print("[Enemy] PATROL type and player left detection, returning")
 		return_position = global_position
 		is_returning_to_patrol = true
 		return
-	
-	# PERSISTENT type: Always chase until player dies
 	
 	animated_sprite.play("run")
 	
-	var direction_to_player = sign(player.global_position.x - global_position.x)
 	var distance_to_player = player_distance_cache
 	
-	# Check if in attack range
 	if distance_to_player <= ATTACK_RANGE and can_attack:
 		change_state(State.ATTACK_READY)
 		return
 	
-	# Move toward player
-	velocity.x = direction_to_player * chase_speed
-	facing_direction = direction_to_player
+	# Only update path periodically
+	if path_update_timer <= 0.0:
+		path_update_timer = PATH_UPDATE_INTERVAL
+		navigation_agent.target_position = player.global_position
+		
+		if not navigation_agent.is_navigation_finished():
+			cached_next_position = navigation_agent.get_next_path_position()
+	
+	if not navigation_agent.is_navigation_finished():
+		var direction = (cached_next_position - global_position).normalized()
+		
+		# Only check jumps occasionally
+		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * chase_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+	else:
+		# Direct movement if navigation finished
+		var direction = (player.global_position - global_position).normalized()
+		target_velocity_x = direction.x * chase_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+
+# Jump system from AdvancedEnemy (uses raycasting only when needed)
+func _should_jump_obstacle(direction: Vector2) -> bool:
+	if not can_jump or not is_on_floor():
+		return false
+	
+	var space_state = get_world_2d().direct_space_state
+	var check_pos = global_position + Vector2(direction.x * jump_check_distance, 0)
+	
+	var query = PhysicsRayQueryParameters2D.create(global_position, check_pos)
+	query.exclude = [self]
+	query.collision_mask = 1
+	
+	var result = space_state.intersect_ray(query)
+	return not result.is_empty()
+
+func _perform_jump() -> void:
+	if can_jump and is_on_floor():
+		velocity.y = jump_velocity
+		can_jump = false
+		
+		await get_tree().create_timer(jump_cooldown).timeout
+		if is_instance_valid(self):
+			can_jump = true
 
 func _state_attack_ready(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
+	target_velocity_x = 0.0
 	
-	if not player or player.dead:
+	if not player or not is_instance_valid(player) or (player.has_method("is_dead") and player.is_dead()):
 		change_state(State.CHASE)
 		return
 	
 	var distance_to_player = player_distance_cache
 	
-	# Player escaped range
-	if distance_to_player > ATTACK_RANGE: #+ 20:
+	if distance_to_player > ATTACK_RANGE + 10:
 		change_state(State.CHASE)
 		return
 	
 	facing_direction = sign(player.global_position.x - global_position.x)
 	
-	# Attack cooldown check
 	if attack_cooldown > 0:
 		animated_sprite.play("idle")
 		return
 	
-	# Perform attack
 	_perform_attack()
 
 func _state_attacking(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
+	target_velocity_x = 0.0
 
 func _state_hurt(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, chase_speed * delta * 10.0)
+	target_velocity_x = 0.0
 	animated_sprite.play("hurt")
 	
 	await get_tree().create_timer(0.3).timeout
@@ -352,13 +361,13 @@ func _state_hurt(delta: float) -> void:
 	
 	if current_state == State.HURT:
 		can_take_damage = true
-		if player and not player.dead:
+		if player and is_instance_valid(player) and not (player.has_method("is_dead") and player.is_dead()):
 			change_state(State.CHASE)
 		else:
 			is_returning_to_patrol = true
 
 func _state_dead(delta: float) -> void:
-	velocity.x = 0
+	target_velocity_x = 0.0
 	velocity.y = 0
 	if animated_sprite.animation != "death":
 		animated_sprite.play("death")
@@ -370,29 +379,18 @@ func _perform_attack() -> void:
 	attack_cooldown = ATTACK_COOLDOWN_TIME
 	players_hit_this_attack.clear()
 	
-	#print("[Enemy] Attacking!")
-	
-	# Telegraph delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
 	
 	if not is_instance_valid(self):
 		return
 	
-	# Play both animations at the same time
 	animated_sprite.play("attack")
-	
-	await get_tree().create_timer(0.3).timeout
 	
 	_enable_damage_area()
 	
-	# Check for damage during the attack
-# Check for damage during the attack (reduced frequency)
-	var damage_checks = 3  # Only check 3 times instead of every frame
-	for i in range(damage_checks):
-		if not is_instance_valid(self):
-			return
-		_check_damage_to_player()
-		await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(ATTACK_DURATION_TIME).timeout
+	
+	_check_damage_to_player()
 	
 	_disable_damage_area()
 	is_attacking = false
@@ -413,46 +411,52 @@ func _disable_damage_area() -> void:
 				child.disabled = true
 
 func _check_damage_to_player() -> void:
-	if not is_attacking or not player:
+	if not player or not is_instance_valid(player):
 		return
 	
 	if players_hit_this_attack.has(player):
 		return
 	
 	if deal_damage_area_attack:
-		var overlapping = deal_damage_area_attack.get_overlapping_bodies()  # Changed to bodies
+		var overlapping = deal_damage_area_attack.get_overlapping_bodies()
 		for body in overlapping:
 			if body == player or body == Global.playerBody:
-				if player.has_method("take_damage"):
-					player.take_damage(damage) # damage = attack
+				if body.has_method("take_damage"):
+					body.take_damage(damage)
 					players_hit_this_attack.append(player)
-					#print("[Enemy] Hit player for %d damage!" % damage)
 					
-					# Apply knockback
 					var direction = sign(player.global_position.x - global_position.x)
 					var knockback = Vector2(direction * 200, -100)
-					if player.has_method("apply_knockback"):
-						player.apply_knockback(knockback)
+					if body.has_method("apply_knockback"):
+						body.apply_knockback(knockback)
 				return
 
-func _return_to_patrol() -> void:
+func _return_to_patrol(delta: float) -> void:
 	animated_sprite.play("run")
 	
-	# Calculate distance to return position
-	var distance_to_return = global_position.distance_to(return_position)
+	# Only update path periodically
+	if path_update_timer <= 0.0:
+		path_update_timer = PATH_UPDATE_INTERVAL
+		navigation_agent.target_position = return_position
+		
+		if not navigation_agent.is_navigation_finished():
+			cached_next_position = navigation_agent.get_next_path_position()
 	
-	# If close enough to return position, resume patrol
-	if distance_to_return < 50:
+	if not navigation_agent.is_navigation_finished():
+		var direction = (cached_next_position - global_position).normalized()
+		
+		# Only check jumps occasionally
+		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
+			_perform_jump()
+		
+		target_velocity_x = direction.x * patrol_speed
+		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+	else:
+		# Reached return position
 		is_returning_to_patrol = false
-		patrol_direction = 1 if randf() > 0.5 else -1  # Random direction
+		patrol_direction = 1 if randf() > 0.5 else -1
+		_generate_new_patrol_target()
 		change_state(State.PATROL)
-		#print("[Enemy] Reached return position, resuming patrol")
-		return
-	
-	# Move toward return position
-	var direction_to_return = sign(return_position.x - global_position.x)
-	velocity.x = direction_to_return * patrol_speed
-	facing_direction = direction_to_return
 
 func _update_sprite_direction() -> void:
 	if facing_direction != 0:
@@ -466,18 +470,12 @@ func change_state(new_state: State) -> void:
 	
 	previous_state = current_state
 	current_state = new_state
-	
-	# Only print important state changes
-	if new_state == State.CHASE or new_state == State.ATTACKING or new_state == State.DEAD:
-		#print("[Enemy] State: %s -> %s" % [State.keys()[previous_state], State.keys()[current_state]])
-		pass
 
 func take_damage(damage_amount: int) -> void:
 	if current_state == State.DEAD or not can_take_damage:
 		return
 	
 	health -= damage_amount
-	#print("[Enemy] Took %d damage. Health: %d/%d" % [damage_amount, health, health_max])
 	
 	if health <= 0:
 		die()
@@ -487,16 +485,13 @@ func take_damage(damage_amount: int) -> void:
 
 func die() -> void:
 	if current_state == State.DEAD:
-		return  # Prevent multiple death calls
+		return
 	
-	#print("[Enemy] Died!")
 	change_state(State.DEAD)
 	
-	# Disable collision immediately
 	if has_node("CollisionShape2D"):
 		$CollisionShape2D.disabled = true
 	
-	# Disable all areas
 	if detection_area:
 		detection_area.monitoring = false
 	if attack_area:
@@ -504,59 +499,39 @@ func die() -> void:
 	if hitbox:
 		hitbox.monitoring = false
 	
-	# Stop movement
 	velocity = Vector2.ZERO
+	set_process(false)
+	set_physics_process(false)
 	
-	# Play death animation
 	if animated_sprite:
 		animated_sprite.play("death")
-		# Wait for animation to finish
 		await animated_sprite.animation_finished
 	else:
-		# Fallback if no animation
 		await get_tree().create_timer(1.0).timeout
-	
-	# Fade out (optional)
-	#var tween = create_tween()
-	#tween.tween_property(self, "modulate:a", 0.0, 0.5)
-	#await tween.finished
 	
 	queue_free()
 
 func _on_detection_area_entered(body: Node2D) -> void:
-	# Check multiple ways to identify player
 	var is_player = false
 	
-	if body is Player:
-		is_player = true
-	elif body == Global.playerBody:
-		is_player = true
-	elif body.is_in_group("player"):
+	if body.is_in_group("player") or body == Global.playerBody:
 		is_player = true
 	
 	if is_player:
-		#print("[Enemy] ✓ Player detected! Starting chase!")
 		is_player_in_detection = true
 		player = body
 		
-		# Immediately chase if not dead or attacking
-		if current_state != State.DEAD and current_state != State.ATTACKING:
+		if current_state != State.DEAD and current_state != State.ATTACKING and current_state != State.HURT:
 			change_state(State.CHASE)
 
 func _on_detection_area_exited(body: Node2D) -> void:
 	if body == Global.playerBody:
-		#print("[Enemy] Player left detection area!")
 		is_player_in_detection = false
 		
-		# Only return to patrol if PATROL type
 		if enemy_type == EnemyType.PATROL:
-			if current_state == State.CHASE or current_state == State.ATTACK_READY:
-				#print("[Enemy] PATROL type - returning to patrol")
+			if current_state == State.CHASE or current_state == State.ATTACK_READY or current_state == State.ATTACKING:
 				return_position = global_position
 				is_returning_to_patrol = true
-		else:
-			#print("[Enemy] PERSISTENT type - continuing chase")
-			pass
 
 func _on_attack_area_entered(body: Node2D) -> void:
 	if body == Global.playerBody:
@@ -568,5 +543,5 @@ func _on_attack_area_exited(body: Node2D) -> void:
 
 func _on_hitbox_area_entered(area: Area2D) -> void:
 	if area == Global.playerDamageZone:
-		var damage_amount = Global.playerDamageAmount
+		var damage_amount = Global.playerDamageAmount if Global.has("playerDamageAmount") else 10
 		take_damage(damage_amount)
