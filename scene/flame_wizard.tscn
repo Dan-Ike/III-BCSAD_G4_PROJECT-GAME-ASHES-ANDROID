@@ -271,10 +271,10 @@ animations = [{
 radius = 15.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wniqe"]
-radius = 254.096
+radius = 72.3395
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7gp33"]
-radius = 586.308
+radius = 188.096
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_siaxf"]
 radius = 66.0076
@@ -284,8 +284,8 @@ radius = 11.0
 height = 48.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pf8ga"]
-radius = 11.0
-height = 44.0
+radius = 15.0
+height = 56.0
 
 [node name="FlameWizard" type="CharacterBody2D"]
 script = ExtResource("1_k0njy")
@@ -296,7 +296,7 @@ animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
-position = Vector2(0, 4)
+position = Vector2(0, 11)
 shape = SubResource("CapsuleShape2D_tt07m")
 
 [node name="DetectionArea" type="Area2D" parent="."]
@@ -341,6 +341,7 @@ position = Vector2(-4, -1)
 shape = SubResource("CapsuleShape2D_pf8ga")
 
 [node name="HealthBar" parent="." instance=ExtResource("6_p15xp")]
+visible = false
 offset_top = 19.0
 offset_bottom = 26.0
 

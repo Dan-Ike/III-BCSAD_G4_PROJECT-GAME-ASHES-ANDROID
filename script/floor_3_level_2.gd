@@ -7,6 +7,9 @@ extends Node2D
 @onready var before_3_1: CanvasLayer = $before_3_1
 @onready var floor_title: CanvasLayer = $FloorTitle
 @onready var player: Player = $player
+@onready var gate: CollisionShape2D = $StaticBody2D2/gate
+@onready var flr_3_lvl_3: Area2D = $flr3lvl3
+@onready var advanced_enemy: AdvancedEnemy = $AdvancedEnemy
 
 func _show_floor_title_then_start() -> void:
 	# Show floor title (pauses game)
@@ -33,7 +36,14 @@ func _ready() -> void:
 	_show_floor_title_then_start()
 	
 	Global.set_retrying(false)
+	if advanced_enemy:
+		advanced_enemy.connect("tree_exited", _on_advanced_enemy_died)
 
+func _on_advanced_enemy_died() -> void:
+	# Remove the gate collision when enemy dies
+	if gate:
+		gate.disabled = true
+		print("[Level] Gate opened - Advanced Enemy defeated!")
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""
@@ -55,7 +65,7 @@ func _should_show_cutscene() -> bool:
 func _process(delta: float) -> void:
 	pass
 
-func _on_floor_3_lvl_2_body_entered(body: Node2D) -> void:
+func _on_flr_3_lvl_3_body_entered(body: Node2D) -> void:
 	if body is Player:
 		# Get time FIRST before stopping
 		var time_cleared = body._get_elapsed_time()

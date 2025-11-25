@@ -543,5 +543,5 @@ func _on_attack_area_exited(body: Node2D) -> void:
 
 func _on_hitbox_area_entered(area: Area2D) -> void:
 	if area == Global.playerDamageZone:
-		var damage_amount = Global.playerDamageAmount if Global.has("playerDamageAmount") else 10
+		var damage_amount = Global.playerDamageAmount if "playerDamageAmount" in Global else 10
 		take_damage(damage_amount)

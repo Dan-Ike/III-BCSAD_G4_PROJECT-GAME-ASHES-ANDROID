@@ -7,6 +7,13 @@ extends Node2D
 @onready var before_3_1: CanvasLayer = $before_3_1
 @onready var floor_title: CanvasLayer = $FloorTitle
 @onready var player: Player = $player
+
+@onready var gate: CollisionShape2D = $StaticBody2D2/gate
+@onready var advanced_enemy: AdvancedEnemy = $AdvancedEnemy	
+@onready var flr_3_lvl_2: Area2D = $flr3lvl2
+
+var is_transitioning = false
+
 func _ready() -> void:
 	Global.set_floor_level(3, 1)
 	
@@ -36,6 +43,14 @@ func _ready() -> void:
 		_show_floor_title_then_start()
 	
 	Global.set_retrying(false)
+	if advanced_enemy:
+		advanced_enemy.connect("tree_exited", _on_advanced_enemy_died)
+
+func _on_advanced_enemy_died() -> void:
+	# Remove the gate collision when enemy dies
+	if gate:
+		gate.disabled = true
+		print("[Level] Gate opened - Advanced Enemy defeated!")
 
 func _show_floor_title_then_start() -> void:
 	# Show floor title (pauses game)
@@ -75,21 +90,28 @@ func _process(delta: float) -> void:
 	pass
 
 func _on_floor_3_lvl_2_body_entered(body: Node2D) -> void:
-	if body is Player:
+	if body is Player and not is_transitioning:
+		is_transitioning = true
+		
 		# Get time FIRST before stopping
 		var time_cleared = body._get_elapsed_time()
 		body.stop_level_timer()
 		
 		print("[Level] Player completed Floor %d, Level %d in %.2f seconds" % [Global.current_floor, Global.current_level, time_cleared])
 		
+		# Disable player input during transition
+		body.set_physics_process(false)
+		body.touch_controls.disable_all_controls()
+		
+		# Play cinematic fade to black
+		scene_transition_animation.play("fade_in")
+		await scene_transition_animation.animation_finished
+		
 		# Save progress
 		Global.gameStarted = true
 		SaveManager.mark_level_completed(3, 1)
 		SaveManager.advance_to_level(3, 2)
 		unlock_attack()
-		
-		# Disable touch controls
-		body.touch_controls.disable_all_controls()
 		
 		# Show level completed screen
 		var game_over_scene = preload("res://scene/game_over.tscn")
