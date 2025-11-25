@@ -287,7 +287,6 @@ offset_bottom = 149.96
 
 [node name="PauseMenu" type="Control" parent="."]
 process_mode = 3
-visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -899,6 +898,7 @@ value = 100.0
 show_percentage = false
 
 [node name="Settings" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -1031,10 +1031,6 @@ offset_left = -160.2
 offset_top = -24.76
 offset_right = 159.8
 offset_bottom = -8.76003
-theme_override_icons/grabber = ExtResource("18_hg4c8")
-theme_override_icons/grabber_highlight = ExtResource("18_hg4c8")
-theme_override_icons/grabber_disabled = ExtResource("18_hg4c8")
-theme_override_icons/tick = ExtResource("18_hg4c8")
 theme_override_styles/slider = SubResource("StyleBoxLine_5cq61")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_p5f4l")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_y3unk")

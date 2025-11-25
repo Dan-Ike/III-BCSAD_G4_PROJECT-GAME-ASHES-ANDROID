@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=39 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
 [ext_resource type="Texture2D" uid="uid://c2thoj84krhoy" path="res://art/components/Sample Only.png" id="2_by01r"]
@@ -32,6 +32,10 @@
 [ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="24_xyo3m"]
 [ext_resource type="Texture2D" uid="uid://e4mt6s6fc4o0" path="res://art/components/PlayVideo_Button.png" id="30_kj8il"]
 [ext_resource type="Texture2D" uid="uid://8hxqohejfs5p" path="res://art/components/PlayVideo_Button (1).png" id="31_xyo3m"]
+[ext_resource type="Texture2D" uid="uid://bht7q7d83mq15" path="res://art/components/Retry_Button (2).png" id="33_5dp28"]
+[ext_resource type="Texture2D" uid="uid://gdu5vp1lbm16" path="res://art/components/Retry_Button (3).png" id="34_lfhnn"]
+[ext_resource type="Texture2D" uid="uid://dk5gfdo0gl6ig" path="res://art/buttons_new/Cancel_Button (2).png" id="35_d5kma"]
+[ext_resource type="Texture2D" uid="uid://cgpdqgyiy3p1e" path="res://art/buttons_new/Cancel_Button (3).png" id="36_wju0j"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hxu56"]
 texture = ExtResource("2_by01r")
@@ -834,6 +838,589 @@ FELICIANO, Maria Avejane
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Continue" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Continue"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="Continue"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
+
+[node name="Control" type="Control" parent="Continue"]
+layout_mode = 1
+anchor_left = 0.491
+anchor_top = 0.834
+anchor_right = 0.491
+anchor_bottom = 0.834
+offset_left = -124.7
+offset_top = -35.916
+offset_right = 125.3
+offset_bottom = 36.084
+
+[node name="cancel" type="TouchScreenButton" parent="Continue/Control"]
+texture_normal = ExtResource("33_5dp28")
+texture_pressed = ExtResource("34_lfhnn")
+
+[node name="Label" type="Label" parent="Continue"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
+text = "Info!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Continue"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
+text = "No progress to continue.
+Please start a new game first!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="Continue"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="Continue/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="NewGameLoggedIn" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="NewGameLoggedIn"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="NewGameLoggedIn"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
+
+[node name="Control" type="Control" parent="NewGameLoggedIn"]
+layout_mode = 1
+anchor_left = 0.491
+anchor_top = 0.834
+anchor_right = 0.491
+anchor_bottom = 0.834
+offset_left = -124.7
+offset_top = -35.916
+offset_right = 125.3
+offset_bottom = 36.084
+
+[node name="cancel" type="TouchScreenButton" parent="NewGameLoggedIn/Control"]
+texture_normal = ExtResource("33_5dp28")
+texture_pressed = ExtResource("34_lfhnn")
+
+[node name="Label" type="Label" parent="NewGameLoggedIn"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
+text = "Error!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="NewGameLoggedIn"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.591
+anchor_right = 0.5
+anchor_bottom = 0.591
+offset_left = -244.5
+offset_top = -45.034
+offset_right = 244.5
+offset_bottom = 44.966
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
+text = "Cannot reset save progress on
+logged-in account. Please log
+out first if you want to start
+a new game."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="NewGameLoggedIn"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="NewGameLoggedIn/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="NewGameConfirm" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="NewGameConfirm"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="NewGameConfirm"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
+
+[node name="Control" type="Control" parent="NewGameConfirm"]
+layout_mode = 1
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
+
+[node name="cancel" type="TouchScreenButton" parent="NewGameConfirm/Control"]
+scale = Vector2(1.7, 1.7)
+texture_normal = ExtResource("35_d5kma")
+texture_pressed = ExtResource("36_wju0j")
+
+[node name="Control2" type="Control" parent="NewGameConfirm"]
+layout_mode = 1
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
+
+[node name="okay_newgame" type="TouchScreenButton" parent="NewGameConfirm/Control2"]
+texture_normal = ExtResource("33_5dp28")
+texture_pressed = ExtResource("34_lfhnn")
+
+[node name="Label" type="Label" parent="NewGameConfirm"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
+text = "Please Confirm"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="NewGameConfirm"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
+text = "Are you sure you want to start
+a new game? This will erase
+all your progress"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="NewGameConfirm"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="NewGameConfirm/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="NoNet" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="NoNet"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="NoNet"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
+
+[node name="Control" type="Control" parent="NoNet"]
+layout_mode = 1
+anchor_left = 0.491
+anchor_top = 0.834
+anchor_right = 0.491
+anchor_bottom = 0.834
+offset_left = -124.7
+offset_top = -35.916
+offset_right = 125.3
+offset_bottom = 36.084
+
+[node name="cancel" type="TouchScreenButton" parent="NoNet/Control"]
+texture_normal = ExtResource("33_5dp28")
+texture_pressed = ExtResource("34_lfhnn")
+
+[node name="Label" type="Label" parent="NoNet"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
+text = "No Internet!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="NoNet"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
+text = "No Internet Connection.
+Try to reconnect and try again later."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="NoNet"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="NoNet/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="Logout" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Logout"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="Logout"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("16_pixcj")
+
+[node name="Control" type="Control" parent="Logout"]
+layout_mode = 1
+anchor_left = 0.296
+anchor_top = 0.861
+anchor_right = 0.296
+anchor_bottom = 0.861
+offset_left = -125.2
+offset_top = -36.014
+offset_right = 124.8
+offset_bottom = 35.986
+
+[node name="cancel" type="TouchScreenButton" parent="Logout/Control"]
+texture_normal = ExtResource("11_pixcj")
+texture_pressed = ExtResource("12_5dp28")
+
+[node name="Control2" type="Control" parent="Logout"]
+layout_mode = 1
+anchor_left = 0.681
+anchor_top = 0.861
+anchor_right = 0.681
+anchor_bottom = 0.861
+offset_left = -124.7
+offset_top = -36.014
+offset_right = 125.3
+offset_bottom = 35.986
+
+[node name="logout" type="TouchScreenButton" parent="Logout/Control2"]
+texture_normal = ExtResource("13_lfhnn")
+texture_pressed = ExtResource("14_d5kma")
+
+[node name="Label" type="Label" parent="Logout"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
+text = "Log Out"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Logout"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 22
+text = "Are you sure you want to log out
+your account?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="Logout"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_exit" type="TouchScreenButton" parent="Logout/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
 [connection signal="pressed" from="Settings/Control/back" to="." method="_on_back_settings_pressed"]
 [connection signal="value_changed" from="Settings/AudioControl" to="Settings/AudioControl" method="_on_value_changed"]
 [connection signal="value_changed" from="Settings/AudioSoundControl2" to="Settings/AudioSoundControl2" method="_on_value_changed"]
@@ -850,3 +1437,15 @@ vertical_alignment = 1
 [connection signal="pressed" from="Mainbtn/Control2/start_continue" to="." method="_on_start_continue_pressed"]
 [connection signal="pressed" from="Mainbtn/Control3/exit" to="." method="_on_exit_btn_pressed"]
 [connection signal="pressed" from="Credits/Control2/exit_credits" to="." method="_on_exit_credits_pressed"]
+[connection signal="pressed" from="Continue/Control/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="Continue/Control3/back_exit" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="NewGameLoggedIn/Control/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="NewGameLoggedIn/Control3/back_exit" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="NewGameConfirm/Control/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="NewGameConfirm/Control2/okay_newgame" to="." method="_on_okay_newgame_pressed"]
+[connection signal="pressed" from="NewGameConfirm/Control3/back_exit" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="NoNet/Control/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="NoNet/Control3/back_exit" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="Logout/Control/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="Logout/Control2/logout" to="." method="_on_logout_pressed"]
+[connection signal="pressed" from="Logout/Control3/back_exit" to="." method="_on_cancel_pressed"]

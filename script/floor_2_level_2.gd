@@ -253,7 +253,7 @@ func _on_floor_3_level_1_body_entered(body: Node2D) -> void:
 	SaveManager.mark_level_completed(2, 2)
 	SaveManager.advance_to_level(2, 3)
 	unlock_shine()
-	unlock_attack()
+	#unlock_attack()
 	
 	# Disable touch controls
 	if body.touch_controls:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://yaeq7flcmtiq"]
+[gd_scene load_steps=27 format=3 uid="uid://yaeq7flcmtiq"]
 
 [ext_resource type="Script" uid="uid://bhtjmndrdcrqu" path="res://script/floor.gd" id="1_bha7m"]
 [ext_resource type="Texture2D" uid="uid://b276ynq2mgobf" path="res://art/components/Settings_PopUp.png" id="2_iefsv"]
@@ -12,6 +12,13 @@
 [ext_resource type="Texture2D" uid="uid://bf461ngdsq5mw" path="res://art/components/Floor3_Button (1).png" id="8_0p1gy"]
 [ext_resource type="Texture2D" uid="uid://6er44r68klkb" path="res://art/components/Back_Button.png" id="9_0pc6r"]
 [ext_resource type="Texture2D" uid="uid://bsus22e1igs6" path="res://art/components/Back_Button (1).png" id="10_hn5fd"]
+[ext_resource type="Texture2D" uid="uid://ceqhdk72i2huk" path="res://art/components/TitleText_Background.png" id="13_787b7"]
+[ext_resource type="Texture2D" uid="uid://lllew6fm2ivi" path="res://art/components/HalfBodyText_Background.png" id="14_spkbs"]
+[ext_resource type="Texture2D" uid="uid://bht7q7d83mq15" path="res://art/components/Retry_Button (2).png" id="18_j58ce"]
+[ext_resource type="Texture2D" uid="uid://gdu5vp1lbm16" path="res://art/components/Retry_Button (3).png" id="19_m264g"]
+[ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="19_qx6h6"]
+[ext_resource type="Texture2D" uid="uid://c1l55auhvft0l" path="res://art/components/Close_Button.png" id="20_kckpf"]
+[ext_resource type="Texture2D" uid="uid://bp3pexm30n2y7" path="res://art/components/Close_Button (1).png" id="21_0q481"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bha7m"]
 texture = ExtResource("2_iefsv")
@@ -245,6 +252,226 @@ position = Vector2(251.5, 351)
 scale = Vector2(0.193584, 0.125615)
 texture = ExtResource("4_iefsv")
 
+[node name="Floor2Lock" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Floor2Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("13_787b7")
+
+[node name="TextureRect2" type="TextureRect" parent="Floor2Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("14_spkbs")
+
+[node name="Label" type="Label" parent="Floor2Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_3mjqk")
+theme_override_font_sizes/font_size = 32
+text = "Locked!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Floor2Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("19_qx6h6")
+theme_override_font_sizes/font_size = 22
+text = "Floor 2 is locked! Complete
+Floor 1 to unlock."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="Floor2Lock"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_2" type="TouchScreenButton" parent="Floor2Lock/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("20_kckpf")
+texture_pressed = ExtResource("21_0q481")
+
+[node name="Control" type="Control" parent="Floor2Lock"]
+layout_mode = 1
+anchor_left = 0.491
+anchor_top = 0.834
+anchor_right = 0.491
+anchor_bottom = 0.834
+offset_left = -124.7
+offset_top = -35.916
+offset_right = 125.3
+offset_bottom = 36.084
+
+[node name="okay2" type="TouchScreenButton" parent="Floor2Lock/Control"]
+texture_normal = ExtResource("18_j58ce")
+texture_pressed = ExtResource("19_m264g")
+
+[node name="Floor3Lock" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -187.0
+offset_right = 350.0
+offset_bottom = 187.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Floor3Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.158
+anchor_right = 0.5
+anchor_bottom = 0.158
+offset_left = -275.0
+offset_top = -59.092
+offset_right = 275.0
+offset_bottom = 58.908
+texture = ExtResource("13_787b7")
+
+[node name="TextureRect2" type="TextureRect" parent="Floor3Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.638
+anchor_right = 0.5
+anchor_bottom = 0.638
+offset_left = -350.0
+offset_top = -145.612
+offset_right = 350.0
+offset_bottom = 145.388
+texture = ExtResource("14_spkbs")
+
+[node name="Label" type="Label" parent="Floor3Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.152
+anchor_right = 0.5
+anchor_bottom = 0.152
+offset_left = -336.5
+offset_top = -38.848
+offset_right = 336.5
+offset_bottom = 39.152
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_3mjqk")
+theme_override_font_sizes/font_size = 32
+text = "Locked!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="Floor3Lock"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.628
+anchor_right = 0.5
+anchor_bottom = 0.628
+offset_left = -244.5
+offset_top = -44.872
+offset_right = 244.5
+offset_bottom = 45.128
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("19_qx6h6")
+theme_override_font_sizes/font_size = 22
+text = "Floor 3 is locked! Complete
+Floor 2 to unlock."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="Floor3Lock"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.374
+anchor_right = 0.936
+anchor_bottom = 0.374
+offset_left = -30.2
+offset_top = -29.876
+offset_right = 29.8
+offset_bottom = 30.124
+
+[node name="back_3" type="TouchScreenButton" parent="Floor3Lock/Control3"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("20_kckpf")
+texture_pressed = ExtResource("21_0q481")
+
+[node name="Control" type="Control" parent="Floor3Lock"]
+layout_mode = 1
+anchor_left = 0.491
+anchor_top = 0.834
+anchor_right = 0.491
+anchor_bottom = 0.834
+offset_left = -124.7
+offset_top = -35.916
+offset_right = 125.3
+offset_bottom = 36.084
+
+[node name="okay3" type="TouchScreenButton" parent="Floor3Lock/Control"]
+texture_normal = ExtResource("18_j58ce")
+texture_pressed = ExtResource("19_m264g")
+
 [connection signal="pressed" from="floor/Control/floor1" to="." method="_on_floor_1_pressed"]
 [connection signal="pressed" from="floor/Control2/floor2" to="." method="_on_floor_2_pressed"]
 [connection signal="pressed" from="floor/Control3/floor3" to="." method="_on_floor_3_pressed"]
@@ -253,3 +480,7 @@ texture = ExtResource("4_iefsv")
 [connection signal="pressed" from="FloorBtns/floor2" to="." method="_on_floor_2_pressed"]
 [connection signal="pressed" from="FloorBtns/floor3" to="." method="_on_floor_3_pressed"]
 [connection signal="pressed" from="FloorBtns/mainmenu" to="." method="_on_mainmenu_pressed"]
+[connection signal="pressed" from="Floor2Lock/Control3/back_2" to="." method="_on_back_2_pressed"]
+[connection signal="pressed" from="Floor2Lock/Control/okay2" to="." method="_on_okay_2_pressed"]
+[connection signal="pressed" from="Floor3Lock/Control3/back_3" to="." method="_on_back_3_pressed"]
+[connection signal="pressed" from="Floor3Lock/Control/okay3" to="." method="_on_okay_3_pressed"]

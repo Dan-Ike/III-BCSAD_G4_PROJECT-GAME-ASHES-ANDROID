@@ -33,6 +33,12 @@ var debug_label: Label = null
 @onready var play_credits: TouchScreenButton = $Credits/Control/play_credits
 @onready var exit_credits: TouchScreenButton = $Credits/Control2/exit_credits
 
+@onready var continue_pop_up: Control = $Continue
+@onready var new_game_logged_in: Control = $NewGameLoggedIn
+@onready var new_game_confirm: Control = $NewGameConfirm
+@onready var okay_newgame: TouchScreenButton = $NewGameConfirm/Control2/okay_newgame
+@onready var no_net: Control = $NoNet
+@onready var logout: Control = $Logout
 
 const SUPABASE_URL = "https://fsntwndbknzhmotgphtj.supabase.co"
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbnR3bmRia256aG1vdGdwaHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NjUwMjAsImV4cCI6MjA3NTE0MTAyMH0.ZJESWD5jcH2rmFodnwHpI_cSsQWqnk1Fk-mmcrjP5mE"
@@ -79,6 +85,11 @@ func _ready() -> void:
 	exit.visible = false
 	credits.visible = false
 	version.visible = true
+	continue_pop_up.visible = false
+	new_game_confirm.visible = false
+	new_game_logged_in.visible = false
+	no_net.visible = false
+	logout.visible = false
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
@@ -356,7 +367,18 @@ func _log_debug(message: String) -> void:
 func _on_google_pressed() -> void:
 	# Check internet first
 	if not internet_connected:
-		_show_error("No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			components.visible = false
+			no_net.visible = true
+			title.visible = false  
+			version.visible = false
+			
+			transition_in([bg_2, no_net])
+		)
+		#_show_error("No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
 		return
 	
 	_log_debug("Google Login clicked")
@@ -366,7 +388,7 @@ func _on_google_pressed() -> void:
 		auth_in_progress = true
 		_log_debug("Starting OAuth flow...")
 		_start_google_oauth_flow()
-		_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically redirected back to the game.")
+		#_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically redirected back to the game.")
 	elif OS.has_feature("web"):
 		auth_in_progress = true
 		_log_debug("Starting Web OAuth flow...")
@@ -375,7 +397,7 @@ func _on_google_pressed() -> void:
 		if _start_local_server():
 			auth_in_progress = true
 			_start_google_oauth_flow()
-			_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically logged in!")
+			#_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically logged in!")
 		else:
 			_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
 
@@ -387,7 +409,7 @@ func _start_web_oauth_flow():
 	
 	if origin == null or origin == "":
 		_log_debug("Origin is null or empty")
-		_show_error("Could not get page origin")
+		#_show_error("Could not get page origin")
 		return
 	
 	var redirect_url = origin + "/callback.html"
@@ -403,15 +425,15 @@ func _start_google_oauth_flow():
 	
 	if OS.has_feature("Android"):
 		redirect_url = "io.supabase.godot://login-callback/"
-		_log_debug("Android redirect: " + redirect_url)
+		#_log_debug("Android redirect: " + redirect_url)
 	else:
 		redirect_url = "http://127.0.0.1:%d/callback" % DESKTOP_CALLBACK_PORT
 	
 	var oauth_url = SUPABASE_URL + "/auth/v1/authorize?provider=google&prompt=select_account&redirect_to=" + redirect_url.uri_encode()
 	
-	_log_debug("OAuth URL: " + oauth_url)
-	_log_debug("Redirect URL: " + redirect_url)
-	_log_debug("Opening browser...")
+	#_log_debug("OAuth URL: " + oauth_url)
+	#_log_debug("Redirect URL: " + redirect_url)
+	#_log_debug("Opening browser...")
 	
 	OS.shell_open(oauth_url)
 
@@ -476,7 +498,16 @@ func _on_newgame_pressed() -> void:
 	
 	# Check if user is logged in
 	if Global.get_current_user().size() > 0:
-		_show_error("Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			new_game_logged_in.visible = true
+			title.visible = false  
+			version.visible = false
+			transition_in([bg_2, new_game_logged_in])
+		)
+		#_show_error("Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
 		return
 	
 	var current_floor = SaveManager.data["progress"]["current_floor"]
@@ -488,28 +519,37 @@ func _on_newgame_pressed() -> void:
 		Global.is_retrying_level = false
 		slide_in_transition("res://scene/floor.tscn")
 	else:
-		# If there's progress, show confirmation dialog
-		var dlg := ConfirmationDialog.new()
-		dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
-		dlg.confirmed.connect(func():
-			_reset_local_save()
-			_show_info("Save progress erased. Starting new game...")
-			await get_tree().create_timer(1.0).timeout
-			Global.is_retrying_level = false
-			slide_in_transition("res://scene/floor.tscn")
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			new_game_confirm.visible = true
+			title.visible = false  
+			version.visible = false
+			transition_in([bg_2, new_game_confirm])
 		)
+		# If there's progress, show confirmation dialog
+		#var dlg := ConfirmationDialog.new()
+		#dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
+		#dlg.confirmed.connect(func():
+		#	_reset_local_save()
+		#	_show_info("Save progress erased. Starting new game...")
+		#	await get_tree().create_timer(1.0).timeout
+		#	Global.is_retrying_level = false
+		#	slide_in_transition("res://scene/floor.tscn")
+		#)
 		# Force button back to normal state
-		var reset_button = func():
+		#var reset_button = func():
 			# Toggle visibility to force redraw
-			newgame.visible = false
-			await get_tree().process_frame
-			newgame.visible = true
+		#	newgame.visible = false
+		#	await get_tree().process_frame
+		#	newgame.visible = true
 		
-		dlg.canceled.connect(reset_button)
-		dlg.close_requested.connect(reset_button)
+		#dlg.canceled.connect(reset_button)
+		#dlg.close_requested.connect(reset_button)
 		
-		add_child(dlg)
-		dlg.popup_centered()
+		#add_child(dlg)
+		#dlg.popup_centered()
 
 func _reset_local_save() -> void:
 	# Reset SaveManager data to defaults
@@ -1136,7 +1176,7 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 				var user_id = str(res["id"])
 				_background_sync(user_id)
 			
-			_show_info("Welcome back, " + res.get("email", "User") + "!")
+			#_show_info("Welcome back, " + res.get("email", "User") + "!")
 			print("⚡ Total login time: %d ms" % (Time.get_ticks_msec() - start_time))
 		else:
 			_show_error("Invalid user data received")
@@ -1295,26 +1335,37 @@ func _update_profile_placeholder():
 
 func _on_profile_pressed() -> void:
 	if Global.get_current_user().size() > 0:
-			var dlg := ConfirmationDialog.new()
-			dlg.dialog_text = "Do you want to log out?"
-			dlg.confirmed.connect(func():
-				Global.clear_session()
-				_clear_session_file()
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			components.visible = false
+			logout.visible = true
+			title.visible = false  
+			version.visible = false
+			
+			transition_in([bg_2, logout])
+		)
+			#var dlg := ConfirmationDialog.new()
+			#dlg.dialog_text = "Do you want to log out?"
+			#dlg.confirmed.connect(func():
+			#	Global.clear_session()
+			#	_clear_session_file()
 				
-				if FileAccess.file_exists(PROFILE_IMAGE_PATH):
-					DirAccess.remove_absolute(PROFILE_IMAGE_PATH)
-					print("Cached profile image deleted")
+			#	if FileAccess.file_exists(PROFILE_IMAGE_PATH):
+			#		DirAccess.remove_absolute(PROFILE_IMAGE_PATH)
+			#		print("Cached profile image deleted")
 				
-				google.visible = true
-				google.set_process_input(true)
-				profile.visible = false
-				_update_profile_placeholder()
+			#	google.visible = true
+			#	google.set_process_input(true)
+			#	profile.visible = false
+			#	_update_profile_placeholder()
 				
-				print("User logged out successfully")
-				_show_info("Logged out successfully!")
-			)
-			add_child(dlg)
-			dlg.popup_centered()
+			#	print("User logged out successfully")
+			#	_show_info("Logged out successfully!")
+			#)
+			#add_child(dlg)
+			#dlg.popup_centered()
 
 func _on_control_choice_selected(index: int) -> void:
 	Global.control_type = index
@@ -1433,21 +1484,31 @@ func _on_start_continue_pressed() -> void:
 	
 	# Only allow continue if there's actual progress
 	if not has_progress:
-		var dlg := AcceptDialog.new()
-		dlg.dialog_text = "No progress to continue.\nPlease start a new game first!"
-		dlg.title = "Info"
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			continue_pop_up.visible = true
+			title.visible = false  
+			version.visible = false
+		
+			transition_in([bg_2, continue_pop_up])
+		)
+		#var dlg := AcceptDialog.new()
+		#dlg.dialog_text = "No progress to continue.\nPlease start a new game first!"
+		#dlg.title = "Info"
 		
 		# Force button back to normal state when dialog closes
-		var reset_button = func():
-			start_continue.visible = false
-			await get_tree().process_frame
-			start_continue.visible = true
+		#var reset_button = func():
+		#	start_continue.visible = false
+		#	await get_tree().process_frame
+		#	start_continue.visible = true
 		
-		dlg.confirmed.connect(reset_button)
-		dlg.close_requested.connect(reset_button)
+		#dlg.confirmed.connect(reset_button)
+		#dlg.close_requested.connect(reset_button)
 		
-		add_child(dlg)
-		dlg.popup_centered()
+		#add_child(dlg)
+		#dlg.popup_centered()
 		return
 	
 	Global.is_retrying_level = false
@@ -1524,3 +1585,33 @@ func slide_in_transition(scene_path: String) -> void:
 	# Clean up and switch scenes properly
 	get_tree().current_scene = next_scene
 	queue_free()
+
+
+func _on_okay_newgame_pressed() -> void:
+	# Small delay for visual feedback
+	await get_tree().create_timer(0.15).timeout
+	
+	_reset_local_save()
+	#_show_info("Save progress erased. Starting new game...")
+	await get_tree().create_timer(1.0).timeout
+	Global.is_retrying_level = false
+	slide_in_transition("res://scene/floor.tscn")
+
+
+func _on_logout_pressed() -> void:
+	_ready()
+	transition_in([background, main_btns, components, title, version])
+	Global.clear_session()
+	_clear_session_file()
+	
+	if FileAccess.file_exists(PROFILE_IMAGE_PATH):
+		DirAccess.remove_absolute(PROFILE_IMAGE_PATH)
+		# print("Cached profile image deleted")
+	
+	google.visible = true
+	google.set_process_input(true)
+	profile.visible = false
+	_update_profile_placeholder()
+	
+	# print("User logged out successfully")
+	# _show_info("Logged out successfully!")

@@ -9795,7 +9795,8 @@ offset_bottom = 40.0
 [node name="TouchControls" parent="Control" instance=ExtResource("57_pny23")]
 
 [node name="RisingLava" parent="." instance=ExtResource("58_0vsgp")]
-position = Vector2(939, 626)
+position = Vector2(936, 625)
+scale = Vector2(1.00978, 0.997244)
 
 [node name="FloorTitle" parent="." instance=ExtResource("59_0l23d")]
 

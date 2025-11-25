@@ -1,5 +1,5 @@
 extends CharacterBody2D
-class_name AdvancedEnemy
+class_name Boss
 
 @onready var deal_damage_area_down_slash: Area2D = $DealDamageArea_DownSlash
 @onready var deal_damage_area_jump_down_attack: Area2D = $DealDamageArea_JumpDownAttack

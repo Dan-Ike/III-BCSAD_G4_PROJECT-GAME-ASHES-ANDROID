@@ -3,6 +3,13 @@ extends Control
 @onready var floor_2: TouchScreenButton = $floor/Control2/floor2
 @onready var floor_3: TouchScreenButton = $floor/Control3/floor3
 @onready var mainmenu: TouchScreenButton = $floor/Control4/back
+@onready var floor_2_lock: Control = $Floor2Lock
+@onready var floor_3_lock: Control = $Floor3Lock
+@onready var back_2: TouchScreenButton = $Floor2Lock/Control3/back_2
+@onready var okay_2: TouchScreenButton = $Floor2Lock/Control/okay2
+@onready var back_3: TouchScreenButton = $Floor3Lock/Control3/back_3
+@onready var okay_3: TouchScreenButton = $Floor3Lock/Control/okay3
+@onready var floor: Control = $floor
 
 # Store unlock status
 var f2_unlocked = false
@@ -38,7 +45,8 @@ func _on_floor_2_pressed() -> void:
 		Global.selected_floor = "floor_2"
 		transition_out("res://scene/floor_level.tscn")
 	else:
-		_show_popup("Floor 2 is locked! Complete Floor 1 to unlock.")
+		floor.visible = false
+		floor_2_lock.visible = true
 
 func _on_floor_3_pressed() -> void:
 	await get_tree().create_timer(0.15).timeout
@@ -46,7 +54,8 @@ func _on_floor_3_pressed() -> void:
 		Global.selected_floor = "floor_3"
 		transition_out("res://scene/floor_level.tscn")
 	else:
-		_show_popup("Floor 3 is locked! Complete Floor 2 to unlock.")
+		floor.visible = false
+		floor_3_lock.visible = true
 
 func _on_mainmenu_pressed() -> void:
 	await get_tree().create_timer(0.15).timeout
@@ -96,3 +105,20 @@ func _show_popup(message: String) -> void:
 	# Auto-free the popup when closed
 	popup.connect("confirmed", popup.queue_free)
 	popup.connect("canceled", popup.queue_free)
+
+
+func _on_back_2_pressed() -> void:
+	floor_2_lock.visible = false
+	floor.visible = true
+
+func _on_okay_2_pressed() -> void:
+	floor_2_lock.visible = false
+	floor.visible = true
+
+func _on_back_3_pressed() -> void:
+	floor_3_lock.visible = false
+	floor.visible = true
+
+func _on_okay_3_pressed() -> void:
+	floor_3_lock.visible = false
+	floor.visible = true

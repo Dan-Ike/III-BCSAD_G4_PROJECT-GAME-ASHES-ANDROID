@@ -189,7 +189,7 @@ func _on_floor_3_lvl_1_body_entered(body: Node2D) -> void:
 	SaveManager.mark_level_completed(2, 3)
 	SaveManager.advance_to_level(3, 1)
 	Global.advance_floor()
-	
+	unlock_attack()
 	# Disable touch controls
 	if body.touch_controls:
 		body.touch_controls.disable_all_controls()
@@ -200,6 +200,13 @@ func _on_floor_3_lvl_1_body_entered(body: Node2D) -> void:
 	get_tree().root.add_child(game_over)
 	if game_over.has_method("show_game_over"):
 		game_over.show_game_over(Global.current_floor, Global.current_level, time_cleared, true)
+
+func unlock_attack():
+	Global.touchatk = true
+	SaveManager.unlock_ability("attack")
+	var controls = get_tree().root.get_node("TouchControls")
+	if controls:
+		controls.show_attack_button()
 
 func _count_lit_torches() -> int:
 	#"""Helper to count currently lit torches"""
