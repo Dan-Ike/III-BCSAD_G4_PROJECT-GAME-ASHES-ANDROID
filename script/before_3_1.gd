@@ -27,91 +27,48 @@ signal cutscene_finished
 
 
 var cutscene_data = [
-
 	{
-
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f01 - new.png",
-
 		"texts": [
-
 			"\"Greed – The Hollow Vault\"",
-
 			"Greed offered everything. But nothing was ever mine."
-
 		]
-
 	},
-
 	{
-
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f02 - new.png",
-
 		"texts": [
-
 			"\"Anger – The Furnace Path\"",
-
 			"Anger didn’t burn me. It built me."
-
 		]
-
 	},
-
 	{
-
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f03 - new.png",
-
 		"texts": [
-
 			"\"Heresy – The Tower of Echoes\"",
-
 			"Heresy didn’t question me. It reminded me."
-
 		]
-
 	},
-
 	{
-
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f04 - new.png",
-
 		"texts": [
-
 			"\"The Realization\"",
-
 			"I wasn’t here to survive. I was here to finish what I started."
-
 		]
-
 	},
-
 	{
-
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f05 - new.png",
-
 		"texts": [
-
 			"\"The Door Ahead\"",
-
 			"The tower doesn’t forgive. But it remembers. And so do I."
-
 		]
-
 	},
-
 	{
-
 		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f06 - new.png",
-
 		"texts": [
-
 			"\"The Fulfillment\"",
-
 			"This time, I won’t run. I’ll fulfill it."
-
 		]
-
 	}
-
 ]
 
 var summary_data = {

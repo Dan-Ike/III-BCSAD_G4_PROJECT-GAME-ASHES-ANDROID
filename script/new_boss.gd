@@ -752,21 +752,21 @@ func _get_attack_damage() -> int:
 	var anim_name = animated_sprite_2d.animation
 	match anim_name:
 		"vertical_slash":
-			return 1
+			return 5
 		"down_slash":
-			return 2
+			return 6
 		"jump_up_attack":
-			return 3
+			return 7
 		"jump_down_attack":
-			return 3
+			return 7
 		"idle_up_attack":
-			return 2
+			return 6
 		"dash_attack":
-			return 3
+			return 7
 		"special_dash":
-			return 4
+			return 8
 		_:
-			return 1
+			return 5
 
 func _track_player_behavior(delta: float) -> void:
 	if anticipate_jump_timer > 0:

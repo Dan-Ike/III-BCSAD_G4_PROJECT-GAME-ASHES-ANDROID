@@ -1989,7 +1989,7 @@ position = Vector2(3333, -84)
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)
 scale = Vector2(0.659109, 0.71469)
-zoom = Vector2(3.5, 3.182)
+zoom = Vector2(2.75, 2.5)
 limit_left = -5
 limit_bottom = 800
 limit_smoothed = true
@@ -2009,6 +2009,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("12_mr3fv")]
+visible = false
 
 [node name="StaticBody2D2" type="StaticBody2D" parent="."]
 
@@ -2196,8 +2197,8 @@ position = Vector2(3154, -370)
 [node name="AdvancedEnemy" parent="." instance=ExtResource("21_dqmrn")]
 position = Vector2(4421, -77)
 enemy_type = 2
-health = 1
-health_max = 1
+health = 150
+health_max = 150
 
 [node name="FloorTitle" parent="." instance=ExtResource("22_qkfkd")]
 visible = false

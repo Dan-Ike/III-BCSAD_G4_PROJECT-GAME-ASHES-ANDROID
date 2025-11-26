@@ -29,122 +29,58 @@ signal cutscene_finished
 var cutscene_data = [
 
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f01 - new.png",
-
+		"background":"res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f01 - new.png",
 		"texts": [
-
-			"\"The Descent Begins\"",
-
-			"This floor didn't greet me. It judged me."
-
+			"\"Limbo was quiet. Too quiet. Like the world had stopped breathing.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f02 - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f02 - new.png",
 		"texts": [
-
-			"\"Violence – The Echoes of Impact\"",
-
-			"Violence didn't strike me. It waited for me to choose."
-
+			"\"If I stopped, I’d vanish too.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f03 - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f03 - new.png",
 		"texts": [
-
-			"\"Fraud – The Shifting Path\"",
-
-			"Fraud didn't lie to me. It let me lie to myself."
-
+			"\"Lust burned. Not with desire. But with regret.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f04 - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f04 - new.png",
 		"texts": [
-
-			"\"Treachery – The Frozen Crossing\"",
-
-			"Treachery didn't accuse me. It remembered me."
-
+			"\"I ran faster. I didn’t dare look back.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f05 - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f05 - new.png",
 		"texts": [
-
-			"\"The Final Platform\"",
-
-			"The final boss didn't rise. He had always been there."
-
+			"\"Gluttony devours everything. Even the ground.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f06 - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f06 - new.png",
 		"texts": [
-
-			"\"The Mirror\"",
-
-			"I wasn't fighting a monster. I was facing the one I used to be."
-
+			"\"I couldn’t breathe. Just run.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f07 - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f07 - new.png",
 		"texts": [
-
-			"\"The Duel Within\"",
-
-			"I didn't fight to win. I fought to change."
-
+			"\"I didn’t escape. I endured.\""
 		]
-
 	},
-
 	{
-
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f08  - new.png",
-
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f08  - new.png",
 		"texts": [
-
-			"\"The Door That Awaits\"",
-
-			"I wasn't running anymore. I was fulfilling it."
-
+			"\"I thought I’d earned rest. But the tower doesn’t reward. It reveals.\""
 		]
-
 	}
-
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The descent was not a fall, but a return. Violence, Fraud, and Treachery were not enemies—they were memories carved into the walls of who I once was. Each step down stripped away the lies I built to survive. At the end, the final foe was not a monster, but my reflection. This was never a battle for victory, but for understanding. The door ahead no longer leads out—it leads through."
+	"text": "The silence felt suffocating, as though existence itself had stilled. Stopping meant disappearing. Pain lingered like regret rather than desire. Fear fueled motion, forbidding any backward glance. Relentless hunger consumed everything in its path, leaving no space to breathe—only to flee. Survival wasn’t escape, but endurance. Just when rest felt deserved, the truth emerged: the tower doesn’t grant relief—it exposes."
 }
 
 # State variables

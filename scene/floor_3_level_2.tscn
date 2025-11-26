@@ -1,4 +1,4 @@
-[gd_scene load_steps=80 format=3 uid="uid://bjrs2dvvol370"]
+[gd_scene load_steps=81 format=3 uid="uid://bjrs2dvvol370"]
 
 [ext_resource type="Script" uid="uid://ba075uomoctgp" path="res://script/floor_3_level_2.gd" id="1_gxohb"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_fi1ph"]
@@ -1267,24 +1267,24 @@ size = Vector2(80, 48)
 size = Vector2(80, 20)
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_fyhkv"]
-vertices = PackedVector2Array(1588.26, -444.039, 1590.71, -353.227, 590, -375.797, 582.133, -448.938)
+vertices = PackedVector2Array(1569.36, -438.102, 1571.62, -377.969, 589.969, -376.008, 582.141, -448.867)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(581, -366, 571, -459, 1598, -454, 1601, -343)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(581, -366, 571, -459, 1579, -448, 1582, -368)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_656x5"]
-vertices = PackedVector2Array(2248.21, -672.039, 2239.73, -560.047, 525.398, -569.938, 518.633, -679.953)
+vertices = PackedVector2Array(2248.5, -672.039, 2244.47, -589.008, 520.727, -591.977, 518.281, -679.953)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(516, -560, 508, -690, 2259, -682, 2249, -550)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(511, -582, 508, -690, 2259, -682, 2254, -579)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_ta6w2"]
-vertices = PackedVector2Array(2015.76, -664.047, 2013.22, -552.031, 637.078, -556.961, 626.008, -671.93)
+vertices = PackedVector2Array(1957.79, -581.992, 638.727, -581, 643.313, -645.109, 1956.2, -660.883)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(628, -547, 615, -682, 2026, -674, 2023, -542)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(628, -571, 634, -655, 1966, -671, 1968, -572)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_7rpx2"]
-vertices = PackedVector2Array(-215.492, -786.359, -228.656, -695, -690.391, -695, -694.578, -801.656)
+vertices = PackedVector2Array(-230.703, -695.156, -673.609, -701.859, -677.328, -759.133, -235.344, -764.867)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-700, -685, -705, -812, -204, -796, -220, -685)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-683, -692, -688, -769, -226, -775, -220, -685)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_x1jo8"]
 vertices = PackedVector2Array(69, -789.109, 69, -674.133, -758.852, -684.867, -757.141, -798.883)
@@ -1292,27 +1292,32 @@ polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(-769, -675, -767, -809, 79, -799, 79, -664)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_w6erl"]
-vertices = PackedVector2Array(355.867, -664.18, -806.383, -684.828, -810.602, -792.109, 354.117, -804.891)
+vertices = PackedVector2Array(347.5, -692.93, -806.391, -685.063, -810.602, -792.109, 353.438, -804.883)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-816, -675, -821, -802, 364, -815, 366, -654)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-816, -675, -821, -802, 364, -815, 357, -683)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_hny4h"]
-vertices = PackedVector2Array(-103.383, -799.109, -107.609, -689.078, -801.219, -694.906, -803.758, -806.883)
+vertices = PackedVector2Array(-103.25, -799.109, -105.75, -699.93, -801.219, -695.063, -803.758, -806.883)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-811, -685, -814, -817, -93, -809, -98, -679)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-811, -685, -814, -817, -93, -809, -96, -690)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_1dnb8"]
 vertices = PackedVector2Array(-461, -792.281, -461, -695.242, -778, -702.758, -778, -801.688)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-788, -693, -788, -812, -451, -802, -451, -685)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-763, -693, -771, -804, -480, -804, -477, -707)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_3q3sg"]
-vertices = PackedVector2Array(-255.922, -844.023, -254.07, -594, -957, -594, -957, -845.969)
+vertices = PackedVector2Array(-254.07, -594.047, -926.352, -597.938, -934.641, -827.242, -255.922, -843.75)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-967, -584, -967, -856, -246, -854, -244, -584)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-936, -588, -945, -837, -246, -854, -244, -584)])
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sfcrt"]
 size = Vector2(78, 65)
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_07y8j"]
+vertices = PackedVector2Array(867, 17.9688, 460.109, 17.0234, 460.883, -49.1328, 867, -54.8516)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(451, -59, 450, 27, 877, 28, 877, -65)])
 
 [node name="floor_3_level_1" type="Node2D"]
 position = Vector2(-47, 56)
@@ -1339,7 +1344,7 @@ position = Vector2(195, -126)
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)
 scale = Vector2(0.659109, 0.71469)
-zoom = Vector2(3.5, 3.182)
+zoom = Vector2(2.75, 2.5)
 limit_left = -5
 limit_bottom = 800
 limit_smoothed = true
@@ -1555,6 +1560,8 @@ enemy_type = 0
 [node name="AdvancedEnemy" parent="." instance=ExtResource("20_gxohb")]
 position = Vector2(6205, -831)
 enemy_type = 2
+health = 150
+health_max = 150
 
 [node name="FloorTitle" parent="." instance=ExtResource("21_fyhkv")]
 visible = false
@@ -1602,6 +1609,9 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="flr3lvl3"]
 position = Vector2(179, 21.5)
 shape = SubResource("RectangleShape2D_sfcrt")
+
+[node name="NavigationRegion2D10" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_07y8j")
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor3lvl2" to="." method="_on_floor_3_lvl_2_body_entered"]

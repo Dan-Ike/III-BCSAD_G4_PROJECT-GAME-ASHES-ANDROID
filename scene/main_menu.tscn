@@ -1298,6 +1298,7 @@ texture_normal = ExtResource("7_mh7xh")
 texture_pressed = ExtResource("8_0d2hm")
 
 [node name="Logout" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

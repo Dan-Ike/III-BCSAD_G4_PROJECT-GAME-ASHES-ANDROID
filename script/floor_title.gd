@@ -6,15 +6,15 @@ signal title_finished
 @onready var color_rect: ColorRect = $ColorRect
 
 var level_titles = {
-	"1_1": "Deep Abyss",
-	"1_2": "Deep Abyss 2",
-	"1_3": "TBD",
-	"2_1": "TBD",
-	"2_2": "TBD",
-	"2_3": "TBD",
-	"3_1": "TBD",
-	"3_2": "TBD",
-	"3_3": "TBD"
+	"1_1": "The Molten Rift",
+	"1_2": "Spined Passage",
+	"1_3": "The Ascending Crucible",
+	"2_1": "The Ember Trial",
+	"2_2": "Trial of Emberlight",
+	"2_3": "The Maze of Shadows",
+	"3_1": "The Midnight Hunt",
+	"3_2": "The Warlock's Verdant Siege",
+	"3_3": "The Memory That Hunts You"
 }
 
 func _ready() -> void:

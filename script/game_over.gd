@@ -25,46 +25,45 @@ extends CanvasLayer
 @onready var retry: TouchScreenButton = $game_over/Control3/retry
 
 var level_titles = {
-	"1_1": "Deep Abyss",
-	"1_2": "Deep Abyss 2",
-	"1_3": "TBD",
-	"2_1": "TBD",
-	"2_2": "TBD",
-	"2_3": "TBD",
-	"3_1": "TBD",
-	"3_2": "TBD",
-	"3_3": "TBD"
+	"1_1": "The Molten Rift",
+	"1_2": "Spined Passage",
+	"1_3": "The Ascending Crucible",
+	"2_1": "The Ember Trial",
+	"2_2": "Trial of Emberlight",
+	"2_3": "The Maze of Shadows",
+	"3_1": "The Midnight Hunt",
+	"3_2": "The Warlock's Verdant Siege",
+	"3_3": "The Memory That Hunts You"
 }
 
 #quotes for game over
 var quotes = {
 	"1_1": [
-		"Failure is the first step to success.",
-		"Even the light must flicker before it burns bright again."
+		"The heat of old regret melted the stone beneath you."
 	],
 	"1_2": [
-		"Do not fear the darkness — it teaches you to see the light.",
-		"Only by losing everything do we learn what matters most."
+		"You bled out on the jagged points of self-punishment."
 	],
 	"1_3": [
-		"Every fall carves the path for your next climb.",
-		"You may stumble today, but the summit still waits for you tomorrow."
+		"The intensity  of your failure rose up to claim you."
 	],
 	"2_1": [
-		"Patience is not waiting — it is enduring without losing focus.",
-		"The calm mind sees victory long before it arrives."
+		"Trapped by the gloom, you surrendered to the silence of despair."
 	],
 	"2_2": [
-		"The wise warrior studies the map before stepping into the field.",
-		"Awareness turns chaos into opportunity."
+		"One misstep broke the sacred sequence, and the darkness returned."
+	],
+	"2_3": [
+		"Your inner light dimmed until you were swallowed by the maze."
 	],
 	"3_1": [
-		"Slow steps still conquer great distances.",
-		"Steady hands build what haste will only break."
+		"The shadows devoured your will, leaving only cold emptiness."
 	],
 	"3_2": [
-		"The greatest battle is the one fought within yourself.",
-		"Master your heart, and the world will follow."
+		"All that opposed him was reduced to smoke and cunder"
+	],
+	"3_3": [
+		"Your reflection was stronger. You are chained to your history"
 	],
 	"default": [
 		"Sometimes falling is the only way to rise.",
@@ -74,36 +73,34 @@ var quotes = {
 #quotes for level completed
 var quotes_2 = {
 	"1_1": [
-		"ggs",
-		"ggs"
+		"You leaped across the consuming fire of your past."
 	],
 	"1_2": [
-		"ggs2",
-		"ggs2"
+		"The passage demanded perfection, and you passed without scar."
 	],
 	"1_3": [
-		"ggs3",
-		"ggs3"
+		"Against the melting world, your will ascended."
 	],
 	"2_1": [
-		"ggs4",
-		"ggs4"
+		"Breaking the silence, you called forth the light from the deep."
 	],
 	"2_2": [
-		"ggs5",
-		"ggs5"
+		"you deciphered the dark heart and restored the true pattern of flame."
+	],
+	"2_3": [
+		"The labyrinth is complete. Your faint flame guides the exit."
 	],
 	"3_1": [
-		"ggs6",
-		"ggs6"
+		"You proved the light in you is more dangerous than the dark."
 	],
 	"3_2": [
-		"ggs7",
-		"ggs7"
+		"The forbidden spell is broken. The verdant life endures."
+	],
+	"3_3": [
+		"The phantom of who you were is gone. You move forward, unburdened"
 	],
 	"default": [
-		"ggs0",
-		"ggs0"
+		"There's only one way to go if you're at the bottom and that's up."
 	]
 };
 

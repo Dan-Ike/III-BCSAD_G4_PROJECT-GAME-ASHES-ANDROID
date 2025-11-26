@@ -27,59 +27,59 @@ signal cutscene_finished
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f01 - new.png",
 		"texts": [
-			"\"The Coffin Beneath the Sky\"",
-			"The world moved. I didn't."
+			"\"The Tower Sleeps\"",
+			"The tower didn’t fall. It simply stopped waiting."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f02 - new.png",
 		"texts": [
-			"\"The Breath I Didn't Take\"",
-			"The world moved. I didn't."
+			"\"The Path Behind\"",
+			"He didn’t erase the past. He carried it."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f03 - new.png",
 		"texts": [
-			"\"Eyes That Remember\"",
-			"The ash clung to me. Like memory. Like guilt."
+			"\"The Witnesses\"",
+			"They didn’t cheer. They didn’t mourn. They remembered."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f04 - new.png",
 		"texts": [
-			"\"The Tower That Waited\"",
-			"It had waited. Not for heroes. But for the broken."
+			"\"The Mark\"",
+			"He didn’t leave a monument. He left a mark."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f05 - new.png",
 		"texts": [
-			"\"The Pull Beneath the Smoke\"",
-			"Something called to me. Not with words. But with memory."
+			"\"The Walk\"",
+			"He didn’t ascend. He continued."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f06 - new.png",
 		"texts": [
-			"\"The Step Into Silence\"",
-			"I didn't know what waited inside. Only that I had to enter."
+			"\"The Boy Survived\"",
+			"He didn’t vanish. He endured."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f07 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f07 - new.png",
 		"texts": [
-			"\"The Door That Closed\"",
-			"And the world forgot me. Just as I had forgotten it."
+			"\"The Echo\"",
+			"He didn’t rewrite the story. He made space for another to begin."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The world moved on while I remained still—buried beneath memory and ash. The tower did not summon the worthy; it called the forgotten. Each echo, each step, was a reminder of what I had lost and what still lingered within me. When the door closed, the world faded, and only silence answered. That was where it began."
+	"text": "The tower remained—not destroyed, just no longer waiting. He didn’t erase his past but carried it with him. There were no celebrations or sorrow, only remembrance. He left not a monument but a lasting impact. He didn’t rise above—it was enough to continue. He didn’t disappear; he survived. He didn’t change the story, but created room for a new one to start."
 }
 
 

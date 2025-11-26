@@ -27,59 +27,40 @@ signal cutscene_finished
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f01 - new.png",
 		"texts": [
-			"\"The Coffin Beneath the Sky\"",
-			"The world moved. I didn't."
+			"\"I reached the edge. I said nothing.\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f02 - new.png",
 		"texts": [
-			"\"The Breath I Didn't Take\"",
-			"The world moved. I didn't."
+			"\"She didn’t ask for forgiveness. She waited. I gave her silence.\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f03 - new.png",
 		"texts": [
-			"\"Eyes That Remember\"",
-			"The ash clung to me. Like memory. Like guilt."
+			"\"I didn’t carry guilt. I buried it.\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f04 - new.png",
 		"texts": [
-			"\"The Tower That Waited\"",
-			"It had waited. Not for heroes. But for the broken."
+			"\"There was no heaven. No fire. Just forgetting\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f05 - new.png",
 		"texts": [
-			"\"The Pull Beneath the Smoke\"",
-			"Something called to me. Not with words. But with memory."
-		]
-	},
-	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f06 - new.png",
-		"texts": [
-			"\"The Step Into Silence\"",
-			"I didn't know what waited inside. Only that I had to enter."
-		]
-	},
-	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f07 - new.png",
-		"texts": [
-			"\"The Door That Closed\"",
-			"And the world forgot me. Just as I had forgotten it."
+			"\"The tower didn’t punish me. It let me repeat.\""
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The world moved on while I remained still—buried beneath memory and ash. The tower did not summon the worthy; it called the forgotten. Each echo, each step, was a reminder of what I had lost and what still lingered within me. When the door closed, the world faded, and only silence answered. That was where it began."
+	"text": "I arrived at the end without words. She waited, not for forgiveness, but for my silence—and I gave it. I didn’t feel guilt; I buried it. There was no salvation or damnation, only oblivion. The tower didn’t condemn me—it allowed me to relive it all."
 }
 
 
