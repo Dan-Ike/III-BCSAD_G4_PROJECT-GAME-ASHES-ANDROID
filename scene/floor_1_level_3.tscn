@@ -9793,7 +9793,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="TouchControls" parent="Control" instance=ExtResource("57_pny23")]
-visible = false
 
 [node name="FloorTitle" parent="." instance=ExtResource("59_0l23d")]
 visible = false

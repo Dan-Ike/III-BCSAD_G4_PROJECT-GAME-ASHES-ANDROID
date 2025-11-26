@@ -490,10 +490,10 @@ shape = SubResource("RectangleShape2D_xvmuc")
 position = Vector2(2770, -112)
 can_attack_through_platforms = true
 
-[node name="bad_ending" parent="." instance=ExtResource("18_jopsl")]
+[node name="FloorTitle" parent="." instance=ExtResource("20_yk64j")]
 visible = false
 
-[node name="FloorTitle" parent="." instance=ExtResource("20_yk64j")]
+[node name="bad_ending" parent="." instance=ExtResource("18_jopsl")]
 visible = false
 
 [node name="good_ending" parent="." instance=ExtResource("19_aafwr")]

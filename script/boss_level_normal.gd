@@ -278,9 +278,12 @@ func _on_player_died() -> void:
 		
 		# Wait for cutscene to finish
 		await bad_ending.cutscene_finished
-		
+	
+	# --- FIX APPLIED HERE ---
+	# This block now runs AFTER the cutscene (if played) or immediately if not.
+	
 	# Now show game over screen AFTER cutscene
-	await get_tree().process_frame# Wait one frame
+	await get_tree().process_frame # Wait one frame, just like the good ending, for safety.
 	
 	var game_over_scene = preload("res://scene/game_over.tscn")
 	var game_over_screen = game_over_scene.instantiate()
@@ -288,7 +291,6 @@ func _on_player_died() -> void:
 	
 	if game_over_screen.has_method("show_game_over"):
 		game_over_screen.show_game_over(3, 3, time_survived, false)
-
 func _process(delta: float) -> void:
 	pass
 

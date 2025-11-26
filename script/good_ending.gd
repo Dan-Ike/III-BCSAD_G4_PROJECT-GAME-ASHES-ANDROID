@@ -122,7 +122,7 @@ var cutscene_id: String = ""
 
 func _ready() -> void:
 	# Use PROCESS_MODE_ALWAYS so the script continues even if game is paused by get_tree().paused = true
-	process_mode = Node.PROCESS_MODE_ALWAYS 
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	var level_node = get_parent()
 	if level_node.has_node("player"):
 		player = level_node.get_node("player")
@@ -135,6 +135,7 @@ func _ready() -> void:
 	text_container.hide()
 	text_container.modulate.a = 0.0
 	
+	# Connect Continue Button to the standard handler by default.
 	continue_button.pressed.connect(_on_continue_pressed)
 	exit.pressed.connect(_on_skip_pressed) # Connect the Exit button in the skip menu
 	skip_button.pressed.connect(_on_skip_button_pressed) # Connect the initial Skip button
@@ -151,8 +152,8 @@ func _input(event: InputEvent) -> void:
 			if not in_summary and not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
 			elif in_summary and continue_button.visible:
-				# This handles click-to-continue in the summary screen
-				proceed_to_game()
+				# FIX: Emit the signal to call the currently connected function (finish_cutscene or proceed_to_game)
+				continue_button.emit_signal("pressed")
 			
 			get_tree().root.set_input_as_handled()
 
@@ -221,7 +222,8 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and not cutscene_paused:
 		if in_summary:
 			if continue_button.visible:
-				proceed_to_game()
+				# FIX: Emit the signal to call the currently connected function
+				continue_button.emit_signal("pressed")
 		else:
 			if not is_transitioning and not waiting_for_text_delay:
 				complete_current_text()
@@ -273,10 +275,10 @@ func start_cutscene(id: String = "") -> void:
 				pause_btn.pressed.disconnect(touch_controls._on_pause_pressed)
 	
 	_pause_player()
-	get_tree().paused = true # This pauses the rest of the game scene
+#	get_tree().paused = true # This pauses the rest of the game scene
 	
-	if cutscene_data.size() > 0:
-		show_scene(0, 0)
+#	if cutscene_data.size() > 0:
+#		show_scene(0, 0)
 
 
 func _pause_player() -> void:
@@ -353,7 +355,7 @@ func show_scene(scene_index: int, text_index: int) -> void:
 			fade_timer = 0.0
 			next_background_path = new_background
 			
-			await get_tree().create_timer(fade_duration * 2).timeout
+#			await get_tree().create_timer(fade_duration * 2).timeout
 			
 			if in_summary: # CRITICAL CHECK AFTER AWAIT
 				return
@@ -461,8 +463,48 @@ func show_summary() -> void:
 	
 	# Reset timer for continue button display
 	continue_timer = 0.0
+	
+	# FIX: Set the correct final action based on cutscene type
+	_set_final_action_button()
+
+# FIX: NEW FUNCTION to handle final cleanup for Endings (Good or Bad).
+# This avoids running gameplay resumption logic.
+func finish_cutscene() -> void:
+	"""Handles final cleanup and signal emission for Endings (Good/Bad)."""
+	# Halt this script's processing loop completely
+	set_process(false) 
+	
+	Global.cutscene_playing = false
+	
+	# Save cutscene watched status
+	if cutscene_id != "":
+		SaveManager.mark_cutscene_watched(cutscene_id)
+	
+	# Do NOT call _unpause_player() or resume music/cameras here!
+	# The parent scene handles the rest (Game Over/Level Complete).
+	
+	cutscene_finished.emit()
+	
+	queue_free()
+
+# FIX: NEW FUNCTION to set up the continue button logic based on cutscene type.
+func _set_final_action_button() -> void:
+	# Disconnect both just in case before connecting the correct one
+	if continue_button.pressed.is_connected(finish_cutscene):
+		continue_button.pressed.disconnect(finish_cutscene)
+	if continue_button.pressed.is_connected(_on_continue_pressed):
+		continue_button.pressed.disconnect(_on_continue_pressed)
+
+	if cutscene_id.ends_with("_ending"):
+		# For Good or Bad Endings, the final button should just clean up this scene
+		continue_button.pressed.connect(finish_cutscene)
+	else:
+		# For Prologue/Normal flow, the final button should proceed to gameplay
+		continue_button.pressed.connect(_on_continue_pressed)
+
 
 func proceed_to_game() -> void:
+	"""Handles cleanup and transition to actual gameplay (PROLOGUE only)."""
 	# Halt this script's processing loop completely
 	set_process(false) 
 	
@@ -504,7 +546,8 @@ func _on_summary_container_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			if in_summary and continue_button.visible:
-				proceed_to_game()
+				# FIX: Emit the signal to call the currently connected function
+				continue_button.emit_signal("pressed")
 
 func delayed_action(delay: float, action: Callable) -> void:
 	await get_tree().create_timer(delay).timeout
@@ -513,20 +556,25 @@ func delayed_action(delay: float, action: Callable) -> void:
 func _on_skip_pressed() -> void:
 	"""
 	Called when pressing the Exit button in the skip confirmation menu.
-	The cascade is controlled by the 'in_summary' flag and 'await' checks.
-	We must NOT stop the process here, otherwise the continue timer won't run.
+	The final action is controlled by the '_set_final_action_button' setup.
 	"""
 	print("========== _ON_SKIP_PRESSED CALLED (Finalizing) ==========")
 	
-	# 1. Show the summary. This sets in_summary = true.
+	# 1. Show the summary. This sets in_summary = true and sets up the final button action.
 	show_summary()
 	
 	# 2. Hide the skip menu.
 	cutscene_paused = false
 	skip_cutscene.visible = false
+	
+	# FIX: If it's an ending, immediately trigger the final action to skip the continue timer wait.
+	if cutscene_id.ends_with("_ending"):
+		# This calls the new finish_cutscene() function
+		finish_cutscene()
 
 
 func _on_continue_pressed() -> void:
+	"""Standard handler for the final button when it leads to gameplay (Prologue)."""
 	proceed_to_game()
 
 
