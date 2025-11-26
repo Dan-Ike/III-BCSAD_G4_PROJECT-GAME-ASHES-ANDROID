@@ -374,11 +374,10 @@ script = ExtResource("1_2e4gn")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_01hmn")
-animation = &"attack"
-frame = 5
-frame_progress = 1.0
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(1, 2)
 shape = SubResource("CapsuleShape2D_2pl16")
 
@@ -406,6 +405,7 @@ shape = SubResource("CircleShape2D_duggc")
 debug_color = Color(0.999109, 0, 0.123329, 0.42)
 
 [node name="DealDamageArea_Attack" type="Area2D" parent="."]
+visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -424,9 +424,8 @@ position = Vector2(-4, -1)
 shape = SubResource("CapsuleShape2D_h0er4")
 
 [node name="HealthBar" parent="." instance=ExtResource("8_kgop6")]
-visible = false
-offset_top = 19.0
-offset_bottom = 26.0
+offset_top = 23.0
+offset_bottom = 30.0
 
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]

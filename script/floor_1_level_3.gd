@@ -6,6 +6,7 @@ extends Node2D
 @onready var camera_2d_2 = $player/Camera2D2
 @onready var scene_transition_animation = $SceneTransitionAnimation/AnimationPlayer
 @onready var floor_title: CanvasLayer = $FloorTitle
+@onready var spike_collision: Area2D = $spike_collision
 
 var lava_started: bool = false
 
@@ -79,3 +80,7 @@ func unlock_attack():
 func unlock_dash():
 	Global.touchdash = true
 	SaveManager.unlock_ability("dash")
+
+func _on_spike_collision_body_entered(body: Node2D) -> void:
+	if body is Player and body.can_take_damage:
+		body.take_damage(Global.spikeDamageAmount)

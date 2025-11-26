@@ -1437,6 +1437,7 @@ texture_pressed = ExtResource("8_0d2hm")
 [connection signal="pressed" from="Mainbtn/Control/newgame" to="." method="_on_newgame_pressed"]
 [connection signal="pressed" from="Mainbtn/Control2/start_continue" to="." method="_on_start_continue_pressed"]
 [connection signal="pressed" from="Mainbtn/Control3/exit" to="." method="_on_exit_btn_pressed"]
+[connection signal="pressed" from="Credits/Control/play_credits" to="." method="_on_play_credits_pressed"]
 [connection signal="pressed" from="Credits/Control2/exit_credits" to="." method="_on_exit_credits_pressed"]
 [connection signal="pressed" from="Continue/Control/cancel" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="Continue/Control3/back_exit" to="." method="_on_cancel_pressed"]

@@ -1615,3 +1615,16 @@ func _on_logout_pressed() -> void:
 	
 	# print("User logged out successfully")
 	# _show_info("Logged out successfully!")
+
+
+func _on_play_credits_pressed() -> void:
+	# Small delay to show button press visual feedback
+	await get_tree().create_timer(0.15).timeout
+	
+	transition_out(func():
+		credits.visible = false
+		bg_2.visible = false
+		
+		# Change to the credits video scene
+		get_tree().change_scene_to_file("res://scene/credits.tscn")
+	)

@@ -296,6 +296,7 @@ sprite_frames = SubResource("SpriteFrames_hb0h1")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -2)
 shape = SubResource("CapsuleShape2D_tt07m")
 
@@ -342,9 +343,8 @@ position = Vector2(-4, -1)
 shape = SubResource("CapsuleShape2D_pf8ga")
 
 [node name="HealthBar" parent="." instance=ExtResource("6_p15xp")]
-visible = false
-offset_top = 19.0
-offset_bottom = 26.0
+offset_top = 28.0
+offset_bottom = 35.0
 
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]

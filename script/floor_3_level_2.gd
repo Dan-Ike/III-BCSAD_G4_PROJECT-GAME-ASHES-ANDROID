@@ -44,6 +44,10 @@ func _on_advanced_enemy_died() -> void:
 	if gate:
 		gate.disabled = true
 		print("[Level] Gate opened - Advanced Enemy defeated!")
+	if $TileMap2:  
+			$TileMap2.visible = false
+			print("[Level] Gate TileMap hidden")
+
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""
