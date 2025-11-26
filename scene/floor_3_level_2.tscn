@@ -1302,9 +1302,9 @@ polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(-811, -685, -814, -817, -93, -809, -96, -690)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_1dnb8"]
-vertices = PackedVector2Array(-461, -792.281, -461, -695.242, -778, -702.758, -778, -801.688)
+vertices = PackedVector2Array(-710.258, -785.352, -712.711, -703.844, -753.711, -703.148, -760.141, -792.367)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-763, -693, -771, -804, -480, -804, -477, -707)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-775, -703, -771, -804, -700, -794, -703, -694)])
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_3q3sg"]
 vertices = PackedVector2Array(-254.07, -594.047, -926.352, -597.938, -934.641, -827.242, -255.922, -843.75)
@@ -1572,27 +1572,14 @@ collision_mask = 2
 visible = false
 position = Vector2(-8, 18)
 
-[node name="FlameWizard" parent="." instance=ExtResource("18_gxohb")]
-position = Vector2(854, -1)
-
 [node name="FlameWizard2" parent="." instance=ExtResource("18_gxohb")]
 position = Vector2(1550, -414)
 
 [node name="FlameWizard3" parent="." instance=ExtResource("18_gxohb")]
 position = Vector2(1964, -699)
 
-[node name="FlameWizard4" parent="." instance=ExtResource("18_gxohb")]
-position = Vector2(2786, -699)
-
-[node name="FlameWizard5" parent="." instance=ExtResource("18_gxohb")]
-position = Vector2(3026, -551)
-
 [node name="FlameWizard6" parent="." instance=ExtResource("18_gxohb")]
 position = Vector2(4207, -551)
-
-[node name="Warlock" parent="." instance=ExtResource("19_fyhkv")]
-position = Vector2(2141, -1148)
-enemy_type = 0
 
 [node name="Warlock2" parent="." instance=ExtResource("19_fyhkv")]
 position = Vector2(2624, -1006)
@@ -1600,18 +1587,6 @@ enemy_type = 0
 
 [node name="Warlock3" parent="." instance=ExtResource("19_fyhkv")]
 position = Vector2(4568, -1009)
-enemy_type = 0
-
-[node name="Warlock4" parent="." instance=ExtResource("19_fyhkv")]
-position = Vector2(5027, -1144)
-enemy_type = 0
-
-[node name="Warlock5" parent="." instance=ExtResource("19_fyhkv")]
-position = Vector2(4879, -861)
-enemy_type = 0
-
-[node name="Warlock6" parent="." instance=ExtResource("19_fyhkv")]
-position = Vector2(5421, -1431)
 enemy_type = 0
 
 [node name="AdvancedEnemy" parent="." instance=ExtResource("20_gxohb")]
@@ -1651,7 +1626,7 @@ position = Vector2(5444, -392)
 navigation_polygon = SubResource("NavigationPolygon_hny4h")
 
 [node name="NavigationRegion2D8" type="NavigationRegion2D" parent="."]
-position = Vector2(5563, -109)
+position = Vector2(4154, -96)
 navigation_polygon = SubResource("NavigationPolygon_1dnb8")
 
 [node name="NavigationRegion2D9" type="NavigationRegion2D" parent="."]

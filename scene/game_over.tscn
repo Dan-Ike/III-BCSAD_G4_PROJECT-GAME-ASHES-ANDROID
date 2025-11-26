@@ -195,15 +195,16 @@ anchor_left = 0.5
 anchor_top = 0.401
 anchor_right = 0.5
 anchor_bottom = 0.401
-offset_left = -116.0
+offset_left = -200.0
 offset_top = -23.53
-offset_right = 122.0
+offset_right = 198.0
 offset_bottom = 23.47
 theme_override_fonts/font = ExtResource("7_46orx")
 theme_override_font_sizes/font_size = 24
 text = "Floor 1 - Level 1
 Level Title"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Quote" type="Label" parent="level_completed"]
 custom_minimum_size = Vector2(400, 0)
@@ -349,13 +350,13 @@ vertical_alignment = 1
 [node name="FloorLevel" type="Label" parent="game_over"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
+anchor_left = 0.494
 anchor_top = 0.401
-anchor_right = 0.5
+anchor_right = 0.494
 anchor_bottom = 0.401
-offset_left = -116.0
+offset_left = -202.8
 offset_top = -23.53
-offset_right = 122.0
+offset_right = 203.2
 offset_bottom = 23.47
 theme_override_fonts/font = ExtResource("7_46orx")
 theme_override_font_sizes/font_size = 24

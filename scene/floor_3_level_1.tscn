@@ -2151,44 +2151,20 @@ collision_mask = 2
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("14_l8b3l")]
 visible = false
 
-[node name="Canine" parent="." instance=ExtResource("19_pqwcw")]
-position = Vector2(2243, -319)
-
 [node name="Canine2" parent="." instance=ExtResource("19_pqwcw")]
 position = Vector2(1616, -251)
 
 [node name="Canine3" parent="." instance=ExtResource("19_pqwcw")]
 position = Vector2(156, -258)
 
-[node name="Canine4" parent="." instance=ExtResource("19_pqwcw")]
-position = Vector2(109, -516)
-
 [node name="Canine5" parent="." instance=ExtResource("19_pqwcw")]
 position = Vector2(775, -654)
-
-[node name="Canine6" parent="." instance=ExtResource("19_pqwcw")]
-position = Vector2(63, -803)
-
-[node name="Canine7" parent="." instance=ExtResource("19_pqwcw")]
-position = Vector2(609, -945)
-
-[node name="Canine8" parent="." instance=ExtResource("19_pqwcw")]
-position = Vector2(1616, -948)
 
 [node name="Canine9" parent="." instance=ExtResource("19_pqwcw")]
 position = Vector2(1657, -800)
 
-[node name="Canine10" parent="." instance=ExtResource("19_pqwcw")]
-position = Vector2(2169, -659)
-
 [node name="HellKnight2" parent="." instance=ExtResource("20_qkfkd")]
 position = Vector2(3162, -656)
-
-[node name="HellKnight3" parent="." instance=ExtResource("20_qkfkd")]
-position = Vector2(4169, -648)
-
-[node name="HellKnight6" parent="." instance=ExtResource("20_qkfkd")]
-position = Vector2(4172, -362)
 
 [node name="HellKnight7" parent="." instance=ExtResource("20_qkfkd")]
 position = Vector2(3154, -370)
@@ -2247,6 +2223,10 @@ navigation_polygon = SubResource("NavigationPolygon_0xnht")
 
 [node name="NavigationRegion2D12" type="NavigationRegion2D" parent="."]
 position = Vector2(2928, -81)
+navigation_polygon = SubResource("NavigationPolygon_fnaxj")
+
+[node name="NavigationRegion2D13" type="NavigationRegion2D" parent="."]
+position = Vector2(464, -132)
 navigation_polygon = SubResource("NavigationPolygon_fnaxj")
 
 [node name="before_3_1" parent="." instance=ExtResource("23_dqmrn")]
