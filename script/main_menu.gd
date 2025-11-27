@@ -425,18 +425,36 @@ func _start_google_oauth_flow():
 	
 	if OS.has_feature("Android"):
 		redirect_url = "io.supabase.godot://login-callback/"
-		#_log_debug("Android redirect: " + redirect_url)
+		_log_debug("Android redirect: " + redirect_url)
 	else:
 		redirect_url = "http://127.0.0.1:%d/callback" % DESKTOP_CALLBACK_PORT
+		_log_debug("Desktop redirect: " + redirect_url)
 	
 	var oauth_url = SUPABASE_URL + "/auth/v1/authorize?provider=google&prompt=select_account&redirect_to=" + redirect_url.uri_encode()
 	
-	#_log_debug("OAuth URL: " + oauth_url)
-	#_log_debug("Redirect URL: " + redirect_url)
-	#_log_debug("Opening browser...")
+	_log_debug("=== OAUTH FLOW DEBUG ===")
+	_log_debug("Full OAuth URL: " + oauth_url)
+	_log_debug("Redirect URL (encoded): " + redirect_url.uri_encode())
+	_log_debug("Opening browser...")
 	
 	OS.shell_open(oauth_url)
-
+	
+	# Add a check to see if we receive callback
+	var check_timer = Timer.new()
+	check_timer.name = "OAuthCheckTimer"
+	check_timer.wait_time = 2.0
+	check_timer.one_shot = false
+	add_child(check_timer)
+	
+	var check_count = 0
+	check_timer.timeout.connect(func():
+		check_count += 1
+		_log_debug("Waiting for OAuth callback... (%d seconds)" % (check_count * 2))
+		if check_count >= 30:  # Stop after 60 seconds
+			_log_debug("OAuth timeout - no callback received")
+			check_timer.queue_free()
+	)
+	check_timer.start()
 func _on_unlockall_pressed() -> void:
 	transition_out(func():
 		# Check if user is logged in
@@ -1159,6 +1177,11 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 	
 	var text = body.get_string_from_utf8()
 	
+	_log_debug("=== USER INFO RESPONSE ===")
+	_log_debug("Response code: " + str(response_code))
+	_log_debug("Result: " + str(result))
+	_log_debug("Body preview: " + text.substr(0, min(200, text.length())))
+	
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY:
@@ -1176,19 +1199,21 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 				var user_id = str(res["id"])
 				_background_sync(user_id)
 			
-			#_show_info("Welcome back, " + res.get("email", "User") + "!")
 			print("⚡ Total login time: %d ms" % (Time.get_ticks_msec() - start_time))
 		else:
+			_log_debug("❌ Invalid JSON response")
 			_show_error("Invalid user data received")
 			_handle_login_failure()
 	else:
+		_log_debug("❌ Failed response code: " + str(response_code))
+		_log_debug("Full error body: " + text)
+		
 		if response_code == 403 or response_code == 401:
 			print("🔄 Token expired, refreshing...")
 			_refresh_access_token()
 		else:
-			_show_error("Login failed (" + str(response_code) + ")")
+			_show_error("Login failed (Code: " + str(response_code) + ")\n\nError: " + text.substr(0, 100))
 			_handle_login_failure()
-
 func _background_sync(user_id: String) -> void:
 	"""Sync data in background without blocking"""
 	print("🔄 Background sync starting...")

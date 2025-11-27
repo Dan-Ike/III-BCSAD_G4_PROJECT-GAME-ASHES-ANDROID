@@ -317,7 +317,7 @@ offset_left = -221.3
 offset_top = -6.88002
 offset_right = 221.7
 offset_bottom = 7.11998
-theme_override_fonts/font = ExtResource("2_jir8d")
+theme_override_fonts/font = ExtResource("10_bmvp1")
 theme_override_font_sizes/font_size = 20
 text = "\"Summary here woohoo\""
 horizontal_alignment = 1
@@ -366,7 +366,6 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ContinueButton" type="Button" parent="."]
-visible = false
 anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.91

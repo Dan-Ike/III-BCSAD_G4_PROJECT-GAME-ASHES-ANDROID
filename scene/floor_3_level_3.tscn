@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://cgobdytreawen"]
+[gd_scene load_steps=40 format=3 uid="uid://cgobdytreawen"]
 
 [ext_resource type="Script" uid="uid://bbpxkprdhibkt" path="res://script/boss_level_normal.gd" id="1_congw"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_xvmuc"]
@@ -16,8 +16,6 @@
 [ext_resource type="Texture2D" uid="uid://dflv8pqucsab8" path="res://art/floor3/Tileset/tileset.png" id="12_xvmuc"]
 [ext_resource type="PackedScene" uid="uid://d5oerf8phnpm" path="res://boss.tscn" id="16_congw"]
 [ext_resource type="PackedScene" uid="uid://bss3fjsgtra6o" path="res://scene/before_boss_normal.tscn" id="17_lftvs"]
-[ext_resource type="PackedScene" uid="uid://djq3870fxykiy" path="res://scene/bad_ending.tscn" id="18_jopsl"]
-[ext_resource type="PackedScene" uid="uid://328bqvoevr2x" path="res://scene/good_ending.tscn" id="19_aafwr"]
 [ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="20_yk64j"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l8b3l"]
@@ -491,12 +489,6 @@ position = Vector2(2770, -112)
 can_attack_through_platforms = true
 
 [node name="FloorTitle" parent="." instance=ExtResource("20_yk64j")]
-visible = false
-
-[node name="bad_ending" parent="." instance=ExtResource("18_jopsl")]
-visible = false
-
-[node name="good_ending" parent="." instance=ExtResource("19_aafwr")]
 visible = false
 
 [node name="before_boss_normal" parent="." instance=ExtResource("17_lftvs")]

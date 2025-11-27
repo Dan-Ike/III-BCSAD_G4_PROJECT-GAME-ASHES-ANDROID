@@ -247,7 +247,6 @@ texture_normal = ExtResource("13_eu86r")
 texture_pressed = ExtResource("14_7iusd")
 
 [node name="SummaryContainer2" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -316,7 +315,7 @@ offset_left = -221.3
 offset_top = -6.88002
 offset_right = 221.7
 offset_bottom = 7.11998
-theme_override_fonts/font = ExtResource("2_cgy7y")
+theme_override_fonts/font = ExtResource("10_bgucf")
 theme_override_font_sizes/font_size = 20
 text = "\"Summary here woohoo\""
 horizontal_alignment = 1
@@ -386,3 +385,4 @@ flat = true
 [connection signal="pressed" from="skipCutscene/Control2/exit" to="." method="_on_skip_pressed"]
 [connection signal="pressed" from="skipCutscene/Control3/back_exit" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="buttons/Control/SkipButton" to="." method="_on_skip_button_pressed"]
+[connection signal="pressed" from="ContinueButton" to="." method="_on_continue_pressed"]

@@ -745,12 +745,10 @@ func handle_death_animation() -> void:
 	$Camera2D.zoom = Vector2(4, 4)
 	await get_tree().create_timer(1.0).timeout
 	
-	# Check if we're in boss level - let boss level handle game over
-	var parent_level = get_parent()
-	if parent_level and parent_level.has_method("_on_player_died"):
-		if "ending_playing" in parent_level and parent_level.ending_playing:
-			print("[Player] Boss level will handle game over screen")
-			return  
+	# Check if we're in boss level (3-3) - let boss level handle game over
+	if Global.current_floor == 3 and Global.current_level == 3:
+		print("[Player] Boss level will handle game over screen")
+		return  
 	
 	# Normal levels - show game over as usual
 	Global.playerAlive = false

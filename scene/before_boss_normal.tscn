@@ -69,6 +69,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="skipCutscene" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -316,7 +317,7 @@ offset_left = -221.3
 offset_top = -6.88002
 offset_right = 221.7
 offset_bottom = 7.11998
-theme_override_fonts/font = ExtResource("2_r2dc7")
+theme_override_fonts/font = ExtResource("10_4yr51")
 theme_override_font_sizes/font_size = 20
 text = "\"Summary here woohoo\""
 horizontal_alignment = 1
