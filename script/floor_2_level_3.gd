@@ -40,6 +40,7 @@ const COLOR_UNLIT = Color(1.0, 1.0, 1.0, 1.0)
 const COLOR_LIT = Color(1.0, 0.9, 0.0, 1.0)   
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(2, 3)
 	player_camera.enabled = false
 	camera_2d_2.enabled = true
@@ -188,7 +189,7 @@ func _on_floor_3_lvl_1_body_entered(body: Node2D) -> void:
 	# Save progress
 	SaveManager.mark_level_completed(2, 3)
 	SaveManager.advance_to_level(3, 1)
-	Global.advance_floor()
+	#Global.advance_floor()
 	unlock_attack()
 	# Disable touch controls
 	if body.touch_controls:

@@ -50,6 +50,7 @@ func _show_floor_title_then_start() -> void:
 	player.reset_level_timer()
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(2, 2)
 	player_camera.enabled = false
 	camera_2d_2.enabled = true

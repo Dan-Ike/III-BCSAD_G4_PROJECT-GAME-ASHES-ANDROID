@@ -16,6 +16,7 @@ var boss_defeated: bool = false
 var player_defeated: bool = false
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(3, 3)
 	unlock_attack()
 	unlock_dash()

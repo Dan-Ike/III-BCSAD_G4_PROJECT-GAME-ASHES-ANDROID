@@ -27,40 +27,59 @@ signal cutscene_finished
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f01 - new.png",
 		"texts": [
-			"\"I reached the edge. I said nothing.\""
+			"\"The Tower Sleeps\"",
+			"The tower didn’t fall. It simply stopped waiting."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f02 - new.png",
 		"texts": [
-			"\"She didn't ask for forgiveness. She waited. I gave her silence.\""
+			"\"The Path Behind\"",
+			"He didn’t erase the past. He carried it."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f03 - new.png",
 		"texts": [
-			"\"I didn't carry guilt. I buried it.\""
+			"\"The Witnesses\"",
+			"They didn’t cheer. They didn’t mourn. They remembered."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f04 - new.png",
 		"texts": [
-			"\"There was no heaven. No fire. Just forgetting\""
+			"\"The Mark\"",
+			"He didn’t leave a monument. He left a mark."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f05 - new.png",
 		"texts": [
-			"\"The tower didn't punish me. It let me repeat.\""
+			"\"The Walk\"",
+			"He didn’t ascend. He continued."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f06 - new.png",
+		"texts": [
+			"\"The Boy Survived\"",
+			"He didn’t vanish. He endured."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f07 - new.png",
+		"texts": [
+			"\"The Echo\"",
+			"He didn’t rewrite the story. He made space for another to begin."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "I arrived at the end without words. She waited, not for forgiveness, but for my silence—and I gave it. I didn't feel guilt; I buried it. There was no salvation or damnation, only oblivion. The tower didn't condemn me—it allowed me to relive it all."
+	"text": "He accepted the past and moved forward. He made an impact without trying to be remembered. He survived and allowed a new story to begin. The tower stopped waiting, and people simply remembered."
 }
 
 
@@ -120,22 +139,11 @@ func _input(event: InputEvent) -> void:
 	if cutscene_paused: 
 		return
 	
-	if event is InputEventScreenTouch and event.pressed:
-		# For TouchScreenButtons, we can't easily check if they were clicked
-		# So we'll just let them handle their own input via their pressed signals
-		# and handle screen taps for advancing text
-		
-		# Anywhere on screen advances text (buttons will handle themselves via signals)
-		if not in_summary and not is_transitioning and not waiting_for_text_delay:
-			complete_current_text()
-		elif in_summary and continue_button.visible:
-			proceed_to_game()
-		
-		get_viewport().set_input_as_handled()
-	
-	elif event is InputEventMouseButton:
+	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			# Check if clicking on continue button (regular Button, not TouchScreenButton)
+			# Check if clicking on buttons - let them handle their own input
+			if skip_button.visible and skip_button.is_pressed():
+				return
 			if continue_button.visible and continue_button.get_global_rect().has_point(event.position):
 				return
 			
@@ -145,7 +153,7 @@ func _input(event: InputEvent) -> void:
 			elif in_summary and continue_button.visible:
 				proceed_to_game()
 			
-			get_viewport().set_input_as_handled()
+			get_tree().root.set_input_as_handled()
 
 func _process(delta: float) -> void:
 	if in_summary and not continue_button.visible:
@@ -188,6 +196,8 @@ func _process(delta: float) -> void:
 		if text_delay_timer >= text_delay_duration:
 			waiting_for_text_delay = false
 			text_delay_timer = 0.0
+			# Start showing text container with fade in
+			# Make sure to use current_text which was set in show_scene
 			_start_text_fade_in()
 	
 	# Handle fade transitions for text container
@@ -208,7 +218,7 @@ func _process(delta: float) -> void:
 				text_container.modulate.a = 1.0
 	
 	# Handle Enter key to advance
-	if Input.is_action_just_pressed("ui_accept") and not cutscene_paused:
+	if Input.is_action_just_pressed("ui_accept") and not cutscene_paused:  # Enter key
 		if in_summary:
 			if continue_button.visible:
 				proceed_to_game()
@@ -220,6 +230,7 @@ func _process(delta: float) -> void:
 		typing_timer += delta
 		if typing_timer >= typing_speed:
 			typing_timer = 0.0
+			# Safety check to prevent index out of bounds
 			if displayed_text.length() < current_text.length():
 				displayed_text += current_text[displayed_text.length()]
 				text_label.text = displayed_text
@@ -231,6 +242,8 @@ func _process(delta: float) -> void:
 		skip_timer += delta
 		if skip_timer >= show_skip_after:
 			skip_button.show()
+	
+
 
 func start_cutscene(id: String = "") -> void:
 	cutscene_id = id
@@ -268,61 +281,69 @@ func show_scene(scene_index: int, text_index: int) -> void:
 	current_text_index = text_index
 	var scene = cutscene_data[scene_index]
 	
+	# Get the text for this scene/index
 	var texts = scene.get("texts", [])
 	if text_index >= texts.size():
+		# No more texts in this scene, move to next
 		show_scene(scene_index + 1, 0)
 		return
 	
+	# Set current text FIRST before any delays or transitions
 	current_text = texts[text_index]
 	displayed_text = ""
 	text_label.text = ""
 	
 	print("show_scene called - Scene: %d, Text: %d, Content: %s" % [scene_index, text_index, current_text])
 	
+	# Check if we need to change background (fade transition)
 	var new_background = scene.get("background", "")
 	var is_first_text_of_scene = (text_index == 0)
 	var background_changed = (new_background != current_background_path)
 	
 	if new_background != "" and background_changed:
+		# Different background - need transition
 		if current_background_path == "":
+			# Very first scene - no fade, just load
 			var texture = load(new_background)
 			if texture:
 				background.texture = texture
 				current_background_path = new_background
 			background.modulate.a = 1.0
 			
+			# Delay before showing first text with fade
 			waiting_for_text_delay = true
 			text_delay_timer = 0.0
 		else:
+			# Fade out current text first
 			_start_text_fade_out()
 			
+			# Then fade transition to new background
 			is_transitioning = true
 			fading_out = true
 			fading_in = false
 			fade_timer = 0.0
 			next_background_path = new_background
 			
-			# Cache tree reference
-			var tree = get_tree()
-			if tree:
-				await tree.create_timer(fade_duration * 2).timeout
+			# Wait for both transitions before showing text
+			await get_tree().create_timer(fade_duration * 2).timeout
 			
+			# Delay before showing first text of new scene with fade
 			waiting_for_text_delay = true
 			text_delay_timer = 0.0
 			return
 	else:
-		# Same background - just update text
+		# Same background or not first text - show text immediately
 		if is_first_text_of_scene:
+			# First text but background didn't change (shouldn't happen normally)
 			waiting_for_text_delay = true
 			text_delay_timer = 0.0
 		else:
-			# Not first text - show immediately with typing
+			# Not first text - just update text without fade, keep container visible
 			text_container.show()
 			text_container.modulate.a = 1.0
-			displayed_text = ""  # Reset displayed text
-			text_label.text = ""  # Clear label
 			is_typing = true
 			typing_timer = 0.0
+
 
 func _start_text_fade_out() -> void:
 	"""Start fading out the text container"""
@@ -330,6 +351,7 @@ func _start_text_fade_out() -> void:
 		text_fading_out = true
 		text_fading_in = false
 		text_fade_timer = 0.0
+
 
 func _start_text_fade_in() -> void:
 	"""Start fading in the text container and begin typing"""
@@ -339,38 +361,47 @@ func _start_text_fade_in() -> void:
 	text_fading_out = false
 	text_fade_timer = 0.0
 	
+	# Reset text display before starting typing - use current_text
 	displayed_text = ""
 	text_label.text = ""
 	
-	is_typing = true  # Make sure this is set
+	# Start typing animation with the current_text
+	is_typing = true
 	typing_timer = 0.0
 	
+	# Debug print
 	print("Starting text fade in with text: ", current_text)
 
+
 func complete_current_text() -> void:
+	# Don't allow interaction during transitions
 	if is_transitioning or waiting_for_text_delay:
 		return
 		
 	if is_typing:
+		# Complete typing instantly
 		displayed_text = current_text
 		text_label.text = displayed_text
 		is_typing = false
 	else:
+		# Check if next will be a new background
 		var scene = cutscene_data[current_scene_index]
 		var texts = scene.get("texts", [])
 		
 		if current_text_index + 1 < texts.size():
+			# More texts in this scene - just show next text without fade
 			show_scene(current_scene_index, current_text_index + 1)
 		else:
-			is_transitioning = true
+			# Moving to next scene - fade out text, then change background
+			is_transitioning = true  # Set this BEFORE starting fade
 			_start_text_fade_out()
 			
-			# Cache tree reference
-			var tree = get_tree()
-			if tree:
-				await tree.create_timer(text_fade_duration).timeout
+			# Wait for fade out
+			await get_tree().create_timer(text_fade_duration).timeout
 			
+			# Move to next scene
 			show_scene(current_scene_index + 1, 0)
+
 
 func show_summary() -> void:
 	background.visible = false
@@ -378,20 +409,19 @@ func show_summary() -> void:
 	bg_2.visible = true
 	in_summary = true
 	
+	# Fade out text container
 	_start_text_fade_out()
 	skip_button.hide()
 	
-	# Cache tree reference
-	var tree = get_tree()
-	if tree:
-		await tree.create_timer(text_fade_duration).timeout
+	await get_tree().create_timer(text_fade_duration).timeout
 	
 	text_container.visible = false
 	
+	#summary_title.text = summary_data["title"]
 	summary_text.text = summary_data["text"]
 	summary_container_2.show()
 	
-	continue_timer = 0.0
+	continue_timer = 0.0 
 
 func proceed_to_game() -> void:
 	Global.cutscene_playing = false
@@ -406,18 +436,16 @@ func proceed_to_game() -> void:
 	if not tree:
 		return
 	
-	# **EMIT THE SIGNAL BEFORE CHANGING SCENE**
+	Global.reset_progress()
+	
+	# Change scene FIRST, then emit signal and cleanup
+	tree.change_scene_to_file("res://scene/credits.tscn")
+	
+	# Emit signal after scene change is queued
 	cutscene_finished.emit()
 	
-	# Add small delay to let signal processing complete
-	await tree.create_timer(0.1).timeout
-	
-	# Check if still valid
-	if not is_inside_tree() or not tree:
-		return
-	
-	Global.reset_progress()
-	tree.change_scene_to_file("res://scene/credits.tscn")
+	# Clean up this cutscene node
+	queue_free()
 
 func _on_text_container_input(event: InputEvent) -> void:
 	"""Handle clicks on text container"""

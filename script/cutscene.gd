@@ -81,7 +81,7 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The world moved on while I remained still—buried beneath memory and ash. The tower did not summon the worthy; it called the forgotten. Each echo, each step, was a reminder of what I had lost and what still lingered within me. When the door closed, the world faded, and only silence answered. That was where it began."
+	"text": "He stayed still while the world moved on. Guilt clung to him. The tower called to the broken, and he entered without knowing why. Once inside, the world forgot him as he had forgotten it."
 }
 
 

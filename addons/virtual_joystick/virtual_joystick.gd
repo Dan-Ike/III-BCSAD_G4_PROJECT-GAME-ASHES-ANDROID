@@ -1,6 +1,9 @@
 class_name VirtualJoystick
 extends Control
 
+const JOYSTICK_PRESSED_2 = preload("res://art/buttons_new/joystick_pressed 2.png")
+
+
 # EXPORTED VARIABLES
 @export var pressed_color := Color.GRAY
 @export_range(0, 200, 1) var deadzone_size : float = 10
@@ -29,12 +32,14 @@ var _touch_index : int = -1
 @onready var _base_default_position : Vector2 = _base.position
 @onready var _tip_default_position : Vector2 = _tip.position
 @onready var _default_color : Color = _tip.modulate
-
+var _default_texture : Texture2D
 func _ready() -> void:
 	if ProjectSettings.get_setting("input_devices/pointing/emulate_mouse_from_touch"):
 		printerr("The Project Setting 'emulate_mouse_from_touch' should be set to False")
 	if not ProjectSettings.get_setting("input_devices/pointing/emulate_touch_from_mouse"):
 		printerr("The Project Setting 'emulate_touch_from_mouse' should be set to True")
+	
+	_default_texture = _tip.texture
 	
 	if not DisplayServer.is_touchscreen_available() and visibility_mode == Visibility_mode.TOUCHSCREEN_ONLY :
 		hide()
@@ -56,7 +61,8 @@ func _input(event: InputEvent) -> void:
 					if visibility_mode == Visibility_mode.WHEN_TOUCHED:
 						show()
 					_touch_index = event.index
-					_tip.modulate = pressed_color
+					#_tip.modulate = pressed_color
+					_tip.texture = JOYSTICK_PRESSED_2
 					_update_joystick(event.position)
 					get_viewport().set_input_as_handled()
 		elif event.index == _touch_index:
@@ -129,7 +135,8 @@ func _reset():
 	is_pressed = false
 	output = Vector2.ZERO
 	_touch_index = -1
-	_tip.modulate = _default_color
+	#_tip.modulate = _default_color
+	_tip.texture = _default_texture
 	_base.position = _base_default_position
 	_tip.position = _tip_default_position
 	if use_input_actions:

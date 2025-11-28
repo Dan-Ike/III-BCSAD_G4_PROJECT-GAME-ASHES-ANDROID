@@ -80,7 +80,7 @@ var cutscene_data = [
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The silence felt suffocating, as though existence itself had stilled. Stopping meant disappearing. Pain lingered like regret rather than desire. Fear fueled motion, forbidding any backward glance. Relentless hunger consumed everything in its path, leaving no space to breathe—only to flee. Survival wasn’t escape, but endurance. Just when rest felt deserved, the truth emerged: the tower doesn’t grant relief—it exposes."
+	"text": "The place felt lifeless, and stopping meant disappearing. Regret hit hard, so he kept running without looking back, even when everything around him was collapsing. He struggled to breathe but continued. He didn’t escape—he endured. He expected rest, but the tower doesn’t give rewards, only truth."
 }
 
 # State variables

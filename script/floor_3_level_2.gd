@@ -26,6 +26,7 @@ func _show_floor_title_then_start() -> void:
 	player.reset_level_timer()
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(3, 2)
 	
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255

@@ -33,7 +33,7 @@ var wander_duration: float = 3.0
 var edge_check_cooldown: float = 0.0
 
 # AI State
-enum State { IDLE, WANDER, CHASE, ATTACK, CHARGE, RANGED_ATTACK, JUMP_ATTACK, RETURN_TO_PATROL, SPIN_ATTACK }
+enum State { IDLE, WANDER, CHASE, ATTACK, CHARGE, RANGED_ATTACK, JUMP_ATTACK, RETURN_TO_PATROL} #SPIN_ATTACK }
 var current_state: State = State.WANDER
 var player: CharacterBody2D
 var can_see_player: bool = false
@@ -331,8 +331,8 @@ func _physics_process(delta: float) -> void:
 			_state_jump_attack(delta)
 		State.RETURN_TO_PATROL:
 			_state_return_to_patrol(delta)
-		State.SPIN_ATTACK:
-			_state_spin_attack(delta)
+		#State.SPIN_ATTACK:
+		#	_state_spin_attack(delta)
 	
 	velocity.x = lerp(velocity.x, target_velocity_x, velocity_smoothing * delta)
 	
@@ -547,9 +547,9 @@ func _update_adaptive_ai_state(distance: float) -> void:
 		current_state = State.CHARGE
 		return
 	
-	if distance < 60.0 and can_spin_attack and not can_attack:
-		current_state = State.SPIN_ATTACK
-		return
+	#if distance < 60.0 and can_spin_attack and not can_attack:
+	#	current_state = State.SPIN_ATTACK
+	#	return
 	
 	if distance < 60.0 and can_attack:
 		current_state = State.ATTACK
@@ -568,9 +568,9 @@ func _update_machine_learning_state(distance: float) -> void:
 	var best_attack = MlEnemyData.get_best_attack()
 	
 	# Priority 1: Counter dodging players with spin attack
-	if player_is_dodger and distance < 150.0 and can_spin_attack:
-		current_state = State.SPIN_ATTACK
-		return
+	#if player_is_dodger and distance < 150.0 and can_spin_attack:
+	#	current_state = State.SPIN_ATTACK
+	#	return
 	
 	# Priority 2: Counter aggressive players with charge
 	if player_is_aggressive and distance > 100.0 and distance < 300.0 and can_charge:
@@ -591,10 +591,10 @@ func _update_machine_learning_state(distance: float) -> void:
 			if distance > 80.0 and distance < 250.0 and can_jump_attack and is_on_floor():
 				current_state = State.JUMP_ATTACK
 				return
-		"spin_attack":
-			if distance < 90.0 and can_spin_attack:
-				current_state = State.SPIN_ATTACK
-				return
+		#"spin_attack":
+		#	if distance < 90.0 and can_spin_attack:
+		#		current_state = State.SPIN_ATTACK
+		#		return
 	
 	# Fallback 1: Try other available attacks even if not "best"
 	if distance > 200.0 and distance < ranged_attack_range and can_ranged:
@@ -606,9 +606,9 @@ func _update_machine_learning_state(distance: float) -> void:
 	elif distance > 80.0 and distance < 250.0 and can_jump_attack and is_on_floor():
 		current_state = State.JUMP_ATTACK
 		return
-	elif distance < 90.0 and can_spin_attack:
-		current_state = State.SPIN_ATTACK
-		return
+	#elif distance < 90.0 and can_spin_attack:
+	#	current_state = State.SPIN_ATTACK
+	#	return
 	
 	# Fallback 2: Melee or chase
 	if distance < 60.0 and can_attack:

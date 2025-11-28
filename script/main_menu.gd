@@ -49,6 +49,8 @@ const PROFILE_IMAGE_PATH = "user://profile_image.png"
 var internet_connected: bool = false
 var checking_internet: bool = false 
 
+var is_transitioning := false
+
 @onready var http: HTTPRequest = HTTPRequest.new()
 var auth_in_progress: bool = false
 var local_server: TCPServer = null
@@ -75,6 +77,7 @@ func _ready() -> void:
 			return
 	
 	add_child(http)
+	is_transitioning = false
 	main_btns.visible = true
 	settings.visible = false
 	components.visible = true
@@ -511,6 +514,9 @@ func _update_newgame_button_visibility() -> void:
 	start_continue.visible = true
 
 func _on_newgame_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
 	# Small delay to show button press visual feedback
 	await get_tree().create_timer(0.15).timeout
 	
@@ -1500,6 +1506,9 @@ func _on_back_settings_pressed() -> void:
 	)
 
 func _on_start_continue_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
 	# Small delay to show button press visual feedback
 	await get_tree().create_timer(0.15).timeout
 	
@@ -1613,6 +1622,9 @@ func slide_in_transition(scene_path: String) -> void:
 
 
 func _on_okay_newgame_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
 	# Small delay for visual feedback
 	await get_tree().create_timer(0.15).timeout
 	

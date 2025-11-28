@@ -9,6 +9,13 @@ var navigation_agent: NavigationAgent2D
 var patrol_center: Vector2
 var patrol_target: Vector2
 
+# Simplified patrol system
+var wander_direction: int = 1
+var wander_time: float = 0.0
+var wander_duration: float = 3.0
+var wander_wait_time: float = 0.0
+const WANDER_CHANGE_INTERVAL = 3.0  # Change direction every 3 seconds
+
 # Jump system
 var jump_velocity: float = -400.0
 var can_jump: bool = true
@@ -91,20 +98,13 @@ const DISTANCE_UPDATE_INTERVAL: float = 0.15
 
 func _ready() -> void:
 	_setup_navigation()
-	patrol_center = global_position
-	_generate_new_patrol_target()
-	# Set up patrol bounds
-	if use_navigation_bounds:
-		_setup_navigation_patrol_bounds()
-	else:
-		# Manual patrol distance from spawn point
-		patrol_left_bound = global_position.x - manual_patrol_distance
-		patrol_right_bound = global_position.x + manual_patrol_distance
 	
 	return_position = global_position
 	
-	# Start patrol randomly
-	patrol_direction = 1 if randf() > 0.5 else -1
+	# Start with random direction
+	wander_direction = 1 if randf() > 0.5 else -1
+	wander_duration = randf_range(2.0, 4.0)
+	
 	change_state(State.PATROL)
 	
 	# IMPORTANT: Connect detection areas AFTER scene is ready
@@ -160,8 +160,30 @@ func _setup_navigation() -> void:
 	navigation_agent.avoidance_enabled = false
 
 func _generate_new_patrol_target() -> void:
-	var rand_x = randf_range(patrol_left_bound, patrol_right_bound)
-	patrol_target = Vector2(rand_x, global_position.y)
+	var margin = 100.0
+	var current_x = global_position.x
+	var target_x: float
+	
+	# Simply alternate direction and pick a target on the opposite side
+	if patrol_direction > 0:
+		# Going right
+		target_x = randf_range(current_x + 150, patrol_right_bound - margin)
+	else:
+		# Going left
+		target_x = randf_range(patrol_left_bound + margin, current_x - 150)
+	
+	# Safety clamp
+	target_x = clamp(target_x, patrol_left_bound + margin, patrol_right_bound - margin)
+	
+	# If target is too close or invalid, just reverse direction
+	if abs(target_x - current_x) < 100:
+		patrol_direction *= -1
+		if patrol_direction > 0:
+			target_x = patrol_right_bound - margin
+		else:
+			target_x = patrol_left_bound + margin
+	
+	patrol_target = Vector2(target_x, global_position.y)
 
 # Jump system
 func _should_jump_obstacle(direction: Vector2) -> bool:
@@ -282,34 +304,33 @@ func _state_idle(delta: float) -> void:
 	animated_sprite.play("idle")
 	target_velocity_x = 0.0
 	
-	patrol_timer -= delta
-	if patrol_timer <= 0:
-		_generate_new_patrol_target()
+	wander_wait_time -= delta
+	if wander_wait_time <= 0:
+		wander_direction = 1 if randf() > 0.5 else -1
+		wander_duration = randf_range(2.0, 4.0)
+		wander_time = 0.0
 		change_state(State.PATROL)
+	
+	# Switch to chase if player detected
+	if is_player_in_detection and player and not player.dead:
+		change_state(State.CHASE)
 
 func _state_patrol(delta: float) -> void:
 	animated_sprite.play("run")
 	
-	# Only update path periodically
-	if path_update_timer <= 0.0:
-		path_update_timer = PATH_UPDATE_INTERVAL
-		navigation_agent.target_position = patrol_target
-		
-		if not navigation_agent.is_navigation_finished():
-			cached_next_position = navigation_agent.get_next_path_position()
+	# Simple wall/edge detection
+	if is_on_wall():
+		wander_direction *= -1
+		wander_time = 0.0
 	
-	if not navigation_agent.is_navigation_finished():
-		var direction = (cached_next_position - global_position).normalized()
-		
-		# Only check for jumps occasionally
-		if path_update_timer <= 0.0 and is_on_floor() and _should_jump_obstacle(direction):
-			_perform_jump()
-		
-		target_velocity_x = direction.x * patrol_speed
-		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
-	else:
-		# Reached patrol target, generate new one
-		patrol_timer = PATROL_WAIT_TIME
+	# Move in wander direction
+	target_velocity_x = wander_direction * patrol_speed
+	facing_direction = wander_direction
+	
+	# Change direction after duration
+	wander_time += delta
+	if wander_time >= wander_duration:
+		wander_wait_time = PATROL_WAIT_TIME
 		change_state(State.IDLE)
 	
 	# Switch to chase if player detected
@@ -327,13 +348,20 @@ func _state_chase(delta: float) -> void:
 		is_returning_to_patrol = true
 		return
 	
-	animated_sprite.play("run")
-	
 	var distance_to_player = player_distance_cache
 	
+	# Check if in attack range FIRST
 	if distance_to_player <= ATTACK_RANGE and can_attack:
 		change_state(State.ATTACK_READY)
 		return
+	
+	# If very close but can't attack yet (cooldown), slow down
+	if distance_to_player <= ATTACK_RANGE + 20:
+		animated_sprite.play("idle")
+		target_velocity_x = 0.0
+		return
+	
+	animated_sprite.play("run")
 	
 	# Only update path periodically
 	if path_update_timer <= 0.0:
@@ -351,11 +379,20 @@ func _state_chase(delta: float) -> void:
 			_perform_jump()
 		
 		target_velocity_x = direction.x * chase_speed
-		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+		
+		# ALWAYS update facing toward the next waypoint
+		if abs(direction.x) > 0.1:
+			facing_direction = sign(direction.x)
 	else:
-		var direction = (player.global_position - global_position).normalized()
-		target_velocity_x = direction.x * chase_speed
-		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
+		# Navigation finished but still need to reach player
+		# Calculate direction directly to player
+		var direction_to_player = (player.global_position - global_position).normalized()
+		
+		target_velocity_x = direction_to_player.x * chase_speed
+		
+		# ALWAYS face toward player
+		if abs(direction_to_player.x) > 0.1:
+			facing_direction = sign(direction_to_player.x)
 
 func _state_attack_ready(delta: float) -> void:
 	target_velocity_x = 0.0
@@ -479,7 +516,18 @@ func _check_damage_to_player() -> void:
 func _return_to_patrol() -> void:
 	animated_sprite.play("run")
 	
-	# Only update path periodically
+	var distance_to_return = global_position.distance_to(return_position)
+	
+	if distance_to_return < 50.0:
+		# Reached return position
+		is_returning_to_patrol = false
+		wander_direction = 1 if randf() > 0.5 else -1
+		wander_duration = randf_range(2.0, 4.0)
+		wander_time = 0.0
+		change_state(State.PATROL)
+		return
+	
+	# Use navigation to return
 	if path_update_timer <= 0.0:
 		path_update_timer = PATH_UPDATE_INTERVAL
 		navigation_agent.target_position = return_position
@@ -495,11 +543,6 @@ func _return_to_patrol() -> void:
 		
 		target_velocity_x = direction.x * patrol_speed
 		facing_direction = sign(direction.x) if abs(direction.x) > 0.1 else facing_direction
-	else:
-		is_returning_to_patrol = false
-		patrol_direction = 1 if randf() > 0.5 else -1
-		_generate_new_patrol_target()
-		change_state(State.PATROL)
 
 func _update_sprite_direction() -> void:
 	if facing_direction != 0:

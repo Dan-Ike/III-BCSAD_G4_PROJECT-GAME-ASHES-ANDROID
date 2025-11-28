@@ -1,12 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://b0fn6bwba1lub"]
+[gd_scene load_steps=5 format=3 uid="uid://6p42lqsb36aq"]
 
 [ext_resource type="Script" uid="uid://fip5ogsfngqa" path="res://script/credits.gd" id="1_hgo0l"]
-[ext_resource type="VideoStream" uid="uid://bxdu5i13evf11" path="res://art/buttons_new/output.ogv" id="2_hgo0l"]
+[ext_resource type="VideoStream" uid="uid://0xiffssjebjr" path="res://art/buttons_new/output (1).ogv" id="2_55r6w"]
+[ext_resource type="Texture2D" uid="uid://crmvccic0jtuh" path="res://art/components/Skip_Button.png" id="3_55r6w"]
+[ext_resource type="Texture2D" uid="uid://cla3sh000ayji" path="res://art/components/Skip_Button (1).png" id="4_i66u5"]
 
 [node name="Credits" type="CanvasLayer"]
 script = ExtResource("1_hgo0l")
 
-[node name="Control" type="Control" parent="."]
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 362)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="TextureRect"]
+visible = false
+layout_mode = 0
+offset_top = -3.0
+offset_right = 1279.0
+offset_bottom = 719.0
+stream = ExtResource("2_55r6w")
+expand = true
+
+[node name="buttons" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,17 +37,18 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="Control"]
+[node name="Control4" type="Control" parent="buttons"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 640.0
-offset_bottom = 360.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.68, 0.68)
-stream = ExtResource("2_hgo0l")
-autoplay = true
-expand = true
-bus = &"Music"
+anchor_left = 0.137
+anchor_top = 0.109
+anchor_right = 0.137
+anchor_bottom = 0.109
+offset_left = -125.36
+offset_top = -35.48
+offset_right = 124.64
+offset_bottom = 35.52
+
+[node name="back" type="TouchScreenButton" parent="buttons/Control4"]
+visible = false
+texture_normal = ExtResource("3_55r6w")
+texture_pressed = ExtResource("4_i66u5")

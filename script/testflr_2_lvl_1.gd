@@ -33,6 +33,7 @@ const COLOR_UNLIT = Color(1.0, 1.0, 1.0, 1.0)
 const COLOR_LIT = Color(1.0, 0.9, 0.0, 1.0)   
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(2, 1)
 	player_camera.enabled = false
 	camera_2d_2.enabled = true

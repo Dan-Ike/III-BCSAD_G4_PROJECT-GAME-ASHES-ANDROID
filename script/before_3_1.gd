@@ -75,7 +75,7 @@ var summary_data = {
 
 	"title": "Story Summary",
 
-	"text": "Greed promised everything yet left nothing to claim. Anger forged strength from pain, and heresy whispered the truths I tried to forget. Each step was not redemption, but remembrance. The tower never offered mercy—it offered clarity. Now, before the final door, I understand: this journey was never about escape. It was about completion."
+	"text": "Greed promised everything but gave nothing. Anger made him stronger. Heresy reminded him of his purpose. He wasn’t there just to survive but to finish what he started. The tower remembers—and so does he. This time, he won’t run."
 
 }
 

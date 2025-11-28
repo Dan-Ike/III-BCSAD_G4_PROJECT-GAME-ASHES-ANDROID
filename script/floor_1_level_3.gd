@@ -11,6 +11,7 @@ extends Node2D
 var lava_started: bool = false
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(1, 3)
 	
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255

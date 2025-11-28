@@ -8,6 +8,7 @@ extends Node2D
 @onready var player: Player = $player
 
 func _ready() -> void:
+	Global.reset_game_over_flag()
 	Global.set_floor_level(1, 2)
 	
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255

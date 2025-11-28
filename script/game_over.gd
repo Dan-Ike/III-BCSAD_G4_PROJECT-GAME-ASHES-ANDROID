@@ -135,14 +135,27 @@ func _ready() -> void:
 	next_2.pressed.connect(_on_next_2_pressed)
 
 func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_level_completed: bool = false) -> void:
-	# Prevent double calls across ALL instances
+	# CRITICAL FIX: More lenient double-call protection
 	if Global.game_over_active:
-		print("[GameOver] Another game over is already active, destroying this instance")
-		queue_free()
+		print("[GameOver] Another game over is already showing, waiting...")
+		await get_tree().create_timer(0.1).timeout
+		# Try again after short delay
+		if Global.game_over_active:
+			print("[GameOver] Still blocked, destroying duplicate")
+			queue_free()
+			return
+	
+	Global.game_over_active = true
+	is_showing = true
+	
+	# Ensure we're in the tree before proceeding
+	if not is_inside_tree():
+		print("[GameOver] ERROR: Not in scene tree!")
+		Global.game_over_active = false
 		return
 	
-	Global.game_over_active = true  # Set global flag
-	is_showing = true  # Keep local flag too
+	# Wait one frame to ensure scene is fully ready
+	await get_tree().process_frame
 	
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
@@ -263,8 +276,14 @@ func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_
 		# Play game over music
 		MusicManager.play_song("gameover")
 	
+	# Make visible and pause AFTER everything is set up
 	visible = true
+	
+	# Wait one more frame before pausing
+	await get_tree().process_frame
 	get_tree().paused = true
+	
+	print("[GameOver] Screen now visible and game paused")
 
 func _on_next_pressed() -> void:
 	delayed_action(0.2, func():

@@ -45,6 +45,10 @@ var soul_light_enabled: bool = false
 var saved_soul_mode: int = -1  # Stores the last soul mode (0=LEVEL1, 1=LEVEL2, 2=LEVEL3)
 enum SoulLightMode { LEVEL1, LEVEL2, LEVEL3 }
 
+# In Global.gd, add a reset function
+func reset_game_over_flag() -> void:
+	game_over_active = false
+	print("[Global] Game over flag reset")
 
 #Controls
 signal control_type_changed

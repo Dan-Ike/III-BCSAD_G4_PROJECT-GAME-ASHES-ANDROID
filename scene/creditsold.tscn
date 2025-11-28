@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0fn6bwba1lub"]
+
+[ext_resource type="Script" uid="uid://fip5ogsfngqa" path="res://script/credits.gd" id="1_k8va1"]
+[ext_resource type="VideoStream" uid="uid://bxdu5i13evf11" path="res://art/buttons_new/output.ogv" id="2_s0u2x"]
+
+[node name="Credits" type="CanvasLayer"]
+script = ExtResource("1_k8va1")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 640.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.68, 0.68)
+stream = ExtResource("2_s0u2x")
+autoplay = true
+expand = true
+bus = &"Music"

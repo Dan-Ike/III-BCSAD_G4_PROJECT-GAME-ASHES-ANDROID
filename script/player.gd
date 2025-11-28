@@ -721,16 +721,20 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	animated_sprite.stop()
 	stop_all_sounds()
-	if touch_controls:
-		touch_controls.disable_all_controls()
+	
+	# Release inputs BEFORE disabling controls
 	Input.action_release("left")
 	Input.action_release("right")
 	Input.action_release("jump")
 	Input.action_release("z")
 	Input.action_release("dash")
+	
+	# Disable touch controls AFTER releasing inputs
+	if touch_controls:
+		touch_controls.disable_all_controls()
+	
 	handle_death_animation()
 	MlEnemyData.record_player_death()
-	
 
 func handle_death_animation() -> void:
 	player_died.emit()
@@ -750,18 +754,38 @@ func handle_death_animation() -> void:
 		print("[Player] Boss level will handle game over screen")
 		return  
 	
-	# Normal levels - show game over as usual
+	# Normal levels - show game over
 	Global.playerAlive = false
 	var died_on_floor = Global.current_floor
 	var died_on_level = Global.current_level
 	print("[Player] Died on Floor %d, Level %d after %.2f seconds" % [died_on_floor, died_on_level, time_survived])
 	
+	# CRITICAL FIX: Reset the flag BEFORE instantiating
+	Global.game_over_active = false
+	
+	# Use deferred call to ensure scene tree is ready
+	call_deferred("_show_game_over_screen", died_on_floor, died_on_level, time_survived)
+
+# New separate function for deferred instantiation
+func _show_game_over_screen(floor_num: int, level_num: int, time_taken: float) -> void:
+	# Double-check we're still in the tree
+	if not is_inside_tree():
+		print("[Player] Not in tree, cannot show game over")
+		return
+	
 	var game_over_scene = preload("res://scene/game_over.tscn")
 	var game_over = game_over_scene.instantiate()
-	get_tree().root.add_child(game_over)
-	if game_over.has_method("show_game_over"):
-		game_over.show_game_over(died_on_floor, died_on_level, time_survived, false)
-
+	
+	# Add to root with deferred to avoid timing issues
+	get_tree().root.call_deferred("add_child", game_over)
+	
+	# Wait a frame to ensure it's in the tree
+	await get_tree().process_frame
+	
+	if game_over and game_over.is_inside_tree() and game_over.has_method("show_game_over"):
+		game_over.show_game_over(floor_num, level_num, time_taken, false)
+	else:
+		print("[Player] ERROR: Game over screen failed to instantiate properly!")
 func take_damage_cooldown(wait_time: float) -> void:
 	can_take_damage = false
 	await get_tree().create_timer(wait_time).timeout
