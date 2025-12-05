@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=41 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
 [ext_resource type="Texture2D" uid="uid://c2thoj84krhoy" path="res://art/components/Sample Only.png" id="2_by01r"]
@@ -36,6 +36,8 @@
 [ext_resource type="Texture2D" uid="uid://gdu5vp1lbm16" path="res://art/components/Retry_Button (3).png" id="34_lfhnn"]
 [ext_resource type="Texture2D" uid="uid://dk5gfdo0gl6ig" path="res://art/buttons_new/Cancel_Button (2).png" id="35_d5kma"]
 [ext_resource type="Texture2D" uid="uid://cgpdqgyiy3p1e" path="res://art/buttons_new/Cancel_Button (3).png" id="36_wju0j"]
+[ext_resource type="Texture2D" uid="uid://jlqlphk5mq4y" path="res://art/buttons_new/Property 1=Okay_Default.png" id="37_qs2km"]
+[ext_resource type="Texture2D" uid="uid://dxqscbuwoo14a" path="res://art/buttons_new/Property 1=Okay_Pressed.png" id="38_1xay8"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hxu56"]
 texture = ExtResource("2_by01r")
@@ -1422,6 +1424,518 @@ scale = Vector2(1.2, 1.2)
 texture_normal = ExtResource("7_mh7xh")
 texture_pressed = ExtResource("8_0d2hm")
 
+[node name="PrivacyNotice" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="PrivacyNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="PrivacyNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
+texture = ExtResource("6_xcvof")
+
+[node name="Control" type="Control" parent="PrivacyNotice"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
+
+[node name="back" type="TouchScreenButton" parent="PrivacyNotice/Control"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="Control2" type="Control" parent="PrivacyNotice"]
+layout_mode = 1
+anchor_left = 0.32
+anchor_top = 1.0
+anchor_right = 0.32
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -39.0
+offset_right = 120.0
+offset_bottom = 26.0
+
+[node name="cancelPrivacy" type="TouchScreenButton" parent="PrivacyNotice/Control2"]
+scale = Vector2(1.6, 1.6)
+texture_normal = ExtResource("35_d5kma")
+texture_pressed = ExtResource("36_wju0j")
+
+[node name="Control3" type="Control" parent="PrivacyNotice"]
+layout_mode = 1
+anchor_left = 0.695
+anchor_top = 0.992
+anchor_right = 0.695
+anchor_bottom = 0.992
+offset_left = -125.5
+offset_top = -34.76
+offset_right = 125.5
+offset_bottom = 34.24
+
+[node name="agreePrivacy" type="TouchScreenButton" parent="PrivacyNotice/Control3"]
+texture_normal = ExtResource("37_qs2km")
+texture_pressed = ExtResource("38_1xay8")
+
+[node name="Label" type="Label" parent="PrivacyNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 32
+text = "Privacy Notice"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PrivacyNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.511
+anchor_top = 0.636
+anchor_right = 0.511
+anchor_bottom = 0.636
+offset_left = -244.7
+offset_top = -131.08
+offset_right = 245.3
+offset_bottom = 130.92
+
+[node name="Label2" type="Label" parent="PrivacyNotice/ScrollContainer"]
+custom_minimum_size = Vector2(480, 450)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
+text = "Ashes – Privacy Notice
+Effective Date: December 1, 2025 
+
+This game may be played completely offline. When played offline, no personal information is collected or transmitted, and only your game progress (e.g., level, score, in-game stats) is saved locally on your device.
+
+If you choose to sign in with Google, we will access limited information from your Google account only for the purpose of saving your game progress online and restoring it on other devices.
+
+Data We Collect When You Use Google Login
+
+Google User ID
+
+Google Account Email
+
+Display Profile Photo
+
+Cloud save file data (your game progress only)
+
+Purpose of Collection
+
+To enable cloud save and restore game progress across devices
+
+To verify that the save data belongs to your account
+
+Data Storage and Security
+
+Offline save: stored locally in device files
+
+Online save: stored via Supabase (secured storage)
+
+All online communication is encrypted via HTTPS/TLS
+
+We do not share, sell, or use your data for marketing
+
+Your Rights
+
+At any time, you can:
+
+Play without logging in (offline mode)
+
+Withdraw your consent by unlinking your account
+
+Request deletion of your cloud-saved data via email
+
+Contact
+
+For data-related concerns:
+destoque..k12151881@umak.edu.ph
+
+If you do not agree to this policy, you may play offline but will not be able to use cloud save features.
+
+🔹 By clicking \"I Agree,” you confirm you have read and understood this Privacy Notice."
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="TermsAndCondition" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="TermsAndCondition"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="TermsAndCondition"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
+texture = ExtResource("6_xcvof")
+
+[node name="Control" type="Control" parent="TermsAndCondition"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
+
+[node name="back" type="TouchScreenButton" parent="TermsAndCondition/Control"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="Control2" type="Control" parent="TermsAndCondition"]
+layout_mode = 1
+anchor_left = 0.32
+anchor_top = 1.0
+anchor_right = 0.32
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -39.0
+offset_right = 120.0
+offset_bottom = 26.0
+
+[node name="cancelterms" type="TouchScreenButton" parent="TermsAndCondition/Control2"]
+scale = Vector2(1.6, 1.6)
+texture_normal = ExtResource("35_d5kma")
+texture_pressed = ExtResource("36_wju0j")
+
+[node name="Control3" type="Control" parent="TermsAndCondition"]
+layout_mode = 1
+anchor_left = 0.695
+anchor_top = 0.992
+anchor_right = 0.695
+anchor_bottom = 0.992
+offset_left = -125.5
+offset_top = -34.76
+offset_right = 125.5
+offset_bottom = 34.24
+
+[node name="agreeterms" type="TouchScreenButton" parent="TermsAndCondition/Control3"]
+texture_normal = ExtResource("37_qs2km")
+texture_pressed = ExtResource("38_1xay8")
+
+[node name="Label" type="Label" parent="TermsAndCondition"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 28
+text = "Terms & Conditions"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TermsAndCondition"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.511
+anchor_top = 0.636
+anchor_right = 0.511
+anchor_bottom = 0.636
+offset_left = -244.7
+offset_top = -131.08
+offset_right = 245.3
+offset_bottom = 130.92
+
+[node name="Label2" type="Label" parent="TermsAndCondition/ScrollContainer"]
+custom_minimum_size = Vector2(480, 450)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
+text = "Ashes – Terms & Conditions
+Last Updated: December 1, 2025
+
+These Terms govern your use of this game. Please read them carefully before playing.
+
+1. License to Use
+
+You are granted a personal, limited, non-commercial license to play this game. You may not modify, reverse engineer, redistribute, or exploit the game content beyond normal gameplay use.
+
+2. Game Usage
+
+The game may be played offline or with optional Google login.
+
+Do not attempt to manipulate cloud data, cheat, bypass game mechanics, or interfere with the normal operation of the game.
+
+3. Cloud Save Feature
+
+If you choose to log in using Google:
+
+Your gameplay progress will be uploaded and linked to your Google account.
+
+Do not use an account that does not belong to you.
+
+You are responsible for securing your Google login and understanding cloud-save risks.
+
+4. Intellectual Property
+
+The game programming/code is the exclusive property of [Developer Name].
+
+Other assets used in the game (such as graphics, audio, effects, or fonts) were obtained from opensource, royalty-free, or licensed creators (e.g., via itch.io or other free-use platforms).
+
+All such external assets remain the property of their respective creators and are used under the licenses provided by them.
+
+You may not claim ownership, extract, resell, or redistribute any part of the game or its assets, whether created by the developer or sourced from third-party creators.
+
+5. No Warranty and Limitation of Liability
+
+This game is provided “as is” without guarantees of performance or compatibility.
+We are not responsible for loss of data, technical issues, or damages arising from gameplay to the maximum extent permitted by law in the Philippines.
+(Note: Limitations do not apply in cases of fraud or gross negligence.)
+
+6. Governing Law
+
+These Terms are governed by the laws of the Republic of the Philippines. Any dispute shall be settled through the appropriate legal process under Philippine jurisdiction.
+
+7. Updates and Modifications
+
+These Terms may be updated occasionally. If changes are made, you will be informed, and continued use of the game indicates acceptance of the updated Terms.
+
+🔹 By clicking “I Agree”, you confirm that you have read, understood, and accept these Terms & Conditions."
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="GoogleNotice" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -265.0
+offset_right = 350.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="GoogleNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.111
+anchor_right = 0.5
+anchor_bottom = 0.111
+offset_left = -275.0
+offset_top = -58.83
+offset_right = 275.0
+offset_bottom = 59.17
+texture = ExtResource("5_ruj6x")
+
+[node name="TextureRect2" type="TextureRect" parent="GoogleNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.52
+anchor_top = 0.629
+anchor_right = 0.52
+anchor_bottom = 0.629
+offset_left = -364.0
+offset_top = -239.37
+offset_right = 336.0
+offset_bottom = 206.63
+texture = ExtResource("6_xcvof")
+
+[node name="Control" type="Control" parent="GoogleNotice"]
+layout_mode = 1
+anchor_left = 0.936
+anchor_top = 0.258
+anchor_right = 0.936
+anchor_bottom = 0.258
+offset_left = -30.2
+offset_top = -29.74
+offset_right = 29.8
+offset_bottom = 30.26
+
+[node name="back" type="TouchScreenButton" parent="GoogleNotice/Control"]
+scale = Vector2(1.2, 1.2)
+texture_normal = ExtResource("7_mh7xh")
+texture_pressed = ExtResource("8_0d2hm")
+
+[node name="Control2" type="Control" parent="GoogleNotice"]
+layout_mode = 1
+anchor_left = 0.32
+anchor_top = 1.0
+anchor_right = 0.32
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -39.0
+offset_right = 120.0
+offset_bottom = 26.0
+
+[node name="cancelGoogle" type="TouchScreenButton" parent="GoogleNotice/Control2"]
+scale = Vector2(1.6, 1.6)
+texture_normal = ExtResource("35_d5kma")
+texture_pressed = ExtResource("36_wju0j")
+
+[node name="Control3" type="Control" parent="GoogleNotice"]
+layout_mode = 1
+anchor_left = 0.695
+anchor_top = 0.992
+anchor_right = 0.695
+anchor_bottom = 0.992
+offset_left = -125.5
+offset_top = -34.76
+offset_right = 125.5
+offset_bottom = 34.24
+
+[node name="agreeGoogle" type="TouchScreenButton" parent="GoogleNotice/Control3"]
+texture_normal = ExtResource("37_qs2km")
+texture_pressed = ExtResource("38_1xay8")
+
+[node name="Label" type="Label" parent="GoogleNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.107
+anchor_right = 0.5
+anchor_bottom = 0.107
+offset_left = -138.0
+offset_top = -18.71
+offset_right = 138.0
+offset_bottom = 18.29
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_sepwh")
+theme_override_font_sizes/font_size = 26
+text = "Google Login Notice"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="GoogleNotice"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.511
+anchor_top = 0.636
+anchor_right = 0.511
+anchor_bottom = 0.636
+offset_left = -244.7
+offset_top = -131.08
+offset_right = 245.3
+offset_bottom = 130.92
+
+[node name="Label2" type="Label" parent="GoogleNotice/ScrollContainer"]
+custom_minimum_size = Vector2(480, 450)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("24_xyo3m")
+theme_override_font_sizes/font_size = 32
+text = "Connect Google Account
+Signing in will allow your game progress to be safely stored online and accessible on other devices.
+
+Information We Will Access
+
+By continuing with Google Login, you agree that this game will access:
+✔ Your Google Account Email – to identify your account and sync progress
+✔ Your Google User ID – to securely store and retrieve cloud save data
+✔ Your Google Profile Picture – only to display as your in-game avatar or account icon (e.g., circular profile image).
+
+Your profile photo is used for display only and is not used for analytics, shared with others, or used outside the game.
+
+Purpose of Data Use
+
+To save and restore gameplay progress across devices (cloud save)
+
+To personalize your account by displaying your Google profile picture in your profile/settings menu
+
+To ensure that cloud save data belongs to your account
+
+Your Choices
+
+You may continue playing without Google login (offline mode)
+
+You may unlink your account or delete cloud data anytime in Settings
+
+Cloud save functionality will not work without Google login
+
+All online communication is encrypted via HTTPS/TLS. We do not request access to your contacts, messages, or any other unrelated data.
+
+🔹 By clicking “Continue”, you provide specific consent for your email, user ID, and (optional) profile photo to be processed for cloud save and account display purposes only.
+
+🔹 If you do not wish to proceed, click “Cancel” to remain offline."
+vertical_alignment = 1
+autowrap_mode = 3
+
 [connection signal="pressed" from="Settings/Control/back" to="." method="_on_back_settings_pressed"]
 [connection signal="value_changed" from="Settings/AudioControl" to="Settings/AudioControl" method="_on_value_changed"]
 [connection signal="value_changed" from="Settings/AudioSoundControl2" to="Settings/AudioSoundControl2" method="_on_value_changed"]
@@ -1451,3 +1965,12 @@ texture_pressed = ExtResource("8_0d2hm")
 [connection signal="pressed" from="Logout/Control/cancel" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="Logout/Control2/logout" to="." method="_on_logout_pressed"]
 [connection signal="pressed" from="Logout/Control3/back_exit" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="PrivacyNotice/Control/back" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="PrivacyNotice/Control2/cancelPrivacy" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="PrivacyNotice/Control3/agreePrivacy" to="." method="_on_agree_privacy_pressed"]
+[connection signal="pressed" from="TermsAndCondition/Control/back" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="TermsAndCondition/Control2/cancelterms" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="TermsAndCondition/Control3/agreeterms" to="." method="_on_agreeterms_pressed"]
+[connection signal="pressed" from="GoogleNotice/Control/back" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="GoogleNotice/Control2/cancelGoogle" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="GoogleNotice/Control3/agreeGoogle" to="." method="_on_agree_google_pressed"]

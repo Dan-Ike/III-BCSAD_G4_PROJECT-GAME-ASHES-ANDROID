@@ -508,27 +508,29 @@ script = ExtResource("1_wpjdb")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_6wo1u")
-animation = &"charge"
-frame = 11
-frame_progress = 1.0
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -1)
 shape = SubResource("CapsuleShape2D_4qqp7")
 
 [node name="DetectionArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_w1egl")
 debug_color = Color(0.884857, 0.332513, 5.77569e-07, 0.42)
 
 [node name="PatrolArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PatrolArea"]
 shape = SubResource("CircleShape2D_d3xqd")
 debug_color = Color(0, 0, 0, 0.42)
 
 [node name="AttackArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 position = Vector2(7, -2)
@@ -537,6 +539,7 @@ shape = SubResource("CircleShape2D_wpjdb")
 debug_color = Color(0.999109, 0, 0.123329, 0.42)
 
 [node name="DealDamageArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -546,6 +549,7 @@ rotation = 1.56306
 shape = SubResource("CapsuleShape2D_yabtt")
 
 [node name="Hitbox" type="Area2D" parent="."]
+visible = false
 collision_layer = 4
 collision_mask = 8
 

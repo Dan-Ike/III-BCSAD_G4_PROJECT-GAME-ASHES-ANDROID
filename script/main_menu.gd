@@ -40,6 +40,21 @@ var debug_label: Label = null
 @onready var no_net: Control = $NoNet
 @onready var logout: Control = $Logout
 
+#Notice:
+@onready var privacy_notice: Control = $PrivacyNotice
+@onready var terms_and_condition: Control = $TermsAndCondition
+@onready var google_notice: Control = $GoogleNotice
+@onready var label_2: Label = $PrivacyNotice/ScrollContainer/Label2
+@onready var label_2_2: Label = $TermsAndCondition/Label2
+@onready var label_2_3: Label = $GoogleNotice/Label2
+@onready var agree_privacy: TouchScreenButton = $PrivacyNotice/Control3/agreePrivacy
+@onready var agreeterms: TouchScreenButton = $TermsAndCondition/Control3/agreeterms
+@onready var agree_google: TouchScreenButton = $GoogleNotice/Control3/agreeGoogle
+
+const PRIVACY_ACCEPTED_FILE = "user://privacy_accepted.dat"
+const TERMS_ACCEPTED_FILE = "user://terms_accepted.dat"
+const GOOGLE_NOTICE_ACCEPTED_FILE = "user://google_notice_accepted.dat"
+
 const SUPABASE_URL = "https://fsntwndbknzhmotgphtj.supabase.co"
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbnR3bmRia256aG1vdGdwaHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NjUwMjAsImV4cCI6MjA3NTE0MTAyMH0.ZJESWD5jcH2rmFodnwHpI_cSsQWqnk1Fk-mmcrjP5mE"
 
@@ -77,29 +92,66 @@ func _ready() -> void:
 			return
 	
 	add_child(http)
+	_setup_scrollable_notice(privacy_notice.get_node("ScrollContainer"), label_2)
+	_setup_scrollable_notice(terms_and_condition.get_node("ScrollContainer"), label_2_2)
+	_setup_scrollable_notice(google_notice.get_node("ScrollContainer"), label_2_3)
+	
 	is_transitioning = false
+	
+	# Hide everything initially
+	main_btns.visible = false
+	settings.visible = false
+	components.visible = false
+	bg_2.visible = false
+	background.visible = false
+	title.visible = false
+	unlock.visible = false
+	exit.visible = false
+	credits.visible = false
+	version.visible = false
+	continue_pop_up.visible = false
+	new_game_confirm.visible = false
+	new_game_logged_in.visible = false
+	no_net.visible = false
+	logout.visible = false
+	privacy_notice.visible = false
+	terms_and_condition.visible = false
+	google_notice.visible = false
+	
+	# Check if privacy and terms have been accepted
+	if not _is_privacy_accepted():
+		# Show privacy notice first
+		bg_2.visible = true
+		privacy_notice.visible = true
+		transition_in([bg_2, privacy_notice])
+		return
+	
+	if not _is_terms_accepted():
+		# Show terms and condition
+		bg_2.visible = true
+		terms_and_condition.visible = true
+		transition_in([bg_2, terms_and_condition])
+		return
+	
+	# If both accepted, proceed with normal initialization
+	_initialize_main_menu()
+
+func _initialize_main_menu() -> void:
+	"""Initialize the main menu after privacy/terms acceptance"""
 	main_btns.visible = true
 	settings.visible = false
 	components.visible = true
 	bg_2.visible = false
 	background.visible = true
 	title.visible = true
-	unlock.visible = false
-	exit.visible = false
-	credits.visible = false
 	version.visible = true
-	continue_pop_up.visible = false
-	new_game_confirm.visible = false
-	new_game_logged_in.visible = false
-	no_net.visible = false
-	logout.visible = false
+	
 	MusicManager.play_song("menu")
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_choice_selected)
 	
 	newgame.pressed.connect(_on_newgame_pressed)
 	unlockall.pressed.connect(_on_unlockall_pressed)
-	
 	
 	var saved_cutscene_pref = SaveManager.get_setting("cutscene_preference")
 	if saved_cutscene_pref == null:
@@ -114,7 +166,6 @@ func _ready() -> void:
 	cutscene_choice.item_selected.connect(_on_cutscene_choice_selected)
 	
 	google.pressed.connect(_on_google_pressed)
-	#profile.pressed.connect(_on_profile_pressed)
 	
 	var shader = Shader.new()
 	shader.code = """
@@ -137,14 +188,14 @@ void fragment() {
 	profile.material = material
 	profile.custom_minimum_size = Vector2(64, 64)
 	
-# Check internet connectivity first
+	# Check internet connectivity first
 	_check_internet_connection()
 	
 	if Global.session_token == "":
 		_load_session()
 	else:
 		google.visible = false
-		google.set_process_input(false)  # Disable google button input
+		google.set_process_input(false)
 		profile.visible = true
 		_load_cached_profile_image()
 		
@@ -159,8 +210,105 @@ void fragment() {
 	
 	_update_start_button_text()
 	_update_newgame_button_visibility()
-#	_update_newgame_button_visibility()
 
+func _is_privacy_accepted() -> bool:
+	return FileAccess.file_exists(PRIVACY_ACCEPTED_FILE)
+
+func _is_terms_accepted() -> bool:
+	return FileAccess.file_exists(TERMS_ACCEPTED_FILE)
+
+func _is_google_notice_accepted() -> bool:
+	return FileAccess.file_exists(GOOGLE_NOTICE_ACCEPTED_FILE)
+
+func _mark_privacy_accepted() -> void:
+	var f = FileAccess.open(PRIVACY_ACCEPTED_FILE, FileAccess.WRITE)
+	if f:
+		f.store_string("accepted")
+		f.close()
+		print("Privacy notice accepted and saved")
+
+func _mark_terms_accepted() -> void:
+	var f = FileAccess.open(TERMS_ACCEPTED_FILE, FileAccess.WRITE)
+	if f:
+		f.store_string("accepted")
+		f.close()
+		print("Terms accepted and saved")
+
+func _mark_google_notice_accepted() -> void:
+	var f = FileAccess.open(GOOGLE_NOTICE_ACCEPTED_FILE, FileAccess.WRITE)
+	if f:
+		f.store_string("accepted")
+		f.close()
+		print("Google notice accepted and saved")
+
+func _on_agree_privacy_pressed() -> void:
+	_mark_privacy_accepted()
+	
+	transition_out(func():
+		privacy_notice.visible = false
+		
+		# Show terms next
+		terms_and_condition.visible = true
+		transition_in([bg_2, terms_and_condition])
+	)
+
+func _on_agreeterms_pressed() -> void:
+	_mark_terms_accepted()
+	
+	transition_out(func():
+		terms_and_condition.visible = false
+		bg_2.visible = false
+		
+		# Now proceed to main menu
+		_initialize_main_menu()
+		transition_in([background, main_btns, components, title, version])
+	)
+
+func _on_agree_google_pressed() -> void:
+	_mark_google_notice_accepted()
+	
+	transition_out(func():
+		google_notice.visible = false
+		bg_2.visible = false
+		
+		_initialize_main_menu()
+		transition_in([background, main_btns, components, title, version])
+	)
+	
+	# Continue with OAuth flow
+	_log_debug("Google Notice accepted, starting OAuth...")
+	
+	if OS.has_feature("Android"):
+		auth_in_progress = true
+		_log_debug("Starting OAuth flow...")
+		_start_google_oauth_flow()
+	elif OS.has_feature("web"):
+		auth_in_progress = true
+		_log_debug("Starting Web OAuth flow...")
+		_start_web_oauth_flow()
+	else:
+		if _start_local_server():
+			auth_in_progress = true
+			_start_google_oauth_flow()
+		else:
+			_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
+
+func _setup_scrollable_notice(scroll_container: ScrollContainer, label: Label) -> void:
+	if not scroll_container:
+		return
+	
+	# Enable vertical scrolling
+	scroll_container.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll_container.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	
+	# Make label wrap text properly
+	#label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	#label.custom_minimum_size.x = scroll_container.size.x - 20  # Account for scrollbar
+	
+	# Optional: Customize scrollbar appearance
+	var v_scroll = scroll_container.get_v_scroll_bar()
+	if v_scroll:
+		v_scroll.custom_minimum_size.x = 10  # Thinner scrollbar
 
 func _on_app_focus_gained() -> void:
 	"""Called when app gains focus (returns from browser)"""
@@ -381,9 +529,24 @@ func _on_google_pressed() -> void:
 			
 			transition_in([bg_2, no_net])
 		)
-		#_show_error("No internet connection detected.\n\nPlease connect to the internet to log in with Google.")
 		return
 	
+	# Check if Google notice has been accepted
+	if not _is_google_notice_accepted():
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			components.visible = false
+			google_notice.visible = true
+			title.visible = false  
+			version.visible = false
+			
+			transition_in([bg_2, google_notice])
+		)
+		return
+	
+	# If accepted, proceed with OAuth
 	_log_debug("Google Login clicked")
 	_log_debug("OS: " + OS.get_name())
 	
@@ -391,7 +554,6 @@ func _on_google_pressed() -> void:
 		auth_in_progress = true
 		_log_debug("Starting OAuth flow...")
 		_start_google_oauth_flow()
-		#_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically redirected back to the game.")
 	elif OS.has_feature("web"):
 		auth_in_progress = true
 		_log_debug("Starting Web OAuth flow...")
@@ -400,7 +562,6 @@ func _on_google_pressed() -> void:
 		if _start_local_server():
 			auth_in_progress = true
 			_start_google_oauth_flow()
-			#_show_info("Opening browser for Google login...\n\nAfter selecting your account, you'll be automatically logged in!")
 		else:
 			_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
 
@@ -458,13 +619,22 @@ func _start_google_oauth_flow():
 			check_timer.queue_free()
 	)
 	check_timer.start()
+
 func _on_unlockall_pressed() -> void:
+	# Reset all notice acceptances for testing
+	#if FileAccess.file_exists(PRIVACY_ACCEPTED_FILE):
+	#	DirAccess.remove_absolute(PRIVACY_ACCEPTED_FILE)
+	#	print("Privacy acceptance reset")
+	
+	#if FileAccess.file_exists(TERMS_ACCEPTED_FILE):
+	#	DirAccess.remove_absolute(TERMS_ACCEPTED_FILE)
+	#	print("Terms acceptance reset")
+	
+	#if FileAccess.file_exists(GOOGLE_NOTICE_ACCEPTED_FILE):
+	#	DirAccess.remove_absolute(GOOGLE_NOTICE_ACCEPTED_FILE)
+	#	print("Google notice acceptance reset")
+	
 	transition_out(func():
-		# Check if user is logged in
-		#if Global.get_current_user().size() > 0:
-		#	_show_error("Cannot unlock on a logged-in account.\nPlease log out first if you want to use this feature.")
-		#	return
-		
 		unlock.visible = true
 		main_btns.visible = false
 		background.visible = false
@@ -475,7 +645,6 @@ func _on_unlockall_pressed() -> void:
 		
 		transition_in([bg_2, unlock])
 	)
-	
 
 func _unlock_all_content() -> void:
 	# Unlock all abilities
@@ -517,11 +686,13 @@ func _on_newgame_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
+	
 	# Small delay to show button press visual feedback
 	await get_tree().create_timer(0.15).timeout
 	
 	# Check if user is logged in
 	if Global.get_current_user().size() > 0:
+		is_transitioning = false  # Reset flag before showing dialog
 		transition_out(func():
 			main_btns.visible = false
 			background.visible = false
@@ -531,7 +702,6 @@ func _on_newgame_pressed() -> void:
 			version.visible = false
 			transition_in([bg_2, new_game_logged_in])
 		)
-		#_show_error("Cannot reset save progress on a logged-in account.\nPlease log out first if you want to start a new game.")
 		return
 	
 	var current_floor = SaveManager.data["progress"]["current_floor"]
@@ -543,6 +713,7 @@ func _on_newgame_pressed() -> void:
 		Global.is_retrying_level = false
 		slide_in_transition("res://scene/floor.tscn")
 	else:
+		is_transitioning = false  # Reset flag before showing dialog
 		transition_out(func():
 			main_btns.visible = false
 			background.visible = false
@@ -552,28 +723,6 @@ func _on_newgame_pressed() -> void:
 			version.visible = false
 			transition_in([bg_2, new_game_confirm])
 		)
-		# If there's progress, show confirmation dialog
-		#var dlg := ConfirmationDialog.new()
-		#dlg.dialog_text = "Are you sure you want to start a new game?\n\nThis will erase all your progress."
-		#dlg.confirmed.connect(func():
-		#	_reset_local_save()
-		#	_show_info("Save progress erased. Starting new game...")
-		#	await get_tree().create_timer(1.0).timeout
-		#	Global.is_retrying_level = false
-		#	slide_in_transition("res://scene/floor.tscn")
-		#)
-		# Force button back to normal state
-		#var reset_button = func():
-			# Toggle visibility to force redraw
-		#	newgame.visible = false
-		#	await get_tree().process_frame
-		#	newgame.visible = true
-		
-		#dlg.canceled.connect(reset_button)
-		#dlg.close_requested.connect(reset_button)
-		
-		#add_child(dlg)
-		#dlg.popup_centered()
 
 func _reset_local_save() -> void:
 	# Reset SaveManager data to defaults

@@ -11,6 +11,7 @@ extends Node2D
 @onready var floor_title: CanvasLayer = $FloorTitle
 
 func _ready() -> void:
+	MusicManager.play_song("level1")
 	Global.reset_game_over_flag()
 	Global.set_floor_level(1, 1)
 	

@@ -124,7 +124,6 @@ func _ready() -> void:
 		health_bar.max_value = health_max
 		health_bar.value = health
 
-# Setup navigation like AdvancedEnemy
 func _setup_navigation() -> void:
 	navigation_agent = NavigationAgent2D.new()
 	add_child(navigation_agent)

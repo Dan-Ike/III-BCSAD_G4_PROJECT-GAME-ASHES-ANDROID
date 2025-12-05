@@ -621,25 +621,29 @@ metadata/_custom_type_script = "uid://ckxwmmk44cq7t"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3d2wm")
-animation = &"special_dash"
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -1)
 shape = SubResource("CapsuleShape2D_rrd6h")
 
 [node name="DetectionArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_7g8a4")
 debug_color = Color(0.884857, 0.332513, 5.77569e-07, 0.42)
 
 [node name="PatrolArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PatrolArea"]
 shape = SubResource("CircleShape2D_r8fku")
 debug_color = Color(0, 0, 0, 0.42)
 
 [node name="AttackArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 position = Vector2(7, -2)
@@ -648,6 +652,7 @@ shape = SubResource("CircleShape2D_jruke")
 debug_color = Color(0.999109, 0, 0.123329, 0.42)
 
 [node name="DealDamageArea_VerticalSlash" type="Area2D" parent="."]
+visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -657,6 +662,7 @@ rotation = 1.56306
 shape = SubResource("CapsuleShape2D_ysc7m")
 
 [node name="DealDamageArea_JumpUpAttack" type="Area2D" parent="."]
+visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -666,6 +672,7 @@ rotation = 3.14159
 shape = SubResource("CapsuleShape2D_8arul")
 
 [node name="DealDamageArea_JumpDownAttack" type="Area2D" parent="."]
+visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -675,6 +682,7 @@ rotation = 3.14159
 shape = SubResource("CapsuleShape2D_8arul")
 
 [node name="DealDamageArea_DownSlash" type="Area2D" parent="."]
+visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -684,6 +692,7 @@ rotation = 3.14159
 shape = SubResource("CircleShape2D_8arul")
 
 [node name="Hitbox" type="Area2D" parent="."]
+visible = false
 collision_layer = 4
 collision_mask = 8
 
