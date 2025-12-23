@@ -532,3 +532,91 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 	#		print("SaveManager: Control layout pushed to cloud successfully")
 	#	else:
 	#		print("SaveManager: Layout push failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+
+# Collectable Management Functions
+func collect_item(collectable_id: String, collectable_type: String = "generic") -> void:
+	"""Record a collected item"""
+	if not data.has("collectables"):
+		data["collectables"] = []
+	
+	# Check if already collected
+	for item in data["collectables"]:
+		if item.get("id") == collectable_id:
+			print("SaveManager: Item already collected: %s" % collectable_id)
+			return
+	
+	# Add new collectable
+	var collectable_data = {
+		"id": collectable_id,
+		"type": collectable_type,
+		"floor": Global.current_floor,
+		"level": Global.current_level,
+		"collected_at": Time.get_datetime_string_from_system()
+	}
+	
+	data["collectables"].append(collectable_data)
+	_save_local()
+	
+	print("SaveManager: Collected item - %s (Type: %s) at Floor %d Level %d" % [
+		collectable_id,
+		collectable_type,
+		Global.current_floor,
+		Global.current_level
+	])
+	
+	# Sync to cloud if logged in
+	if current_user_id != "":
+		push_all_to_supabase()
+
+func is_collectable_collected(collectable_id: String) -> bool:
+	"""Check if a collectable has been collected"""
+	if not data.has("collectables"):
+		return false
+	
+	for item in data["collectables"]:
+		if item.get("id") == collectable_id:
+			return true
+	
+	return false
+
+func get_collected_items_by_type(collectable_type: String) -> Array:
+	"""Get all collected items of a specific type"""
+	var items = []
+	
+	if not data.has("collectables"):
+		return items
+	
+	for item in data["collectables"]:
+		if item.get("type") == collectable_type:
+			items.append(item)
+	
+	return items
+
+func get_collected_items_in_level(floor: int, level: int) -> Array:
+	"""Get all collectables collected in a specific level"""
+	var items = []
+	
+	if not data.has("collectables"):
+		return items
+	
+	for item in data["collectables"]:
+		if item.get("floor") == floor and item.get("level") == level:
+			items.append(item)
+	
+	return items
+
+func get_total_collected_count() -> int:
+	"""Get total number of collected items"""
+	if not data.has("collectables"):
+		return 0
+	return data["collectables"].size()
+
+func get_collected_count_by_type(collectable_type: String) -> int:
+	"""Get count of collected items by type"""
+	return get_collected_items_by_type(collectable_type).size()
+
+func reset_collectables() -> void:
+	"""Reset all collectables (useful for testing)"""
+	data["collectables"] = []
+	_save_local()
+	print("SaveManager: All collectables reset")

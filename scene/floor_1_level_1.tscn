@@ -1,4 +1,4 @@
-[gd_scene load_steps=154 format=3 uid="uid://chbjd6wiul8ee"]
+[gd_scene load_steps=157 format=3 uid="uid://chbjd6wiul8ee"]
 
 [ext_resource type="Script" uid="uid://ch61gfwtur3cu" path="res://script/floor_1_lvl_1.gd" id="1_bhfcj"]
 [ext_resource type="Texture2D" uid="uid://bbyycjd0cxjyj" path="res://art/free.png" id="2_g15xi"]
@@ -47,6 +47,7 @@
 [ext_resource type="Texture2D" uid="uid://d24kwv80uh8hh" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Details/marker_statue1.png" id="42_nbn7g"]
 [ext_resource type="Texture2D" uid="uid://cepvo7ueevtnh" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Details/lava_drop1_1.png" id="43_ubdwp"]
 [ext_resource type="Texture2D" uid="uid://cmpv3ebx2ccxv" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Details/stalagmite3.png" id="44_7b4ls"]
+[ext_resource type="Texture2D" uid="uid://dap1mgqxqaaoj" path="res://art/Untitled 3-77fc.png" id="44_qnla1"]
 [ext_resource type="Texture2D" uid="uid://k5rrvh632bsq" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Details/stalagnate2.png" id="45_y3rfc"]
 [ext_resource type="Texture2D" uid="uid://by4pvvyso15r7" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Background/Bright/rock2.png" id="46_ymfle"]
 [ext_resource type="Texture2D" uid="uid://bwt0swhwu6ng5" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Tiles_lava/lava_tile3.png" id="47_2clys"]
@@ -59,6 +60,7 @@
 [ext_resource type="Texture2D" uid="uid://day5hl6lbobu7" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Tiles_rock/tile2.png" id="54_xj50u"]
 [ext_resource type="PackedScene" uid="uid://bletdowgl1r03" path="res://scene/prologue.tscn" id="58_2hjmi"]
 [ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="58_c0xc7"]
+[ext_resource type="PackedScene" uid="uid://3yvbp6tjn1pa" path="res://scene/collectable.tscn" id="61_7jntg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_j21ip"]
 texture = ExtResource("2_rwy0f")
@@ -5742,6 +5744,13 @@ texture = ExtResource("43_ubdwp")
 3:4/0 = 0
 4:4/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7jntg"]
+texture = ExtResource("44_qnla1")
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u2m4r"]
 texture = ExtResource("44_7b4ls")
 1:0/0 = 0
@@ -9269,6 +9278,7 @@ sources/46 = SubResource("TileSetAtlasSource_1o2nf")
 sources/48 = SubResource("TileSetAtlasSource_u2m4r")
 sources/49 = SubResource("TileSetAtlasSource_ao27r")
 sources/55 = SubResource("TileSetAtlasSource_xwudf")
+sources/47 = SubResource("TileSetAtlasSource_7jntg")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a5888"]
 size = Vector2(1020, 245)
@@ -9714,6 +9724,12 @@ visible = false
 
 [node name="Cutscene" parent="." instance=ExtResource("58_2hjmi")]
 visible = false
+
+[node name="Collectable" parent="." instance=ExtResource("61_7jntg")]
+position = Vector2(442, 583)
+scale = Vector2(0.586271, 0.528998)
+collectable_id = "floor_1_level_1_coin_1"
+collectable_type = "coin"
 
 [connection signal="body_entered" from="floor1lvl2" to="." method="_on_floor_1_lvl_2_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
