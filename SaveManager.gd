@@ -20,8 +20,99 @@ var data := {
 	"collectables": [],
 	"settings": {},
 	"watched_cutscenes": [],
-	"control_layout": {}
+	"control_layout": {},
+	"level_times": {},  
+	"best_run_time": 0.0 
 }
+
+func save_level_time(floor: int, level: int, time: float) -> void:
+	"""Save the completion time for a specific level"""
+	var level_key = "%d_%d" % [floor, level]
+	
+	print("[SaveManager] save_level_time called - Floor: %d, Level: %d, Time: %.2f" % [floor, level, time])
+	
+	if not data.has("level_times"):
+		data["level_times"] = {}
+		print("[SaveManager] Created new level_times dictionary")
+	
+	# Only save if it's a new best time or first completion
+	if not data["level_times"].has(level_key):
+		data["level_times"][level_key] = time
+		print("[SaveManager] First completion! Saved time: %.2f seconds for %s" % [time, level_key])
+		_save_local()
+		_check_and_update_best_run()
+	elif time < data["level_times"][level_key]:
+		var old_time = data["level_times"][level_key]
+		data["level_times"][level_key] = time
+		print("[SaveManager] New best time for %s! Old: %.2f, New: %.2f" % [level_key, old_time, time])
+		_save_local()
+		_check_and_update_best_run()
+	else:
+		print("[SaveManager] Time %.2f not better than existing %.2f for %s" % [time, data["level_times"][level_key], level_key])
+
+func get_level_time(floor: int, level: int) -> float:
+	"""Get the best time for a specific level (returns 0.0 if not completed)"""
+	var level_key = "%d_%d" % [floor, level]
+	if not data.has("level_times"):
+		return 0.0
+	return data["level_times"].get(level_key, 0.0)
+
+func _check_and_update_best_run() -> void:
+	"""Calculate total time if all 9 levels are completed and update best run"""
+	if not data.has("level_times"):
+		return
+	
+	var total_time = 0.0
+	var all_completed = true
+	
+	# Check all 9 levels (3 floors x 3 levels)
+	for floor in range(1, 4):
+		for level in range(1, 4):
+			var level_key = "%d_%d" % [floor, level]
+			if data["level_times"].has(level_key):
+				total_time += data["level_times"][level_key]
+			else:
+				all_completed = false
+				break
+		if not all_completed:
+			break
+	
+	# Only update best run if all levels completed
+	if all_completed:
+		if not data.has("best_run_time"):
+			data["best_run_time"] = 0.0
+		
+		if data["best_run_time"] == 0.0 or total_time < data["best_run_time"]:
+			data["best_run_time"] = total_time
+			print("SaveManager: NEW BEST RUN TIME: %.2f seconds!" % total_time)
+			_save_local()
+
+func get_best_run_time() -> float:
+	"""Get the best full game completion time"""
+	if not data.has("best_run_time"):
+		return 0.0
+	return data["best_run_time"]
+
+func get_leaderboard_entry() -> Dictionary:
+	"""Get local player's leaderboard entry"""
+	return {
+		"player_name": "Player",  
+		"profile_pic": "", 
+		"time": get_best_run_time(),
+		"completed_all": _has_completed_all_levels()
+	}
+
+func _has_completed_all_levels() -> bool:
+	"""Check if player has completed all 9 levels"""
+	if not data.has("level_times"):
+		return false
+	
+	for floor in range(1, 4):
+		for level in range(1, 4):
+			var level_key = "%d_%d" % [floor, level]
+			if not data["level_times"].has(level_key):
+				return false
+	return true
 
 var current_user_id: String = ""
 var http: HTTPRequest
@@ -90,6 +181,11 @@ func _load_local() -> void:
 					data["watched_cutscenes"] = []
 				if not data.has("control_layout"):
 					data["control_layout"] = {}
+				if not data.has("level_times"):
+					data["level_times"] = {}
+				if not data.has("best_run_time"):
+					data["best_run_time"] = 0.0
+				print("SaveManager: Loaded level_times: ", data.get("level_times", {}))
 				print("SaveManager: Local save loaded - Current: Floor %d Level %d" % [
 					data["progress"]["current_floor"], 
 					data["progress"]["current_level"]

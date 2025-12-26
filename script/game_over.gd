@@ -170,7 +170,8 @@ func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_
 		level_completed.visible = true
 		game_over.visible = false
 		game_over_2.visible = false
-		
+		SaveManager.save_level_time(floor_num, level_num, time_taken)
+		print("[GameOver] Called save_level_time with Floor: %d, Level: %d, Time: %.2f" % [floor_num, level_num, time_taken])
 		# Update labels for level completed
 		var title_key = "%d_%d" % [floor_num, level_num]
 		var level_title = level_titles.get(title_key, "Unknown Level")

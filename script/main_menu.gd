@@ -1814,3 +1814,7 @@ func _on_play_credits_pressed() -> void:
 		# Change to the credits video scene
 		get_tree().change_scene_to_file("res://scene/credits.tscn")
 	)
+
+
+func _on_leaderboard_pressed() -> void:
+	get_tree().change_scene_to_file("res://scene/leaderboard.tscn")
