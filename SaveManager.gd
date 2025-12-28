@@ -151,6 +151,13 @@ func _save_local() -> void:
 		str(data["progress"]["completed_levels"])
 	])
 
+func reset_level_times() -> void:
+	"""Reset all level times (high scores) when starting a new game"""
+	data["level_times"] = {}
+	data["best_run_time"] = 0.0
+	_save_local()
+	print("SaveManager: All level times (high scores) have been reset")
+
 func _load_local() -> void:
 	print("SaveManager: Checking for save file at: " + SAVE_FILE)
 	if FileAccess.file_exists(SAVE_FILE):

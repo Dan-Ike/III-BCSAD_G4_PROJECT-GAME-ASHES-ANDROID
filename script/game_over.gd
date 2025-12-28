@@ -172,15 +172,37 @@ func show_game_over(floor_num: int, level_num: int, time_taken: float = 0.0, is_
 		game_over_2.visible = false
 		SaveManager.save_level_time(floor_num, level_num, time_taken)
 		print("[GameOver] Called save_level_time with Floor: %d, Level: %d, Time: %.2f" % [floor_num, level_num, time_taken])
+		
 		# Update labels for level completed
 		var title_key = "%d_%d" % [floor_num, level_num]
 		var level_title = level_titles.get(title_key, "Unknown Level")
 		floor_level.text = "Floor %d - Level %d\n\"%s\"" % [floor_num, level_num, level_title]
 		
+		# Format current time
 		var minutes = int(time_taken) / 60
 		var seconds = int(time_taken) % 60
 		var milliseconds = int((time_taken - int(time_taken)) * 100)
-		time_cleared.text = "Time Cleared: %02d:%02d.%02d" % [minutes, seconds, milliseconds]
+		
+		# Get best time and add to time_cleared label
+		var best_time = SaveManager.get_level_time(floor_num, level_num)
+		if best_time > 0.0:
+			var hs_minutes = int(best_time) / 60
+			var hs_seconds = int(best_time) % 60
+			var hs_milliseconds = int((best_time - int(best_time)) * 100)
+			
+			# Check if new record
+			var record_text = ""
+			if time_taken <= best_time:
+				record_text = " (NEW RECORD!)"
+			
+			time_cleared.text = "High Score: %02d:%02d.%02d%s\nTime Cleared: %02d:%02d.%02d" % [
+				hs_minutes, hs_seconds, hs_milliseconds, record_text,
+				minutes, seconds, milliseconds
+			]
+		else:
+			time_cleared.text = "High Score: --:--.--\nTime Cleared: %02d:%02d.%02d" % [
+				minutes, seconds, milliseconds
+			]
 		
 		# Pick a success quote
 		var key: String = "%d_%d" % [floor_num, level_num]

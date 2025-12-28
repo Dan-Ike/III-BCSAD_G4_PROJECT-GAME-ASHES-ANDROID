@@ -662,6 +662,18 @@ func _unlock_all_content() -> void:
 	SaveManager.data["progress"]["current_floor"] = 3
 	SaveManager.data["progress"]["current_level"] = 3
 	
+	# Set test high scores for all levels (1:00.00 = 60 seconds)
+	if not SaveManager.data.has("level_times"):
+		SaveManager.data["level_times"] = {}
+	
+	for floor in range(1, 4):
+		for level in range(1, 4):
+			var level_key = "%d_%d" % [floor, level]
+			SaveManager.data["level_times"][level_key] = 60.0  # 1:00.00
+	
+	# Calculate and set best run time (9 levels × 60 seconds = 540 seconds = 9:00.00)
+	SaveManager.data["best_run_time"] = 540.0
+	
 	# Save locally only
 	SaveManager._save_local()
 	
@@ -672,8 +684,7 @@ func _unlock_all_content() -> void:
 	_update_start_button_text()
 	_update_newgame_button_visibility()
 	
-	print("All content unlocked locally")
-
+	print("All content unlocked locally with test high scores (1:00.00 for each level)")
 func _update_newgame_button_visibility() -> void:
 	var current_floor = SaveManager.data["progress"]["current_floor"]
 	var current_level = SaveManager.data["progress"]["current_level"]
@@ -710,6 +721,8 @@ func _on_newgame_pressed() -> void:
 	
 	# If no progress, just start the game directly
 	if not has_progress:
+		# Reset high scores for new game
+		SaveManager.reset_level_times()
 		Global.is_retrying_level = false
 		slide_in_transition("res://scene/floor.tscn")
 	else:

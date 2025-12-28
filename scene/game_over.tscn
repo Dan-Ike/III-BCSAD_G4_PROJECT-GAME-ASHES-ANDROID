@@ -220,7 +220,7 @@ offset_right = 198.0
 offset_bottom = 12.82
 theme_override_fonts/font = ExtResource("7_46orx")
 theme_override_font_sizes/font_size = 24
-text = "\"Git Gud\""
+text = "\"One misstep broke the sacred sequence, and the darkness returned.\""
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -229,16 +229,17 @@ custom_minimum_size = Vector2(400, 0)
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
-anchor_top = 0.709
+anchor_top = 0.69
 anchor_right = 0.5
-anchor_bottom = 0.709
+anchor_bottom = 0.69
 offset_left = -201.0
-offset_top = -12.77
+offset_top = -23.7
 offset_right = 199.0
-offset_bottom = 13.23
+offset_bottom = 2.29996
 theme_override_fonts/font = ExtResource("7_46orx")
 theme_override_font_sizes/font_size = 24
-text = "Time Finished: 00:00:00"
+text = "High Score: 00:00:00
+Time Finished: 00:00:00"
 horizontal_alignment = 1
 autowrap_mode = 3
 
