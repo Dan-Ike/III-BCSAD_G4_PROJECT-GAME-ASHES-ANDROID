@@ -41,21 +41,23 @@ func save_level_time(floor: int, level: int, time: float) -> void:
 		print("[SaveManager] First completion! Saved time: %.2f seconds for %s" % [time, level_key])
 		_save_local()
 		_check_and_update_best_run()
+		
+		# Push to Supabase if online
+		if current_user_id != "":
+			push_times_to_supabase()
+			
 	elif time < data["level_times"][level_key]:
 		var old_time = data["level_times"][level_key]
 		data["level_times"][level_key] = time
 		print("[SaveManager] New best time for %s! Old: %.2f, New: %.2f" % [level_key, old_time, time])
 		_save_local()
 		_check_and_update_best_run()
+		
+		# Push to Supabase if online
+		if current_user_id != "":
+			push_times_to_supabase()
 	else:
 		print("[SaveManager] Time %.2f not better than existing %.2f for %s" % [time, data["level_times"][level_key], level_key])
-
-func get_level_time(floor: int, level: int) -> float:
-	"""Get the best time for a specific level (returns 0.0 if not completed)"""
-	var level_key = "%d_%d" % [floor, level]
-	if not data.has("level_times"):
-		return 0.0
-	return data["level_times"].get(level_key, 0.0)
 
 func _check_and_update_best_run() -> void:
 	"""Calculate total time if all 9 levels are completed and update best run"""
@@ -86,6 +88,95 @@ func _check_and_update_best_run() -> void:
 			data["best_run_time"] = total_time
 			print("SaveManager: NEW BEST RUN TIME: %.2f seconds!" % total_time)
 			_save_local()
+			
+			# Push to Supabase if online
+			if current_user_id != "":
+				push_times_to_supabase()
+
+func push_times_to_supabase() -> void:
+	"""Push level times and best run time to Supabase"""
+	if current_user_id == "":
+		print("SaveManager: cannot push times - no logged-in user")
+		return
+	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		print("SaveManager: HTTP busy, skipping times push")
+		return
+	
+	print("\nPushing level times to Supabase:")
+	print("   Level times: " + str(data.get("level_times", {})))
+	print("   Best run: %.2f" % data.get("best_run_time", 0.0))
+	
+	_pending_request = "update_times"
+	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
+	
+	var headers = [
+		"apikey: %s" % SUPABASE_KEY,
+		"Authorization: Bearer %s" % Global.session_token,
+		"Content-Type: application/json",
+		"Prefer: return=minimal"
+	]
+	
+	if OS.has_feature("web"):
+		headers.append("Accept-Encoding: identity")
+	
+	var payload = {
+		"level_times": data.get("level_times", {}),
+		"best_run_time": data.get("best_run_time", 0.0),
+		"last_played_at": "now()"
+	}
+	
+	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+	if err != OK:
+		print("SaveManager: HTTP request failed to start (update_times):", err)
+
+func push_all_to_supabase() -> void:
+	if current_user_id == "":
+		print("SaveManager: cannot push - no logged-in user")
+		return
+	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		print("SaveManager: HTTP busy, skipping push")
+		return
+	
+	print("\nPushing to Supabase:")
+	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
+	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
+	print("   Level times: " + str(data.get("level_times", {})))
+	print("   Best run: %.2f" % data.get("best_run_time", 0.0))
+	
+	_pending_request = "update_progress"
+	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
+	
+	var headers = [
+		"apikey: %s" % SUPABASE_KEY,
+		"Authorization: Bearer %s" % Global.session_token,
+		"Content-Type: application/json",
+		"Prefer: return=minimal"
+	]
+	
+	if OS.has_feature("web"):
+		headers.append("Accept-Encoding: identity")
+	
+	var payload = {
+		"floor_number": int(data["progress"]["current_floor"]),
+		"level_number": int(data["progress"]["current_level"]),
+		"is_completed": false,
+		"abilities": data["progress"].get("abilities", {}),
+		"completed_levels": data["progress"].get("completed_levels", {}),
+		"level_times": data.get("level_times", {}),  # ADD THIS
+		"best_run_time": data.get("best_run_time", 0.0),  # ADD THIS
+		"last_played_at": "now()"
+	}
+	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+	if err != OK:
+		print("SaveManager: HTTP request failed to start (update_progress):", err)
+
+
+func get_level_time(floor: int, level: int) -> float:
+	"""Get the best time for a specific level (returns 0.0 if not completed)"""
+	var level_key = "%d_%d" % [floor, level]
+	if not data.has("level_times"):
+		return 0.0
+	return data["level_times"].get(level_key, 0.0)
 
 func get_best_run_time() -> float:
 	"""Get the best full game completion time"""
@@ -375,76 +466,6 @@ func sync_to_supabase(user_id: String) -> void:
 	current_user_id = user_id
 	push_all_to_supabase()
 
-func push_all_to_supabase() -> void:
-	if current_user_id == "":
-		print("SaveManager: cannot push - no logged-in user")
-		return
-	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
-		print("SaveManager: HTTP busy, skipping push")
-		return
-	
-	print("\nPushing to Supabase:")
-	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
-	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
-	
-	_pending_request = "update_progress"
-	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
-	
-	var headers = [
-		"apikey: %s" % SUPABASE_KEY,
-		"Authorization: Bearer %s" % Global.session_token,
-		"Content-Type: application/json",
-		"Prefer: return=minimal"
-	]
-	
-	if OS.has_feature("web"):
-		headers.append("Accept-Encoding: identity")
-	
-	var payload = {
-		"floor_number": int(data["progress"]["current_floor"]),
-		"level_number": int(data["progress"]["current_level"]),
-		"is_completed": false,
-		"abilities": data["progress"].get("abilities", {}),
-		"completed_levels": data["progress"].get("completed_levels", {}),
-		"last_played_at": "now()"
-	}
-	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
-	if err != OK:
-		print("SaveManager: HTTP request failed to start (update_progress):", err)
-
-# Uncomment when database is ready
-#func push_layout_to_supabase() -> void:
-#	if current_user_id == "":
-#		print("SaveManager: cannot push layout - no logged-in user")
-#		return
-#	
-#	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
-#		print("SaveManager: HTTP busy, skipping layout push")
-#		return
-#	
-#	print("\nPushing control layout to Supabase")
-#	_pending_request = "update_layout"
-#	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
-#	
-#	var headers = [
-#		"apikey: %s" % SUPABASE_KEY,
-#		"Authorization: Bearer %s" % Global.session_token,
-#		"Content-Type: application/json",
-#		"Prefer: return=minimal"
-#	]
-#	
-#	if OS.has_feature("web"):
-#		headers.append("Accept-Encoding: identity")
-#	
-#	var payload = {
-#		"control_layout": data.get("control_layout", {}),
-#		"updated_at": "now()"
-#	}
-#	
-#	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
-#	if err != OK:
-#		print("SaveManager: HTTP request failed to start (update_layout):", err)
-
 func _merge_completed_levels(local_completed: Dictionary, cloud_completed: Dictionary) -> Dictionary:
 	var merged = {}
 	for key in local_completed:
@@ -542,6 +563,23 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			if typeof(res) == TYPE_ARRAY and res.size() > 0:
 				var row = res[0]
 				
+				var cloud_times = row.get("level_times", {})
+				var local_times = data.get("level_times", {})
+				var merged_times = _merge_level_times(local_times, cloud_times)
+				data["level_times"] = merged_times
+				print("Merged level times: " + str(merged_times))
+				
+				# Merge best run times (keep the best one)
+				var cloud_best = float(row.get("best_run_time", 0.0))
+				var local_best = float(data.get("best_run_time", 0.0))
+				if cloud_best > 0.0 and local_best > 0.0:
+					data["best_run_time"] = min(cloud_best, local_best)
+				elif cloud_best > 0.0:
+					data["best_run_time"] = cloud_best
+				elif local_best > 0.0:
+					data["best_run_time"] = local_best
+				print("Best run time: %.2f" % data.get("best_run_time", 0.0))
+				
 				var cloud_floor = int(row.get("floor_number", 1))
 				var cloud_level = int(row.get("level_number", 1))
 				var cloud_completed = row.get("completed_levels", {})
@@ -627,7 +665,55 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			print("Cloud save updated successfully")
 		else:
 			print("Cloud save failed:", response_code, body_text.substr(0, min(200, body_text.length())))
-	
+	elif _pending_request == "fetch_leaderboard":
+		_pending_request = ""
+		var callback = get_meta("leaderboard_callback") if has_meta("leaderboard_callback") else null
+		
+		print("SaveManager: Leaderboard response - Code:", response_code, "Body:", body_text)
+		
+		if response_code == 200:
+			var res = JSON.parse_string(body_text)
+			
+			if typeof(res) == TYPE_ARRAY:
+				print("SaveManager: Raw leaderboard data count:", res.size())
+				
+				# Filter out entries with no best_run_time or 0 time
+				# Be flexible with both int and float
+				var valid_entries = []
+				for entry in res:
+					var time = entry.get("best_run_time", 0)
+					# Convert to float for comparison
+					var time_float = float(time)
+					
+					print("  Entry user_id:", entry.get("user_id", ""), "time:", time, "type:", typeof(time))
+					
+					if time_float > 0.0:
+						valid_entries.append(entry)
+				
+				print("SaveManager: Fetched %d valid leaderboard entries (out of %d total)" % [valid_entries.size(), res.size()])
+				if callback:
+					callback.call(valid_entries)
+			else:
+				print("SaveManager: Invalid leaderboard response type:", typeof(res))
+				if callback:
+					callback.call([])
+		else:
+			print("SaveManager: Leaderboard fetch failed:", response_code)
+			print("Error details: ", body_text)
+			if callback:
+				callback.call([])
+	elif _pending_request == "update_times":
+		_pending_request = ""
+		if response_code in [200, 201, 204]:
+			print("Level times pushed to cloud successfully")
+		else:
+			print("Level times push failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+	elif _pending_request == "debug_check":
+		_pending_request = ""
+		print("\n=== DEBUG CLOUD DATA ===")
+		print("Response code:", response_code)
+		print("Full response:", body_text)
+		print("========================\n")
 	#Uncomment when database is ready
 	#elif _pending_request == "update_layout":
 	#	_pending_request = ""
@@ -635,6 +721,89 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 	#		print("SaveManager: Control layout pushed to cloud successfully")
 	#	else:
 	#		print("SaveManager: Layout push failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+
+func debug_check_cloud_data() -> void:
+	"""Debug function to check what's in the cloud"""
+	if current_user_id == "":
+		print("DEBUG: Not logged in")
+		return
+	
+	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		print("DEBUG: HTTP busy")
+		return
+	
+	_pending_request = "debug_check"
+	var url = "%s/rest/v1/progress?user_id=eq.%s&select=*" % [SUPABASE_URL, current_user_id]
+	
+	var headers = [
+		"apikey: %s" % SUPABASE_KEY,
+		"Authorization: Bearer %s" % Global.session_token,
+		"Content-Type: application/json"
+	]
+	
+	http.request(url, headers, HTTPClient.METHOD_GET)
+
+func fetch_leaderboard_data(callback: Callable) -> void:
+	"""Fetch top leaderboard entries from Supabase"""
+	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		print("SaveManager: HTTP busy, cannot fetch leaderboard")
+		callback.call([])
+		return
+	
+	print("SaveManager: Fetching leaderboard data...")
+	_pending_request = "fetch_leaderboard"
+	
+	# Store callback for later
+	set_meta("leaderboard_callback", callback)
+	
+	# This filters out NULL and 0 values
+	var url = "%s/rest/v1/progress?select=user_id,best_run_time,level_times&best_run_time=gte.0.1&order=best_run_time.asc" % SUPABASE_URL
+	
+	var headers = [
+		"apikey: %s" % SUPABASE_KEY,
+		"Content-Type: application/json"
+	]
+	
+	if OS.has_feature("web"):
+		headers.append("Accept-Encoding: identity")
+	
+	print("SaveManager: Leaderboard URL: ", url)
+	
+	var err = http.request(url, headers, HTTPClient.METHOD_GET)
+	if err != OK:
+		print("SaveManager: Failed to fetch leaderboard:", err)
+		callback.call([])
+
+func get_username_from_user_id(user_id: String) -> String:
+	"""Get username from current user or return generic name"""
+	var current_user = Global.get_current_user()
+	
+	if current_user.has("id") and str(current_user["id"]) == user_id:
+		# It's the current user
+		return current_user.get("email", "Player").split("@")[0]
+	else:
+		# Different user - return generic name for now
+		# TODO: Fetch from user table when available
+		return "Player"
+
+func _merge_level_times(local_times: Dictionary, cloud_times: Dictionary) -> Dictionary:
+	"""Merge level times, keeping the best (lowest) time for each level"""
+	var merged = {}
+	
+	# Add all local times
+	for key in local_times:
+		merged[key] = local_times[key]
+	
+	# Compare with cloud times and keep the better ones
+	for key in cloud_times:
+		if not merged.has(key):
+			# Cloud has a time we don't have locally
+			merged[key] = cloud_times[key]
+		else:
+			# Keep the better (lower) time
+			merged[key] = min(merged[key], cloud_times[key])
+	
+	return merged
 
 # Collectable Management Functions
 func collect_item(collectable_id: String, collectable_type: String = "generic") -> void:

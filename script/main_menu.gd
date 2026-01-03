@@ -188,9 +188,10 @@ void fragment() {
 	profile.material = material
 	profile.custom_minimum_size = Vector2(64, 64)
 	
-	# Check internet connectivity first
-	_check_internet_connection()
+	# Check internet connectivity FIRST (make it synchronous for initial check)
+	_check_internet_connection_sync()
 	
+	# Then load session
 	if Global.session_token == "":
 		_load_session()
 	else:
@@ -210,6 +211,13 @@ void fragment() {
 	
 	_update_start_button_text()
 	_update_newgame_button_visibility()
+
+func _check_internet_connection_sync() -> void:
+	"""Synchronous internet check for startup"""
+	# Simple check - assume we're online initially
+	# The async check will update it properly
+	internet_connected = true
+	_check_internet_connection()  # Do the real check in background
 
 func _is_privacy_accepted() -> bool:
 	return FileAccess.file_exists(PRIVACY_ACCEPTED_FILE)
@@ -774,48 +782,59 @@ func _reset_local_save() -> void:
 
 func _load_session() -> void:
 	"""Load saved session and auto-login if valid"""
-	if FileAccess.file_exists("user://session.json"):
-		var f = FileAccess.open("user://session.json", FileAccess.READ)
-		if not f:
-			google.visible = true
-			profile.visible = false
-			return
-		
-		var text = f.get_as_text()
-		f.close()
-		
-		var parsed = JSON.parse_string(text)
-		if typeof(parsed) == TYPE_DICTIONARY:
-			var access = parsed.get("access_token", "")
-			var refresh = parsed.get("refresh_token", "")
-			var user_data = parsed.get("user", {})
-			
-			if access != "" and user_data.size() > 0:
-				# Check if we have internet before trying to verify
-				if internet_connected:
-					print("💾 Session found, verifying with server...")
-					_verify_and_restore_session(access, refresh)
-				else:
-					print("💾 Offline mode: Restoring session without verification")
-					# Restore session directly without verification when offline
-					Global.set_session(user_data, access, refresh)
-					google.visible = false
-					profile.visible = true
-					_load_cached_profile_image()
-					
-					# When internet comes back, verify in background
-					if not has_node("OnlineCheckTimer"):
-						var timer = Timer.new()
-						timer.name = "OnlineCheckTimer"
-						timer.wait_time = 30.0  # Check every 30 seconds
-						timer.autostart = true
-						timer.timeout.connect(_check_and_refresh_when_online.bind(access, refresh))
-						add_child(timer)
-				return
+	if not FileAccess.file_exists("user://session.json"):
+		print("💾 No session file found")
+		google.visible = true
+		profile.visible = false
+		return
 	
-	# No valid session
-	google.visible = true
-	profile.visible = false
+	var f = FileAccess.open("user://session.json", FileAccess.READ)
+	if not f:
+		print("❌ Failed to open session file")
+		google.visible = true
+		profile.visible = false
+		return
+	
+	var text = f.get_as_text()
+	f.close()
+	
+	var parsed = JSON.parse_string(text)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		print("❌ Invalid session file format")
+		google.visible = true
+		profile.visible = false
+		return
+	
+	var access = parsed.get("access_token", "")
+	var refresh = parsed.get("refresh_token", "")
+	var user_data = parsed.get("user", {})
+	
+	if access == "" or user_data.size() == 0:
+		print("❌ Session file incomplete")
+		google.visible = true
+		profile.visible = false
+		return
+	
+	# Check if we have internet before trying to verify
+	if internet_connected:
+		print("💾 Session found, verifying with server...")
+		_verify_and_restore_session(access, refresh)
+	else:
+		print("💾 Offline mode: Restoring session without verification")
+		# Restore session directly without verification when offline
+		Global.set_session(user_data, access, refresh)
+		google.visible = false
+		profile.visible = true
+		_load_cached_profile_image()
+		
+		# When internet comes back, verify in background
+		if not has_node("OnlineCheckTimer"):
+			var timer = Timer.new()
+			timer.name = "OnlineCheckTimer"
+			timer.wait_time = 30.0  # Check every 30 seconds
+			timer.autostart = true
+			timer.timeout.connect(_check_and_refresh_when_online.bind(access, refresh))
+			add_child(timer)
 
 func _verify_and_restore_session(access: String, refresh: String) -> void:
 	"""Verify the token is still valid before showing UI"""
@@ -1391,6 +1410,8 @@ func _background_sync(user_id: String) -> void:
 	
 	var sync_time = Time.get_ticks_msec() - sync_start
 	print("✅ Background sync completed in %d ms" % sync_time)
+	
+	SaveManager.debug_check_cloud_data()
 
 func _handle_login_failure() -> void:
 	google.visible = true
