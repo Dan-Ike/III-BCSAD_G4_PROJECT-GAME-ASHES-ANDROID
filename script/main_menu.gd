@@ -1364,11 +1364,6 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 	
 	var text = body.get_string_from_utf8()
 	
-	_log_debug("=== USER INFO RESPONSE ===")
-	_log_debug("Response code: " + str(response_code))
-	_log_debug("Result: " + str(result))
-	_log_debug("Body preview: " + text.substr(0, min(200, text.length())))
-	
 	if response_code == 200:
 		var res = JSON.parse_string(text)
 		if typeof(res) == TYPE_DICTIONARY:
@@ -1376,31 +1371,32 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 			Global.set_session(res, access_token, refresh_tok)
 			_save_session(access_token, refresh_tok, res)
 			
-			# Update profile image in background (non-blocking)
+			# Update profile image in background
 			var avatar_url = res.get("user_metadata", {}).get("avatar_url", "")
 			if avatar_url != "":
 				call_deferred("_update_google_profile_image", avatar_url)
 			
-			# Sync in background without blocking UI
+			# Sync and IMMEDIATELY push avatar data
 			if res.has("id"):
 				var user_id = str(res["id"])
-				_background_sync(user_id)
+				await _background_sync(user_id)
+				
+				# Force push avatar data to database immediately
+				print("🔄 Pushing avatar data to database...")
+				SaveManager.push_all_to_supabase()
 			
 			print("⚡ Total login time: %d ms" % (Time.get_ticks_msec() - start_time))
 		else:
-			_log_debug("❌ Invalid JSON response")
 			_show_error("Invalid user data received")
 			_handle_login_failure()
 	else:
-		_log_debug("❌ Failed response code: " + str(response_code))
-		_log_debug("Full error body: " + text)
-		
 		if response_code == 403 or response_code == 401:
 			print("🔄 Token expired, refreshing...")
 			_refresh_access_token()
 		else:
-			_show_error("Login failed (Code: " + str(response_code) + ")\n\nError: " + text.substr(0, 100))
+			_show_error("Login failed (Code: " + str(response_code) + ")")
 			_handle_login_failure()
+
 func _background_sync(user_id: String) -> void:
 	"""Sync data in background without blocking"""
 	print("🔄 Background sync starting...")

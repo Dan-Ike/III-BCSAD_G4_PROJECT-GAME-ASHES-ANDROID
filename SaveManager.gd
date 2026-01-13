@@ -93,6 +93,63 @@ func _check_and_update_best_run() -> void:
 			if current_user_id != "":
 				push_times_to_supabase()
 
+func push_all_to_supabase() -> void:
+	if current_user_id == "":
+		print("SaveManager: cannot push - no logged-in user")
+		return
+	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		print("SaveManager: HTTP busy, skipping push")
+		return
+	
+	print("\nPushing to Supabase:")
+	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
+	
+	# Get user metadata for avatar and username
+	var current_user = Global.get_current_user()
+	var user_metadata = current_user.get("user_metadata", {})
+	var avatar_url = user_metadata.get("avatar_url", "")
+	var username = current_user.get("email", "Player").split("@")[0]
+	
+	print("   User: %s" % username)
+	print("   Avatar URL: %s" % (avatar_url.substr(0, 50) if avatar_url != "" else "NONE"))
+	
+	_pending_request = "update_progress"
+	
+	# Use POST for INSERT, but check if row exists first
+	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
+	
+	var headers = [
+		"apikey: %s" % SUPABASE_KEY,
+		"Authorization: Bearer %s" % Global.session_token,
+		"Content-Type: application/json",
+		"Prefer: return=minimal,resolution=merge-duplicates"
+	]
+	
+	if OS.has_feature("web"):
+		headers.append("Accept-Encoding: identity")
+	
+	var payload = {
+		"user_id": current_user_id,
+		"floor_number": int(data["progress"]["current_floor"]),
+		"level_number": int(data["progress"]["current_level"]),
+		"is_completed": false,
+		"abilities": data["progress"].get("abilities", {}),
+		"completed_levels": data["progress"].get("completed_levels", {}),
+		"level_times": data.get("level_times", {}),
+		"best_run_time": data.get("best_run_time", 0.0),
+		"last_played_at": "now()",
+		"avatar_url": avatar_url,
+		"username": username
+	}
+	
+	# Use PATCH instead of POST to update existing rows
+	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+	if err != OK:
+		print("SaveManager: HTTP request failed to start (update_progress):", err)
+	else:
+		print("SaveManager: PATCH request sent successfully")
+
+
 func push_times_to_supabase() -> void:
 	"""Push level times and best run time to Supabase"""
 	if current_user_id == "":
@@ -107,6 +164,8 @@ func push_times_to_supabase() -> void:
 	print("   Best run: %.2f" % data.get("best_run_time", 0.0))
 	
 	_pending_request = "update_times"
+	
+	# Use PATCH with user_id filter
 	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
 	
 	var headers = [
@@ -125,26 +184,31 @@ func push_times_to_supabase() -> void:
 		"last_played_at": "now()"
 	}
 	
+	# Use PATCH to update
 	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
 	if err != OK:
 		print("SaveManager: HTTP request failed to start (update_times):", err)
 
-func push_all_to_supabase() -> void:
+
+# ============================================
+# Add this new function for initial row creation
+# ============================================
+
+func _create_initial_progress_row() -> void:
+	"""Create initial progress row for new users"""
 	if current_user_id == "":
-		print("SaveManager: cannot push - no logged-in user")
-		return
-	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
-		print("SaveManager: HTTP busy, skipping push")
 		return
 	
-	print("\nPushing to Supabase:")
-	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
-	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
-	print("   Level times: " + str(data.get("level_times", {})))
-	print("   Best run: %.2f" % data.get("best_run_time", 0.0))
+	print("SaveManager: Creating initial progress row for new user")
+	_pending_request = "create_progress"
 	
-	_pending_request = "update_progress"
-	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
+	# Get user metadata
+	var current_user = Global.get_current_user()
+	var user_metadata = current_user.get("user_metadata", {})
+	var avatar_url = user_metadata.get("avatar_url", "")
+	var username = current_user.get("email", "Player").split("@")[0]
+	
+	var url = "%s/rest/v1/progress" % SUPABASE_URL
 	
 	var headers = [
 		"apikey: %s" % SUPABASE_KEY,
@@ -157,18 +221,54 @@ func push_all_to_supabase() -> void:
 		headers.append("Accept-Encoding: identity")
 	
 	var payload = {
+		"user_id": current_user_id,
 		"floor_number": int(data["progress"]["current_floor"]),
 		"level_number": int(data["progress"]["current_level"]),
 		"is_completed": false,
 		"abilities": data["progress"].get("abilities", {}),
 		"completed_levels": data["progress"].get("completed_levels", {}),
-		"level_times": data.get("level_times", {}),  # ADD THIS
-		"best_run_time": data.get("best_run_time", 0.0),  # ADD THIS
-		"last_played_at": "now()"
+		"level_times": data.get("level_times", {}),
+		"best_run_time": data.get("best_run_time", 0.0),
+		"avatar_url": avatar_url,
+		"username": username
 	}
-	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+	
+	# Use POST for INSERT
+	var err = http.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 	if err != OK:
-		print("SaveManager: HTTP request failed to start (update_progress):", err)
+		print("SaveManager: HTTP request failed to start (create_progress):", err)
+
+
+# Update fetch_leaderboard_data to include avatar_url and username
+func fetch_leaderboard_data(callback: Callable) -> void:
+	"""Fetch top leaderboard entries from Supabase"""
+	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		print("SaveManager: HTTP busy, cannot fetch leaderboard")
+		callback.call([])
+		return
+	
+	print("SaveManager: Fetching leaderboard data...")
+	_pending_request = "fetch_leaderboard"
+	
+	set_meta("leaderboard_callback", callback)
+	
+	# UPDATED: Include avatar_url and username in the query
+	var url = "%s/rest/v1/progress?select=user_id,best_run_time,level_times,avatar_url,username&best_run_time=gte.0.1&order=best_run_time.asc" % SUPABASE_URL
+	
+	var headers = [
+		"apikey: %s" % SUPABASE_KEY,
+		"Content-Type: application/json"
+	]
+	
+	if OS.has_feature("web"):
+		headers.append("Accept-Encoding: identity")
+	
+	print("SaveManager: Leaderboard URL: ", url)
+	
+	var err = http.request(url, headers, HTTPClient.METHOD_GET)
+	if err != OK:
+		print("SaveManager: Failed to fetch leaderboard:", err)
+		callback.call([])
 
 
 func get_level_time(floor: int, level: int) -> float:
@@ -541,7 +641,7 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			if _pending_request == "fetch_progress":
 				_pending_request = ""
 				print("\nNo cloud progress found - Creating initial cloud save")
-				push_all_to_supabase()
+				_create_initial_progress_row()  # CHANGED: Use new function
 			return
 	
 	print("Response Code: %d" % response_code)
@@ -555,22 +655,24 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			
 			if res == null:
 				print("Failed to parse JSON response")
-				print("Raw response: " + body_text.substr(0, min(200, body_text.length())))
 				print("\nNo valid cloud progress - Creating initial cloud save")
-				push_all_to_supabase()
+				_create_initial_progress_row()  # CHANGED: Use new function
 				return
 			
 			if typeof(res) == TYPE_ARRAY and res.size() > 0:
+				# ... existing sync code stays the same ...
 				var row = res[0]
 				
 				var cloud_times = row.get("level_times", {})
+				if cloud_times == null:
+					cloud_times = {}
+				
 				var local_times = data.get("level_times", {})
 				var merged_times = _merge_level_times(local_times, cloud_times)
 				data["level_times"] = merged_times
 				print("Merged level times: " + str(merged_times))
 				
-				# Merge best run times (keep the best one)
-				var cloud_best = float(row.get("best_run_time", 0.0))
+				var cloud_best = float(row.get("best_run_time", 0.0)) if row.get("best_run_time") != null else 0.0
 				var local_best = float(data.get("best_run_time", 0.0))
 				if cloud_best > 0.0 and local_best > 0.0:
 					data["best_run_time"] = min(cloud_best, local_best)
@@ -582,9 +684,18 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				
 				var cloud_floor = int(row.get("floor_number", 1))
 				var cloud_level = int(row.get("level_number", 1))
+				
 				var cloud_completed = row.get("completed_levels", {})
+				if cloud_completed == null:
+					cloud_completed = {}
+				
 				var cloud_abilities = row.get("abilities", {})
+				if cloud_abilities == null:
+					cloud_abilities = {}
+				
 				var cloud_watched = row.get("watched_cutscenes", [])
+				if cloud_watched == null:
+					cloud_watched = []
 				
 				print("\nCloud Progress:")
 				print("   Floor: %d, Level: %d" % [cloud_floor, cloud_level])
@@ -652,24 +763,40 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				
 			else:
 				print("\nNo cloud progress found - Creating initial cloud save")
-				push_all_to_supabase()
+				_create_initial_progress_row()  # CHANGED: Use new function
 		else:
 			print("SaveManager: fetch_progress failed:", response_code, body_text.substr(0, min(200, body_text.length())))
 			
 			if response_code == 406:
 				print("No cloud data exists yet - will create on first save")
 	
+	elif _pending_request == "create_progress":  # NEW HANDLER
+		_pending_request = ""
+		if response_code in [200, 201, 204]:
+			print("✅ Initial progress row created successfully")
+			# Now do a regular update to ensure everything is synced
+			await get_tree().create_timer(0.3).timeout
+			push_all_to_supabase()
+		else:
+			print("❌ Failed to create initial progress row:", response_code, body_text.substr(0, min(200, body_text.length())))
+	
 	elif _pending_request == "update_progress":
 		_pending_request = ""
 		if response_code in [200, 201, 204]:
-			print("Cloud save updated successfully")
+			print("✅ Cloud save updated successfully")
 		else:
-			print("Cloud save failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+			print("❌ Cloud save failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+			
+			# If PATCH fails because row doesn't exist, create it
+			if response_code == 406 or response_code == 404:
+				print("   Row doesn't exist, creating initial row...")
+				_create_initial_progress_row()
+			
 	elif _pending_request == "fetch_leaderboard":
 		_pending_request = ""
 		var callback = get_meta("leaderboard_callback") if has_meta("leaderboard_callback") else null
 		
-		print("SaveManager: Leaderboard response - Code:", response_code, "Body:", body_text)
+		print("SaveManager: Leaderboard response - Code:", response_code, "Body preview:", body_text.substr(0, 200))
 		
 		if response_code == 200:
 			var res = JSON.parse_string(body_text)
@@ -677,18 +804,22 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			if typeof(res) == TYPE_ARRAY:
 				print("SaveManager: Raw leaderboard data count:", res.size())
 				
-				# Filter out entries with no best_run_time or 0 time
-				# Be flexible with both int and float
 				var valid_entries = []
 				for entry in res:
 					var time = entry.get("best_run_time", 0)
-					# Convert to float for comparison
 					var time_float = float(time)
 					
-					print("  Entry user_id:", entry.get("user_id", ""), "time:", time, "type:", typeof(time))
-					
 					if time_float > 0.0:
-						valid_entries.append(entry)
+						var cleaned_entry = {
+							"user_id": str(entry.get("user_id", "")),
+							"best_run_time": time_float,
+							"level_times": entry.get("level_times", {}),
+							"avatar_url": entry.get("avatar_url", "") if entry.get("avatar_url") != null else "",
+							"username": entry.get("username", "Player") if entry.get("username") != null else "Player"
+						}
+						valid_entries.append(cleaned_entry)
+						
+						print("  Added entry - User:", cleaned_entry["username"], "Time:", time_float)
 				
 				print("SaveManager: Fetched %d valid leaderboard entries (out of %d total)" % [valid_entries.size(), res.size()])
 				if callback:
@@ -699,28 +830,23 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 					callback.call([])
 		else:
 			print("SaveManager: Leaderboard fetch failed:", response_code)
-			print("Error details: ", body_text)
+			print("Error details: ", body_text.substr(0, 200))
 			if callback:
 				callback.call([])
+				
 	elif _pending_request == "update_times":
 		_pending_request = ""
 		if response_code in [200, 201, 204]:
-			print("Level times pushed to cloud successfully")
+			print("✅ Level times pushed to cloud successfully")
 		else:
-			print("Level times push failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+			print("❌ Level times push failed:", response_code, body_text.substr(0, min(200, body_text.length())))
+			
 	elif _pending_request == "debug_check":
 		_pending_request = ""
 		print("\n=== DEBUG CLOUD DATA ===")
 		print("Response code:", response_code)
 		print("Full response:", body_text)
 		print("========================\n")
-	#Uncomment when database is ready
-	#elif _pending_request == "update_layout":
-	#	_pending_request = ""
-	#	if response_code in [200, 201, 204]:
-	#		print("SaveManager: Control layout pushed to cloud successfully")
-	#	else:
-	#		print("SaveManager: Layout push failed:", response_code, body_text.substr(0, min(200, body_text.length())))
 
 func debug_check_cloud_data() -> void:
 	"""Debug function to check what's in the cloud"""
@@ -743,36 +869,6 @@ func debug_check_cloud_data() -> void:
 	
 	http.request(url, headers, HTTPClient.METHOD_GET)
 
-func fetch_leaderboard_data(callback: Callable) -> void:
-	"""Fetch top leaderboard entries from Supabase"""
-	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
-		print("SaveManager: HTTP busy, cannot fetch leaderboard")
-		callback.call([])
-		return
-	
-	print("SaveManager: Fetching leaderboard data...")
-	_pending_request = "fetch_leaderboard"
-	
-	# Store callback for later
-	set_meta("leaderboard_callback", callback)
-	
-	# This filters out NULL and 0 values
-	var url = "%s/rest/v1/progress?select=user_id,best_run_time,level_times&best_run_time=gte.0.1&order=best_run_time.asc" % SUPABASE_URL
-	
-	var headers = [
-		"apikey: %s" % SUPABASE_KEY,
-		"Content-Type: application/json"
-	]
-	
-	if OS.has_feature("web"):
-		headers.append("Accept-Encoding: identity")
-	
-	print("SaveManager: Leaderboard URL: ", url)
-	
-	var err = http.request(url, headers, HTTPClient.METHOD_GET)
-	if err != OK:
-		print("SaveManager: Failed to fetch leaderboard:", err)
-		callback.call([])
 
 func get_username_from_user_id(user_id: String) -> String:
 	"""Get username from current user or return generic name"""
