@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://o8t3fuakwli"]
+
+[ext_resource type="Script" uid="uid://d2fxua3ofsi0a" path="res://script/tutorial_orb.gd" id="1_8sw73"]
+
+[node name="tutorial_orb" type="Node2D"]
+script = ExtResource("1_8sw73")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]

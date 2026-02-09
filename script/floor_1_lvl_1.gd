@@ -10,6 +10,9 @@ extends Node2D
 @onready var touch_controls: CanvasLayer = $TouchControls
 @onready var floor_title: CanvasLayer = $FloorTitle
 
+@onready var tutorial_manager: Node = $TutorialManager if has_node("TutorialManager") else null
+
+
 func _ready() -> void:
 	MusicManager.play_song("level1")
 	Global.reset_game_over_flag()
@@ -53,6 +56,10 @@ func _show_floor_title_then_start() -> void:
 	
 	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
+	
+	if tutorial_manager:
+		print("[Level] Calling tutorial manager...")
+		tutorial_manager.check_and_start_tutorial()
 	
 	if cutscene:
 		cutscene.queue_free()

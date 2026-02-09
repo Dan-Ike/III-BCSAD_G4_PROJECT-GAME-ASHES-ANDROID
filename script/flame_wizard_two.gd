@@ -1,5 +1,5 @@
 extends CharacterBody2D
-class_name Kanun
+class_name  Flame_Wizard_Two
 @export var player: CharacterBody2D
 @export var SPEED: int = 50
 @export var CHASE_SPEED: int = 150
@@ -31,8 +31,7 @@ enum States{
 	WANDER,
 	CHASE,
 	ATTACK_TELEGRAPH,
-	ATTACK_LUNGE,
-	ATTACK_RECOVERY,
+	ATTACKING,
 	HURT,
 	DEAD
 }
@@ -42,13 +41,13 @@ var can_attack: bool = true
 var attack_cooldown: float = 0.0
 const ATTACK_COOLDOWN_TIME = 2.0
 const ATTACK_TELEGRAPH_TIME = 0.4
-const ATTACK_LUNGE_TIME = 0.3
-const ATTACK_RECOVERY_TIME = 0.3
-const LUNGE_DISTANCE: float = 150.0
-var lunge_target: Vector2 = Vector2.ZERO
+#const ATTACK_LUNGE_TIME = 0.3
+#const ATTACK_RECOVERY_TIME = 0.3
+#const LUNGE_DISTANCE: float = 150.0
+#var lunge_target: Vector2 = Vector2.ZERO
 var players_hit_this_attack: Array = []
 var can_take_damage: bool = true
-const LUNGE_SPEED: float = 300.0
+#const LUNGE_SPEED: float = 300.0
 
 func _ready():
 	Global.playerBody = player if player else Global.playerBody
@@ -103,12 +102,6 @@ func _physics_process(delta: float) -> void:
 		States.ATTACK_TELEGRAPH:
 			velocity.x = 0
 			move_and_slide()
-		States.ATTACK_LUNGE:
-			handle_lunge_movement(delta)
-			move_and_slide()
-		States.ATTACK_RECOVERY:
-			velocity.x = 0
-			move_and_slide()
 		States.HURT:
 			velocity.x = 0
 			move_and_slide()
@@ -155,23 +148,13 @@ func handle_movement(delta: float) -> void:
 		velocity = velocity.move_toward(direction * CHASE_SPEED, ACCELERATION * delta)
 		sprite.play("run")
 
-func handle_lunge_movement(delta: float) -> void:
-	sprite.play("attack")
-	var direction_to_target = sign(lunge_target.x - global_position.x)
-	velocity.x = direction_to_target * LUNGE_SPEED
-	
-	var distance_to_target = abs(lunge_target.x - global_position.x)
-	if distance_to_target < 5.0 or is_on_wall():
-		current_state = States.ATTACK_RECOVERY
-		_schedule_attack_recovery()
-
 func change_direction() -> void:
 	if current_state == States.WANDER:
 		if abs(global_position.x - last_position.x) < MIN_MOVEMENT:
 			stuck_timer += get_physics_process_delta_time()
 			if stuck_timer >= STUCK_THRESHOLD:
 				sprite.flip_h = !sprite.flip_h
-				ray_cast.target_position = Vector2(125 if sprite.flip_h else -125, 0)
+				ray_cast.target_position = Vector2(-125 if sprite.flip_h else 125, 0)
 				stuck_timer = 0.0
 		else:
 			stuck_timer = 0.0
@@ -179,17 +162,17 @@ func change_direction() -> void:
 		last_position = global_position
 		
 		if sprite.flip_h:
-			# Moving right
-			direction = Vector2(1, 0)
-			if global_position.x >= right_bounds.x:
-				sprite.flip_h = false
-				ray_cast.target_position = Vector2(-125, 0)
-		else:
-			# Moving left
+			# Moving LEFT (inverted for Flame Wizard sprite)
 			direction = Vector2(-1, 0)
 			if global_position.x <= left_bounds.x:
-				sprite.flip_h = true
+				sprite.flip_h = false  # Face right
 				ray_cast.target_position = Vector2(125, 0)
+		else:
+			# Moving RIGHT (inverted for Flame Wizard sprite)
+			direction = Vector2(1, 0)
+			if global_position.x >= right_bounds.x:
+				sprite.flip_h = true  # Face left
+				ray_cast.target_position = Vector2(-125, 0)
 	elif current_state == States.CHASE:
 		if not player:
 			return
@@ -197,10 +180,12 @@ func change_direction() -> void:
 		direction = (player.global_position - global_position).normalized()
 		
 		if direction.x > 0.1:
-			sprite.flip_h = true
+			# Player is to the right
+			sprite.flip_h = false  # Face right (inverted)
 			ray_cast.target_position = Vector2(125, 0)
 		elif direction.x < -0.1:
-			sprite.flip_h = false
+			# Player is to the left
+			sprite.flip_h = true  # Face left (inverted)
 			ray_cast.target_position = Vector2(-125, 0)
 
 func handle_gravity(delta: float) -> void:
@@ -218,36 +203,32 @@ func _prepare_attack() -> void:
 	can_attack = false
 	attack_cooldown = ATTACK_COOLDOWN_TIME
 	players_hit_this_attack.clear()
-	sprite.play("idle")
 	
-	var lunge_direction = 1 if sprite.flip_h else -1
-	lunge_target = global_position + Vector2(lunge_direction * LUNGE_DISTANCE, 0)
-	
+	# Telegraph delay before attack
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
 	
 	if not is_instance_valid(self) or current_state != States.ATTACK_TELEGRAPH:
 		return
 	
-	current_state = States.ATTACK_LUNGE
+	# Start attacking
+	current_state = States.ATTACKING
+	sprite.play("attack")
 	_enable_damage_area()
 	
-	await get_tree().create_timer(ATTACK_LUNGE_TIME).timeout
+	# Check for damage during the attack (3 times over 0.6 seconds)
+	var damage_checks = 3
+	for i in range(damage_checks):
+		if not is_instance_valid(self):
+			return
+		_check_damage_to_player()
+		await get_tree().create_timer(0.2).timeout
 	
-	if not is_instance_valid(self):
-		return
-	
-	_check_damage_to_player()  
 	_disable_damage_area()
-	current_state = States.ATTACK_RECOVERY  
-	_schedule_attack_recovery()  
-
-func _schedule_attack_recovery() -> void:
-	await get_tree().create_timer(ATTACK_RECOVERY_TIME).timeout
 	
-	if not is_instance_valid(self) or current_state != States.ATTACK_RECOVERY:
+	if not is_instance_valid(self) or current_state != States.ATTACKING:
 		return
 	
-	sprite.play("idle")
+	# Return to chase or wander
 	if player and is_instance_valid(player):
 		current_state = States.CHASE
 	else:
@@ -283,8 +264,9 @@ func _check_damage_to_player() -> void:
 					players_hit_this_attack.append(player)
 					print("[Enemy] Dealt ", damage, " damage to player!")
 					
-					var direction = 1 if sprite.flip_h else -1
-					var knockback = Vector2(direction * 250, -150)
+					# Calculate direction FROM enemy TO player (pushes away)
+					var knockback_direction = sign(player.global_position.x - global_position.x)
+					var knockback = Vector2(knockback_direction * 250, -150)
 					if body.has_method("apply_knockback"):
 						body.apply_knockback(knockback)
 				return
@@ -342,3 +324,11 @@ func _on_hitbox_area_entered(area: Area2D) -> void:
 	if area == Global.playerDamageZone:
 		var damage_amount = Global.playerDamageAmount if "playerDamageAmount" in Global else 10
 		take_damage(damage_amount)
+
+
+func _on_attack_area_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+
+
+func _on_attack_area_body_exited(body: Node2D) -> void:
+	pass # Replace with function body.

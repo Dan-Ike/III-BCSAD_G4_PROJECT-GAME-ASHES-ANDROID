@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvy3onkhwomlw"]
+
+[ext_resource type="Script" uid="uid://bffhdl40w5yxj" path="res://script/tutorial_dialogue.gd" id="1_feqrx"]
+
+[node name="tutorial_dialogue" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_feqrx")
+
+[node name="DialoguePanel" type="Panel" parent="."]
+anchors_preset = -1
+anchor_left = 0.156
+anchor_top = 0.069
+anchor_right = 0.844
+anchor_bottom = 0.208
+offset_left = 0.319992
+offset_top = 0.319996
+offset_right = -0.320068
+offset_bottom = 0.23999
+grow_horizontal = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="DialoguePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 15
+
+[node name="DialogueLabel" type="RichTextLabel" parent="DialoguePanel/MarginContainer"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

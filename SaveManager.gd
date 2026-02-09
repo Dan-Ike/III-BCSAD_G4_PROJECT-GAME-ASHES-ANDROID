@@ -93,6 +93,10 @@ func _check_and_update_best_run() -> void:
 			if current_user_id != "":
 				push_times_to_supabase()
 
+func get_data() -> Dictionary:
+	"""Get the entire save data dictionary"""
+	return data
+
 func push_all_to_supabase() -> void:
 	if current_user_id == "":
 		print("SaveManager: cannot push - no logged-in user")
