@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxkhrcbudsbk3"]
+
+[ext_resource type="Script" uid="uid://cha17j3h68j2n" path="res://dialogue_player.gd" id="1_1tqnm"]
+[ext_resource type="Texture2D" uid="uid://dap1mgqxqaaoj" path="res://art/Untitled 3-77fc.png" id="2_vou3l"]
+
+[node name="DialoguePlayer" type="CanvasLayer"]
+layer = 128
+script = ExtResource("1_1tqnm")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+anchors_preset = -1
+anchor_left = 0.15
+anchor_top = 0.071
+anchor_right = 0.85
+anchor_bottom = 0.36
+offset_top = -0.120003
+offset_bottom = -0.200012
+grow_horizontal = 2
+texture = ExtResource("2_vou3l")
+region_rect = Rect2(8, 8.02377, 18.249, 10.4762)
+
+[node name="Name" type="RichTextLabel" parent="NinePatchRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.018
+anchor_top = 0.062
+anchor_right = 0.357
+anchor_bottom = 0.255
+offset_left = -0.128
+offset_top = 0.103999
+offset_right = 0.127991
+offset_bottom = -0.0400047
+text = "Name"
+
+[node name="Message" type="RichTextLabel" parent="NinePatchRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.018
+anchor_top = 0.37
+anchor_right = 0.786
+anchor_bottom = 0.678
+offset_left = -0.128
+offset_top = 0.0400009
+offset_right = -0.255981
+offset_bottom = -0.0240021
+text = "Message"
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

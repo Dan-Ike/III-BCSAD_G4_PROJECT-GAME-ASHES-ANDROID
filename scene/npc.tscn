@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://7su5pk7toruq"]
+
+[ext_resource type="Script" uid="uid://dv5ng1ec0lfi1" path="res://npc.gd" id="1_54ctn"]
+[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="2_ab2no"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8oust"]
+radius = 38.0132
+
+[node name="NPC" type="Node2D"]
+script = ExtResource("1_54ctn")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_ab2no")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_8oust")
