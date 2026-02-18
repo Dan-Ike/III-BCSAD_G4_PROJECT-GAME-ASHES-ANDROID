@@ -6,10 +6,13 @@ extends Node2D
 @onready var spike_collision = $spike_collision
 @onready var floor_title: CanvasLayer = $FloorTitle
 @onready var player: Player = $player
+@onready var touch_controls: CanvasLayer = $TouchControls
 
 func _ready() -> void:
 	Global.reset_game_over_flag()
 	Global.set_floor_level(1, 2)
+	
+	Global.touchdash = true 
 	
 	scene_transition_animation.get_parent().get_node("ColorRect").color.a = 255
 	scene_transition_animation.play("fade_out")
@@ -19,19 +22,21 @@ func _ready() -> void:
 	_show_floor_title_then_start()
 
 func _show_floor_title_then_start() -> void:
-	# Show floor title (pauses game)
 	floor_title.show_title()
 	await floor_title.title_finished
 	
-	# Now start gameplay
 	get_tree().paused = false
 	player_camera.enabled = true
 	camera_2d_2.enabled = true
 	MusicManager.play_song("level1")
-	
-	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
 	
+	# START TUTORIAL
+	var tutorial_manager = get_node_or_null("TutorialManager_2")  
+	if tutorial_manager:
+		tutorial_manager.check_and_start_tutorial()
+	else:
+		push_error("[Level] TutorialManager_2 not found!")
 
 func _process(delta: float) -> void:
 	pass

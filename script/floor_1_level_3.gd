@@ -7,6 +7,7 @@ extends Node2D
 @onready var scene_transition_animation = $SceneTransitionAnimation/AnimationPlayer
 @onready var floor_title: CanvasLayer = $FloorTitle
 @onready var spike_collision: Area2D = $spike_collision
+@onready var touch_controls: CanvasLayer = $TouchControls
 
 var lava_started: bool = false
 
@@ -22,18 +23,21 @@ func _ready() -> void:
 	_show_floor_title_then_start()
 
 func _show_floor_title_then_start() -> void:
-	# Show floor title (pauses game)
 	floor_title.show_title()
 	await floor_title.title_finished
-	
-	# Now start gameplay
 	get_tree().paused = false
 	player_camera.enabled = true
 	camera_2d_2.enabled = true
 	MusicManager.play_song("level1")
-	
-	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
+	
+	Global.can_double_jump = true  
+	
+	var tutorial_manager = get_node_or_null("TutorialManager_3")
+	if tutorial_manager:
+		tutorial_manager.check_and_start_tutorial()
+	else:
+		push_error("[Level] TutorialManager_3 not found!")
 
 func _process(delta: float) -> void:
 	if not lava_started and Input.is_action_just_pressed("jump"):

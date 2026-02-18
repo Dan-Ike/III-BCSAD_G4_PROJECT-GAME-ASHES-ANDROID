@@ -9744,7 +9744,7 @@ collectable_id = "floor_1_level_1_coin_1"
 collectable_type = "coin"
 
 [node name="npc_working" parent="." instance=ExtResource("65_r47y8")]
-position = Vector2(624, 598)
+position = Vector2(575, 598)
 
 [node name="DialoguePlayer" parent="npc_working" instance=ExtResource("66_acu4p")]
 

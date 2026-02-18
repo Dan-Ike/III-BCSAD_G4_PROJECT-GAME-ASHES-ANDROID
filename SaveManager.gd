@@ -193,10 +193,11 @@ func push_times_to_supabase() -> void:
 	if err != OK:
 		print("SaveManager: HTTP request failed to start (update_times):", err)
 
-
-# ============================================
-# Add this new function for initial row creation
-# ============================================
+func reset_tutorial() -> void:
+	"""Reset tutorial completion flag"""
+	data["tutorial_completed"] = false
+	_save_local()
+	print("SaveManager: Tutorial completion reset")
 
 func _create_initial_progress_row() -> void:
 	"""Create initial progress row for new users"""

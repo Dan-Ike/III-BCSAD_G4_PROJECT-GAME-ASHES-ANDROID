@@ -7,6 +7,8 @@ signal player_died
 var level_start_time: float = 0.0
 var is_level_active: bool = false
 
+var tutorial_frozen: bool = false
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var deal_damage_zone: Area2D = $DealDamageZone
 @onready var damage_shape: CollisionShape2D = $DealDamageZone/CollisionShape2D
@@ -333,6 +335,14 @@ func _physics_process(delta: float) -> void:
 	if dead:
 		velocity = Vector2.ZERO
 		return
+		
+	if tutorial_frozen:
+		velocity.x = 0  # Block horizontal movement
+		# Still apply gravity!
+		if not is_on_floor():
+			velocity.y += GRAVITY * delta
+		move_and_slide()
+		return 
 	
 	Global.playerDamageZone = deal_damage_zone
 	Global.playerHitbox = player_hitbox

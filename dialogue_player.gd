@@ -5,19 +5,35 @@ extends CanvasLayer
 var dialogues = []
 var current_dialogue_id = 0
 var is_dialogue_active = false
-
+var dialogue_completed = false
+var player: Player = null
+var can_restart_dialogue = true  
+const RESTART_COOLDOWN = 2.0  
+var npc_dialogue_finished: bool = false
 func _ready():
 	$NinePatchRect.visible = false
+	
+	# Get player reference
+	await get_tree().process_frame
+	player = get_tree().get_first_node_in_group("player")
+	if not player:
+		player = Global.playerBody
 
 func play():
-	if is_dialogue_active:
+	if is_dialogue_active or (dialogue_completed and not can_restart_dialogue):
 		return
 		
 	dialogues = load_dialogue()
 	
 	is_dialogue_active = true
+	dialogue_completed = false
 	$NinePatchRect.visible = true
 	current_dialogue_id = -1
+	
+	if player:
+		player.tutorial_frozen = true
+		player.velocity.x = 0
+	
 	next_line()
 
 func _input(event):
@@ -30,11 +46,29 @@ func next_line():
 	current_dialogue_id += 1
 	if current_dialogue_id >= len(dialogues):
 		is_dialogue_active = false
+		dialogue_completed = true
 		$NinePatchRect.visible = false
+		
+		if player:
+			player.tutorial_frozen = false
+		
+		# NEW: Notify tutorial manager that dialogue finished
+		var tutorial_manager = get_tree().get_first_node_in_group("tutorial_manager")
+		if tutorial_manager and tutorial_manager.has_method("on_npc_dialogue_finished"):
+			tutorial_manager.on_npc_dialogue_finished()
+		
+		_start_restart_cooldown()
 		return
 	
 	$NinePatchRect/Name.text = dialogues[current_dialogue_id]["name"]
 	$NinePatchRect/Message.text = dialogues[current_dialogue_id]["text"]
+
+# NEW: Cooldown function
+func _start_restart_cooldown():
+	can_restart_dialogue = false
+	await get_tree().create_timer(RESTART_COOLDOWN).timeout
+	can_restart_dialogue = true
+	print("[NPC Dialogue] Can restart dialogue now")
 
 func load_dialogue():
 	if FileAccess.file_exists(dialogue_file):
@@ -56,3 +90,11 @@ func load_dialogue():
 
 func _on_timer_timeout() -> void:
 	is_dialogue_active = false
+	
+	if player:
+		player.tutorial_frozen = false
+
+func reset_dialogue():
+	dialogue_completed = false
+	current_dialogue_id = 0
+	can_restart_dialogue = true

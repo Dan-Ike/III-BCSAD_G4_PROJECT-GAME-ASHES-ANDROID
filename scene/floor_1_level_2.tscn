@@ -1,4 +1,4 @@
-[gd_scene load_steps=147 format=3 uid="uid://cbt5vamt3obeb"]
+[gd_scene load_steps=150 format=3 uid="uid://cbt5vamt3obeb"]
 
 [ext_resource type="Script" uid="uid://bm5hiyjwtbwgi" path="res://script/floor_1_lvl_2.gd" id="1_57eg5"]
 [ext_resource type="Texture2D" uid="uid://b8c2ojddu2yre" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Background/Bright/Background.png" id="2_ikqoc"]
@@ -55,8 +55,11 @@
 [ext_resource type="Texture2D" uid="uid://btbks4l7mfu5u" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Tiles_rock/tile1.png" id="53_u7isa"]
 [ext_resource type="Texture2D" uid="uid://day5hl6lbobu7" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Tiles_rock/tile2.png" id="54_x413n"]
 [ext_resource type="PackedScene" uid="uid://b115ta3cgft87" path="res://scene/scene_transition_animation.tscn" id="55_du2o0"]
+[ext_resource type="PackedScene" uid="uid://dvy3onkhwomlw" path="res://scene/tutorial_dialogue.tscn" id="56_3l24l"]
 [ext_resource type="PackedScene" uid="uid://bsiqip3vsfyy2" path="res://scene/player.tscn" id="56_a2x1i"]
+[ext_resource type="Script" uid="uid://dwr4nip3hybpn" path="res://script/tutorial_dialogue_2.gd" id="57_axt7d"]
 [ext_resource type="PackedScene" uid="uid://bjg21ygjiqxou" path="res://scene/touch_controls.tscn" id="57_dg7ln"]
+[ext_resource type="Script" uid="uid://ciaynv106lacv" path="res://script/tutorial_manager_2.gd" id="58_wm8ts"]
 [ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="58_x8b18"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_a3oia"]
@@ -9643,6 +9646,12 @@ position = Vector2(3231.5, 554)
 shape = SubResource("RectangleShape2D_cppyu")
 debug_color = Color(0.999132, 0, 0.122649, 0.42)
 
+[node name="tutorial_dialogue_2" parent="." instance=ExtResource("56_3l24l")]
+script = ExtResource("57_axt7d")
+
+[node name="TutorialManager_2" type="Node" parent="."]
+script = ExtResource("58_wm8ts")
+
 [node name="player" parent="." instance=ExtResource("56_a2x1i")]
 position = Vector2(263, 573)
 enable_soul_light_in_scene = false
@@ -9655,13 +9664,13 @@ limit_left = -5
 limit_bottom = 800
 limit_smoothed = true
 
+[node name="TouchControls" parent="." instance=ExtResource("57_dg7ln")]
+
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-
-[node name="TouchControls" parent="Control" instance=ExtResource("57_dg7ln")]
 
 [node name="FloorTitle" parent="." instance=ExtResource("58_x8b18")]
 visible = false
