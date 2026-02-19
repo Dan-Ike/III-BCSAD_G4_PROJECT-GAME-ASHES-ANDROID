@@ -1,5 +1,4 @@
 extends Node2D
-
 @onready var player: Player = $player
 @onready var player_camera = $player/Camera2D
 @onready var canvas_modulate: CanvasModulate = $CanvasModulate
@@ -23,6 +22,8 @@ extends Node2D
 @onready var camera_2d_2: Camera2D = $player/Camera2D2
 @onready var before_2_1: CanvasLayer = $before_2_1
 @onready var floor_title: CanvasLayer = $FloorTitle
+#@onready var touch_controls: CanvasLayer = $Control/TouchControls
+@onready var touch_controls: CanvasLayer = $TouchControls
 
 var torch_list: Array[Torch] = []
 var indicator_list: Array[ColorRect] = []
@@ -70,22 +71,32 @@ func _ready() -> void:
 	
 	Global.set_retrying(false)
 
+func unlock_dash():
+	Global.touchdash = true
+	SaveManager.unlock_ability("dash")
+
 func _show_floor_title_then_start() -> void:
-	# Show floor title (pauses game)
 	floor_title.show_title()
 	await floor_title.title_finished
 	
-	# Now start gameplay
 	get_tree().paused = false
 	player_camera.enabled = true
 	camera_2d_2.enabled = true
 	MusicManager.play_song("level2")
-	
-	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
 	
 	if before_2_1:
 		before_2_1.queue_free()
+	
+	# Ensure abilities are applied before tutorial shows
+	unlock_double_jump()
+	unlock_dash()
+	
+	var tutorial_manager = get_node_or_null("TutorialManager_4")
+	if tutorial_manager:
+		tutorial_manager.check_and_start_tutorial()
+	else:
+		push_error("[Level] TutorialManager_4 not found!")
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""

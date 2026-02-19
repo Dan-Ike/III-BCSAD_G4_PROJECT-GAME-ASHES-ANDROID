@@ -20,6 +20,7 @@ extends Node2D
 @export var tint_color: Color = Color(1.0, 1.0, 1.0)
 @onready var navigation_region_2d: NavigationRegion2D = $NavigationRegion2D
 @onready var camera_2d_2: Camera2D = $player/Camera2D2
+@onready var touch_controls: CanvasLayer = $TouchControls
 
 var torch_list: Array[Torch] = []
 var indicator_list: Array[ColorRect] = []
@@ -36,18 +37,21 @@ var extinguish_timer: Timer
 @onready var floor_title: CanvasLayer = $FloorTitle
 
 func _show_floor_title_then_start() -> void:
-	# Show floor title (pauses game)
 	floor_title.show_title()
 	await floor_title.title_finished
 	
-	# Now start gameplay
 	get_tree().paused = false
 	player_camera.enabled = true
 	camera_2d_2.enabled = true
 	MusicManager.play_song("level1")
-	
-	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
+	
+	# Start tutorial after floor title
+	var tutorial_manager = get_node_or_null("TutorialManager_5")
+	if tutorial_manager:
+		tutorial_manager.check_and_start_tutorial()
+	else:
+		push_error("[Level] TutorialManager_5 not found!")
 
 func _ready() -> void:
 	Global.reset_game_over_flag()

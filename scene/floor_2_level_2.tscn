@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://dpwdfk71ntkca"]
+[gd_scene load_steps=72 format=3 uid="uid://dpwdfk71ntkca"]
 
 [ext_resource type="Script" uid="uid://br7m6gaei7oxb" path="res://script/floor_2_level_2.gd" id="1_jenlw"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_g5pye"]
@@ -13,6 +13,9 @@
 [ext_resource type="Texture2D" uid="uid://cjxu4axuw1g4r" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Items/000_0065_heart.png" id="8_fmun0"]
 [ext_resource type="Texture2D" uid="uid://d372xgo2vwq5" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Items/000_0009_crystal.png" id="9_ycc3o"]
 [ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="13_exerq"]
+[ext_resource type="PackedScene" uid="uid://dvy3onkhwomlw" path="res://scene/tutorial_dialogue.tscn" id="14_rrirn"]
+[ext_resource type="Script" uid="uid://dg5hwg48yph8y" path="res://script/tutorial_dialogue_5.gd" id="15_rrirn"]
+[ext_resource type="Script" uid="uid://ce505g6hy250t" path="res://script/tutorial_manager_5.gd" id="16_rrirn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_g5pye")
@@ -438,13 +441,13 @@ offset_top = -1807.0
 offset_right = 3120.0
 offset_bottom = -1791.0
 
+[node name="TouchControls" parent="." instance=ExtResource("5_gtklk")]
+
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-
-[node name="TouchControls" parent="Control" instance=ExtResource("5_gtklk")]
 
 [node name="StaticBody2D2" type="StaticBody2D" parent="."]
 
@@ -688,6 +691,12 @@ position = Vector2(768, 0)
 occluder = SubResource("OccluderPolygon2D_rrirn")
 
 [node name="FloorTitle" parent="." instance=ExtResource("13_exerq")]
+
+[node name="tutorial_dialogue_5" parent="." instance=ExtResource("14_rrirn")]
+script = ExtResource("15_rrirn")
+
+[node name="TutorialManager_5" type="Node" parent="."]
+script = ExtResource("16_rrirn")
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor3lvl1" to="." method="_on_floor_3_level_1_body_entered"]

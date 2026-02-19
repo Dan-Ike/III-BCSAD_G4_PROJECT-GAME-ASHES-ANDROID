@@ -7,6 +7,8 @@ extends Node2D
 @onready var before_3_1: CanvasLayer = $before_3_1
 @onready var floor_title: CanvasLayer = $FloorTitle
 @onready var player: Player = $player
+@onready var touch_controls: CanvasLayer = $TouchControls
+@onready var kanun: Kanun = $Kanun
 
 @onready var gate: CollisionShape2D = $StaticBody2D2/gate
 @onready var advanced_enemy: AdvancedEnemy = $AdvancedEnemy	
@@ -54,21 +56,26 @@ func _on_advanced_enemy_died() -> void:
 		print("[Level] Gate opened - Advanced Enemy defeated!")
 
 func _show_floor_title_then_start() -> void:
-	# Show floor title (pauses game)
 	floor_title.show_title()
 	await floor_title.title_finished
 	
-	# Now start gameplay
 	get_tree().paused = false
 	player_camera.enabled = true
 	camera_2d_2.enabled = true
 	MusicManager.play_song("level3")
-	
-	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
 	
 	if before_3_1:
 		before_3_1.queue_free()
+	
+	# Unlock attack before tutorial starts
+	unlock_attack()
+
+	var tutorial_manager = get_node_or_null("TutorialManager_6")
+	if tutorial_manager:
+		tutorial_manager.check_and_start_tutorial()
+	else:
+		push_error("[Level] TutorialManager_6 not found!")
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""
