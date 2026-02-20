@@ -1,4 +1,4 @@
-[gd_scene load_steps=141 format=3 uid="uid://bsktrn2ee4yp0"]
+[gd_scene load_steps=143 format=3 uid="uid://bsktrn2ee4yp0"]
 
 [ext_resource type="Script" uid="uid://bfx8ecolah38u" path="res://script/floor_1_level_3.gd" id="1_8x8xk"]
 [ext_resource type="Texture2D" uid="uid://b8c2ojddu2yre" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Background/Bright/Background.png" id="2_bnbxd"]
@@ -62,6 +62,8 @@
 [ext_resource type="Script" uid="uid://bu4tnkmb44rgt" path="res://script/tutorial_manager_3.gd" id="58_6qhss"]
 [ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="59_0l23d"]
 [ext_resource type="PackedScene" uid="uid://b6xf82r42e4md" path="res://scene/rising_lava.tscn" id="59_pgosm"]
+[ext_resource type="PackedScene" uid="uid://dyaeq8v61rx4w" path="res://scene/npc_working.tscn" id="63_faa06"]
+[ext_resource type="PackedScene" uid="uid://cxkhrcbudsbk3" path="res://scene/dialogue_player.tscn" id="64_lunaj"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_j21ip"]
 texture = ExtResource("2_bnbxd")
@@ -9808,6 +9810,11 @@ visible = false
 
 [node name="RisingLava" parent="." instance=ExtResource("59_pgosm")]
 position = Vector2(1005, 630)
+
+[node name="npc_working" parent="." instance=ExtResource("63_faa06")]
+position = Vector2(1245, 534)
+
+[node name="DialoguePlayer" parent="npc_working" instance=ExtResource("64_lunaj")]
 
 [connection signal="body_entered" from="floor2lvl1" to="." method="_on_floor_2_lvl_1_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
