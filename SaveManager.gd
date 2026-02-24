@@ -22,7 +22,9 @@ var data := {
 	"watched_cutscenes": [],
 	"control_layout": {},
 	"level_times": {},  
-	"best_run_time": 0.0 
+	"best_run_time": 0.0,
+	"tutorial_completed": false,        
+	"tutorial_preference": "play_once"  
 }
 
 func save_level_time(floor: int, level: int, time: float) -> void:
@@ -194,10 +196,16 @@ func push_times_to_supabase() -> void:
 		print("SaveManager: HTTP request failed to start (update_times):", err)
 
 func reset_tutorial() -> void:
-	"""Reset tutorial completion flag"""
 	data["tutorial_completed"] = false
 	_save_local()
-	print("SaveManager: Tutorial completion reset")
+	print("SaveManager: Tutorial reset")
+
+func get_tutorial_preference() -> String:
+	return data.get("tutorial_preference", "play_once")
+
+func set_tutorial_preference(preference: String) -> void:
+	data["tutorial_preference"] = preference
+	_save_local()
 
 func _create_initial_progress_row() -> void:
 	"""Create initial progress row for new users"""
@@ -388,6 +396,10 @@ func _load_local() -> void:
 					data["level_times"] = {}
 				if not data.has("best_run_time"):
 					data["best_run_time"] = 0.0
+				if not data.has("tutorial_completed"):
+					data["tutorial_completed"] = false
+				if not data.has("tutorial_preference"):
+					data["tutorial_preference"] = "play_once"
 				print("SaveManager: Loaded level_times: ", data.get("level_times", {}))
 				print("SaveManager: Local save loaded - Current: Floor %d Level %d" % [
 					data["progress"]["current_floor"], 

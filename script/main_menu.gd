@@ -32,6 +32,8 @@ var debug_label: Label = null
 @onready var credits: Control = $Credits
 @onready var play_credits: TouchScreenButton = $Credits/Control/play_credits
 @onready var exit_credits: TouchScreenButton = $Credits/Control2/exit_credits
+@onready var tutorial_choice: OptionButton = $Settings/TutorialChoice
+@onready var label_6: Label = $Settings/Label6
 
 @onready var continue_pop_up: Control = $Continue
 @onready var new_game_logged_in: Control = $NewGameLoggedIn
@@ -164,6 +166,13 @@ func _initialize_main_menu() -> void:
 		cutscene_choice.select(1)
 	
 	cutscene_choice.item_selected.connect(_on_cutscene_choice_selected)
+	
+	var saved_tutorial_pref = SaveManager.get_tutorial_preference()
+	if saved_tutorial_pref == "play_once":
+		tutorial_choice.select(0)
+	elif saved_tutorial_pref == "always":
+		tutorial_choice.select(1)
+	tutorial_choice.item_selected.connect(_on_tutorial_choice_selected)
 	
 	google.pressed.connect(_on_google_pressed)
 	
@@ -682,6 +691,8 @@ func _unlock_all_content() -> void:
 	# Calculate and set best run time (9 levels × 60 seconds = 540 seconds = 9:00.00)
 	SaveManager.data["best_run_time"] = 540.0
 	
+	SaveManager.data["tutorial_completed"] = true
+	
 	# Save locally only
 	SaveManager._save_local()
 	
@@ -778,6 +789,7 @@ func _reset_local_save() -> void:
 	_update_start_button_text()
 	_update_newgame_button_visibility()
 	
+	SaveManager.reset_tutorial()
 	print("Local save completely reset")
 
 func _load_session() -> void:
@@ -1584,6 +1596,12 @@ func _on_cutscene_choice_selected(index: int) -> void:
 	var preference = "play_once" if index == 0 else "always"
 	SaveManager.set_setting("cutscene_preference", preference)
 	print("Cutscene preference:", preference)
+
+func _on_tutorial_choice_selected(index: int) -> void:
+	var preference = "play_once" if index == 0 else "always"
+	SaveManager.set_setting("tutorial_preference", preference)
+	SaveManager.set_tutorial_preference(preference)
+	print("tutorial preference:", preference)
 
 func _on_start_pressed() -> void:
 	Global.is_retrying_level = false

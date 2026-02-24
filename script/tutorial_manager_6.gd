@@ -5,7 +5,7 @@ var player: Player = null
 var kanun: Node = null
 var tutorial_active: bool = false
 var waiting_for_kill: bool = false
-
+var tutorial_played_this_session: bool = false
 enum TutorialStep {
 	INTRO,
 	KILL_ENEMY,
@@ -57,7 +57,16 @@ func _initialize_nodes() -> void:
 		push_error("[Tutorial] ✗ Kanun not found!")
 
 func _should_run_tutorial() -> bool:
-	return true
+	# Never replay if already played this session (e.g. after death/retry)
+	if tutorial_played_this_session:
+		return false
+	
+	var preference = SaveManager.get_tutorial_preference()
+	
+	if preference == "always":
+		return true
+	
+	return not SaveManager.get_data().get("tutorial_completed", false)
 
 func _ensure_buttons_visible() -> void:
 	if not touch_controls:
@@ -76,13 +85,17 @@ func _ensure_buttons_visible() -> void:
 func start_tutorial() -> void:
 	print("[Tutorial] === START TUTORIAL CALLED ===")
 	if not tutorial_dialogue:
-		push_error("[Tutorial] Cannot start tutorial - missing tutorial_dialogue")
+		push_error("[Tutorial] Cannot start tutorial - missing required nodes")
 		return
+	
+	print("[Tutorial] Starting tutorial...")
 	tutorial_active = true
-	if player:
-		player.tutorial_frozen = true
-		player.velocity = Vector2.ZERO
-	_ensure_buttons_visible()
+	tutorial_played_this_session = true
+	
+	# Disable pause during tutorial
+	if touch_controls:
+		touch_controls.disable_pause()
+	
 	await get_tree().create_timer(0.5).timeout
 	_show_step(TutorialStep.INTRO)
 
@@ -139,11 +152,14 @@ func _next_step() -> void:
 func _end_tutorial() -> void:
 	print("[Tutorial] Ending tutorial...")
 	tutorial_active = false
-	waiting_for_kill = false
+	
 	if tutorial_dialogue:
 		tutorial_dialogue.hide_dialogue()
-	if player:
-		player.tutorial_frozen = false
-	SaveManager.get_data()["tutorial_completed"] = true
-	SaveManager.save()
+	
+	if touch_controls:
+		touch_controls.enable_pause()
+	
+	SaveManager.data["tutorial_completed"] = true
+	SaveManager._save_local()
+	
 	print("[Tutorial] Tutorial completed and saved!")

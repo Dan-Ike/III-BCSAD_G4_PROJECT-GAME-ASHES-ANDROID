@@ -5,7 +5,7 @@ var touch_controls: CanvasLayer = null
 var player: Player = null
 var tutorial_active: bool = false
 var double_jump_completed: bool = false
-
+var tutorial_played_this_session: bool = false
 enum TutorialStep {
 	INTRO,
 	DOUBLE_JUMP,
@@ -97,46 +97,33 @@ func _initialize_nodes() -> void:
 		push_error("[Tutorial] ✗ TouchControls not found!")
 
 func _should_run_tutorial() -> bool:
-	return true
-	#return not SaveManager.get_data().get("tutorial_completed", false)
+	# Never replay if already played this session (e.g. after death/retry)
+	if tutorial_played_this_session:
+		return false
+	
+	var preference = SaveManager.get_tutorial_preference()
+	
+	if preference == "always":
+		return true
+	
+	return not SaveManager.get_data().get("tutorial_completed", false)
 
 func start_tutorial() -> void:
 	print("[Tutorial] === START TUTORIAL CALLED ===")
-	print("[Tutorial] tutorial_dialogue: ", tutorial_dialogue)
-	print("[Tutorial] player: ", player)
 	if not tutorial_dialogue:
-		push_error("[Tutorial] Cannot start tutorial - missing tutorial_dialogue")
+		push_error("[Tutorial] Cannot start tutorial - missing required nodes")
 		return
+	
+	print("[Tutorial] Starting tutorial...")
 	tutorial_active = true
+	tutorial_played_this_session = true
+	
+	# Disable pause during tutorial
 	if touch_controls:
 		touch_controls.disable_pause()
-	_lock_controls()
+	
 	await get_tree().create_timer(0.5).timeout
 	_show_step(TutorialStep.INTRO)
-
-func _lock_controls() -> void:
-	if not touch_controls:
-		return
-	# Hide atk and shine only — dash and jump should stay visible
-	if touch_controls.has_node("Control/Control4/atk"):
-		touch_controls.get_node("Control/Control4/atk").visible = false
-		touch_controls.get_node("Control/Control4/atk").set_process(false)
-	if touch_controls.has_node("Control/Control7/shine"):
-		touch_controls.get_node("Control/Control7/shine").visible = false
-		touch_controls.get_node("Control/Control7/shine").set_process(false)
-	# Keep dash visible — player already learned it
-	if touch_controls.has_node("Control/Control5/dash"):
-		touch_controls.get_node("Control/Control5/dash").visible = true
-		touch_controls.get_node("Control/Control5/dash").set_process(true)
-
-func _unlock_control(control_name: String) -> void:
-	if not touch_controls:
-		return
-	match control_name:
-		"jump":
-			if touch_controls.has_node("Control/Control3/jump"):
-				touch_controls.get_node("Control/Control3/jump").visible = true
-				touch_controls.get_node("Control/Control3/jump").set_process(true)
 
 func _show_step(step: TutorialStep) -> void:
 	current_step = step
@@ -156,8 +143,6 @@ func _show_step(step: TutorialStep) -> void:
 	if player:
 		player.tutorial_frozen = false
 		player.velocity.x = 0
-	if step == TutorialStep.DOUBLE_JUMP:
-		_unlock_control("jump")
 	if step == TutorialStep.INTRO:
 		player_frozen = true
 		if player:
@@ -201,19 +186,15 @@ func _process(_delta: float) -> void:
 func _end_tutorial() -> void:
 	print("[Tutorial] Ending tutorial...")
 	tutorial_active = false
+	
 	if tutorial_dialogue:
 		tutorial_dialogue.hide_dialogue()
+	
+	
 	if touch_controls:
 		touch_controls.enable_pause()
-		if touch_controls.has_node("Control/Control4/atk"):
-			touch_controls.get_node("Control/Control4/atk").visible = Global.touchatk
-			touch_controls.get_node("Control/Control4/atk").set_process(Global.touchatk)
-		if touch_controls.has_node("Control/Control5/dash"):
-			touch_controls.get_node("Control/Control5/dash").visible = true 
-			touch_controls.get_node("Control/Control5/dash").set_process(true)
-		if touch_controls.has_node("Control/Control7/shine"):
-			touch_controls.get_node("Control/Control7/shine").visible = Global.touchshine
-			touch_controls.get_node("Control/Control7/shine").set_process(Global.touchshine)
-	SaveManager.get_data()["tutorial_completed"] = true
-	SaveManager.save()
+	
+	SaveManager.data["tutorial_completed"] = true
+	SaveManager._save_local()
+	
 	print("[Tutorial] Tutorial completed and saved!")

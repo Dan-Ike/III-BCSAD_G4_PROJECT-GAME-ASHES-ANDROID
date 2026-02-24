@@ -4,7 +4,7 @@ var tutorial_dialogue = null
 var touch_controls: CanvasLayer = null
 var player: Player = null
 var tutorial_active: bool = false
-
+var tutorial_played_this_session: bool = false
 enum TutorialStep {
 	INTRO,
 	COMPLETE
@@ -50,32 +50,48 @@ func _initialize_nodes() -> void:
 		push_error("[Tutorial] ✗ TouchControls not found!")
 
 func _should_run_tutorial() -> bool:
-	return true
-	#return not SaveManager.get_data().get("tutorial_completed", false)
+	# Never replay if already played this session (e.g. after death/retry)
+	if tutorial_played_this_session:
+		return false
+	
+	var preference = SaveManager.get_tutorial_preference()
+	
+	if preference == "always":
+		return true
+	
+	return not SaveManager.get_data().get("tutorial_completed", false)
 
 func start_tutorial() -> void:
 	print("[Tutorial] === START TUTORIAL CALLED ===")
 	if not tutorial_dialogue:
-		push_error("[Tutorial] Cannot start tutorial - missing tutorial_dialogue")
+		push_error("[Tutorial] Cannot start tutorial - missing required nodes")
 		return
+	
+	print("[Tutorial] Starting tutorial...")
 	tutorial_active = true
-	# Only freeze the player, don't touch controls
-	if player:
-		player.tutorial_frozen = true
-		player.velocity = Vector2.ZERO
+	tutorial_played_this_session = true
+	
+	# Disable pause during tutorial
+	if touch_controls:
+		touch_controls.disable_pause()
+	
 	await get_tree().create_timer(0.5).timeout
 	_show_step(TutorialStep.INTRO)
 
 func _end_tutorial() -> void:
 	print("[Tutorial] Ending tutorial...")
 	tutorial_active = false
+	
 	if tutorial_dialogue:
 		tutorial_dialogue.hide_dialogue()
-	if player:
-		player.tutorial_frozen = false
-	# No control changes needed since we never disabled them
-	SaveManager.get_data()["tutorial_completed"] = true
-	SaveManager.save()
+	
+	
+	if touch_controls:
+		touch_controls.enable_pause()
+	
+	SaveManager.data["tutorial_completed"] = true
+	SaveManager._save_local()
+	
 	print("[Tutorial] Tutorial completed and saved!")
 
 func _show_step(step: TutorialStep) -> void:

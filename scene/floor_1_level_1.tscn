@@ -1,4 +1,4 @@
-[gd_scene load_steps=162 format=3 uid="uid://chbjd6wiul8ee"]
+[gd_scene load_steps=161 format=3 uid="uid://chbjd6wiul8ee"]
 
 [ext_resource type="Script" uid="uid://ch61gfwtur3cu" path="res://script/floor_1_lvl_1.gd" id="1_bhfcj"]
 [ext_resource type="Texture2D" uid="uid://bbyycjd0cxjyj" path="res://art/free.png" id="2_g15xi"]
@@ -63,7 +63,6 @@
 [ext_resource type="Script" uid="uid://p346edon02un" path="res://script/tutorial_manager.gd" id="58_foij4"]
 [ext_resource type="PackedScene" uid="uid://o8t3fuakwli" path="res://scene/tutorial_orb.tscn" id="59_gnloe"]
 [ext_resource type="PackedScene" uid="uid://dvy3onkhwomlw" path="res://scene/tutorial_dialogue.tscn" id="60_r47y8"]
-[ext_resource type="PackedScene" uid="uid://3yvbp6tjn1pa" path="res://scene/collectable.tscn" id="61_7jntg"]
 [ext_resource type="PackedScene" uid="uid://dyaeq8v61rx4w" path="res://scene/npc_working.tscn" id="65_r47y8"]
 [ext_resource type="PackedScene" uid="uid://cxkhrcbudsbk3" path="res://scene/dialogue_player.tscn" id="66_acu4p"]
 
@@ -9736,12 +9735,6 @@ visible = false
 
 [node name="Cutscene" parent="." instance=ExtResource("58_2hjmi")]
 visible = false
-
-[node name="Collectable" parent="." instance=ExtResource("61_7jntg")]
-position = Vector2(442, 583)
-scale = Vector2(0.586271, 0.528998)
-collectable_id = "floor_1_level_1_coin_1"
-collectable_type = "coin"
 
 [node name="npc_working" parent="." instance=ExtResource("65_r47y8")]
 position = Vector2(575, 598)

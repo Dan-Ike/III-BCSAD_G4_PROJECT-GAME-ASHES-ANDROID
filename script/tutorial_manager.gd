@@ -7,7 +7,7 @@ var touch_controls: CanvasLayer = null
 var player: Player = null
 var tutorial_active: bool = false
 var npc_talked: bool = false
-
+var tutorial_played_this_session: bool = false
 enum TutorialStep {
 	INTRO,
 	MOVE_RIGHT,
@@ -126,27 +126,30 @@ func _initialize_nodes() -> void:
 		print("[Tutorial] ✓ TouchControls found")
 
 func _should_run_tutorial() -> bool:
-	# Only run tutorial if it hasn't been completed before
+	# Never replay if already played this session (e.g. after death/retry)
+	if tutorial_played_this_session:
+		return false
+	
+	var preference = SaveManager.get_tutorial_preference()
+	
+	if preference == "always":
+		return true
+	
 	return not SaveManager.get_data().get("tutorial_completed", false)
 
 func start_tutorial() -> void:
 	print("[Tutorial] === START TUTORIAL CALLED ===")
-	print("[Tutorial] tutorial_orb: ", tutorial_orb)
-	print("[Tutorial] tutorial_dialogue: ", tutorial_dialogue)
-	print("[Tutorial] player: ", player)
 	if not tutorial_orb or not tutorial_dialogue:
 		push_error("[Tutorial] Cannot start tutorial - missing required nodes")
 		return
 	
 	print("[Tutorial] Starting tutorial...")
 	tutorial_active = true
+	tutorial_played_this_session = true
 	
 	# Disable pause during tutorial
 	if touch_controls:
 		touch_controls.disable_pause()
-	
-	# Lock all controls except movement
-	_lock_controls()
 	
 	# Position orb near player
 	if player:
@@ -154,59 +157,8 @@ func start_tutorial() -> void:
 	
 	tutorial_orb.show_orb()
 	
-	# Start with intro
 	await get_tree().create_timer(0.5).timeout
 	_show_step(TutorialStep.INTRO)
-
-func _lock_controls() -> void:
-	if not touch_controls:
-		return
-	
-	print("[Tutorial] Locking controls...")
-	
-	# Hide/disable all controls except left, right, jump
-	if touch_controls.has_node("Control/Control4/atk"):
-		touch_controls.get_node("Control/Control4/atk").visible = false
-		touch_controls.get_node("Control/Control4/atk").set_process(false)
-	
-	if touch_controls.has_node("Control/Control5/dash"):
-		touch_controls.get_node("Control/Control5/dash").visible = false
-		touch_controls.get_node("Control/Control5/dash").set_process(false)
-	
-	if touch_controls.has_node("Control/Control7/shine"):
-		touch_controls.get_node("Control/Control7/shine").visible = false
-		touch_controls.get_node("Control/Control7/shine").set_process(false)
-	
-	# Initially hide jump until it's needed
-	if touch_controls.has_node("Control/Control3/jump"):
-		touch_controls.get_node("Control/Control3/jump").visible = false
-
-func _unlock_control(control_name: String) -> void:
-	if not touch_controls:
-		return
-	
-	print("[Tutorial] Unlocking control: ", control_name)
-	
-	match control_name:
-		"movement":
-			# Show left/right buttons or joystick based on control type
-			if Global.is_button_mode():
-				if touch_controls.has_node("Control/Control/left"):
-					touch_controls.get_node("Control/Control/left").visible = true
-					touch_controls.get_node("Control/Control/left").set_process(true)
-				if touch_controls.has_node("Control/Control2/right"):
-					touch_controls.get_node("Control/Control2/right").visible = true
-					touch_controls.get_node("Control/Control2/right").set_process(true)
-			else:
-				if touch_controls.has_node("Control/Virtual Joystick"):
-					var joystick = touch_controls.get_node("Control/Virtual Joystick")
-					joystick.visible = true
-					joystick.set_process(true)
-		
-		"jump":
-			if touch_controls.has_node("Control/Control3/jump"):
-				touch_controls.get_node("Control/Control3/jump").visible = true
-				touch_controls.get_node("Control/Control3/jump").set_process(true)
 
 func _show_step(step: TutorialStep) -> void:
 	current_step = step
@@ -234,12 +186,6 @@ func _show_step(step: TutorialStep) -> void:
 	if player:
 		player.tutorial_frozen = false
 		player.velocity.x = 0
-	
-	match step:
-		TutorialStep.MOVE_RIGHT, TutorialStep.MOVE_LEFT:
-			_unlock_control("movement")
-		TutorialStep.JUMP:
-			_unlock_control("jump")
 	
 	# Handle special steps
 	if step == TutorialStep.INTRO:
@@ -318,25 +264,10 @@ func _end_tutorial() -> void:
 	if tutorial_orb:
 		tutorial_orb.hide_orb()
 	
-	# Unlock all controls
 	if touch_controls:
 		touch_controls.enable_pause()
-		
-		# Re-enable all controls based on Global settings
-		if touch_controls.has_node("Control/Control4/atk"):
-			touch_controls.get_node("Control/Control4/atk").visible = Global.touchatk
-			touch_controls.get_node("Control/Control4/atk").set_process(Global.touchatk)
-		
-		if touch_controls.has_node("Control/Control5/dash"):
-			touch_controls.get_node("Control/Control5/dash").visible = Global.touchdash
-			touch_controls.get_node("Control/Control5/dash").set_process(Global.touchdash)
-		
-		if touch_controls.has_node("Control/Control7/shine"):
-			touch_controls.get_node("Control/Control7/shine").visible = Global.touchshine
-			touch_controls.get_node("Control/Control7/shine").set_process(Global.touchshine)
 	
-	# Save that tutorial is completed
-	SaveManager.get_data()["tutorial_completed"] = true
-	SaveManager.save()
+	SaveManager.data["tutorial_completed"] = true
+	SaveManager._save_local()
 	
 	print("[Tutorial] Tutorial completed and saved!")
