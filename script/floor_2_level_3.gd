@@ -74,7 +74,7 @@ func _show_floor_title_then_start() -> void:
 	get_tree().paused = false
 	player_camera.enabled = true
 	camera_2d_2.enabled = true
-	MusicManager.play_song("level1")
+	MusicManager.play_song("level2")
 	
 	# Start player timer AFTER floor title finishes
 	player.reset_level_timer()
