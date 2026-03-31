@@ -1,18 +1,77 @@
-[gd_scene load_steps=4 format=3 uid="uid://ce86rk8eoalll"]
+[gd_scene load_steps=12 format=3 uid="uid://ce86rk8eoalll"]
 
 [ext_resource type="Script" uid="uid://kwcmpayi175n" path="res://script/npc_floor_3.gd" id="1_lvilj"]
-[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="2_duifd"]
+[ext_resource type="Texture2D" uid="uid://bcrrp8iarykt0" path="res://art/Knight 2D Pixel Art (2)/Knight 2D Pixel Art/Sprites/with_outline/IDLE.png" id="3_duifd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0re61"]
 size = Vector2(48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0re61"]
+atlas = ExtResource("3_duifd")
+region = Rect2(0, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5cj41"]
+atlas = ExtResource("3_duifd")
+region = Rect2(96, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_std8h"]
+atlas = ExtResource("3_duifd")
+region = Rect2(192, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xv60g"]
+atlas = ExtResource("3_duifd")
+region = Rect2(288, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qbf3b"]
+atlas = ExtResource("3_duifd")
+region = Rect2(384, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2j7jx"]
+atlas = ExtResource("3_duifd")
+region = Rect2(480, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0dq3v"]
+atlas = ExtResource("3_duifd")
+region = Rect2(576, 0, 96, 84)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_t278f"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0re61")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5cj41")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_std8h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xv60g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qbf3b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2j7jx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0dq3v")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}]
 
 [node name="npc_floor_3" type="Area2D"]
 collision_mask = 2
 script = ExtResource("1_lvilj")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_duifd")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_0re61")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 2)
+scale = Vector2(1.1, 1.1)
+sprite_frames = SubResource("SpriteFrames_t278f")
+animation = &"idle"

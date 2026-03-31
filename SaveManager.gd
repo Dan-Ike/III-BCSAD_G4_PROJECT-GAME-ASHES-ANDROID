@@ -507,10 +507,6 @@ func save_control_layout(layout: Dictionary) -> void:
 	_save_local()
 	print("SaveManager: Control layout saved locally")
 	print("  Layout data: ", layout)
-	
-	# Uncomment when database is ready
-	# if current_user_id != "":
-	#     push_layout_to_supabase()
 
 func get_control_layout() -> Dictionary:
 	var layout = data.get("control_layout", {})
@@ -522,10 +518,6 @@ func reset_control_layout() -> void:
 	data["control_layout"] = {}
 	_save_local()
 	print("SaveManager: Control layout reset to defaults")
-	
-	# Uncomment when database is ready
-	# if current_user_id != "":
-	#     push_layout_to_supabase()
 
 func mark_cutscene_watched(cutscene_id: String) -> void:
 	if not data.has("watched_cutscenes"):
@@ -658,7 +650,7 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			if _pending_request == "fetch_progress":
 				_pending_request = ""
 				print("\nNo cloud progress found - Creating initial cloud save")
-				_create_initial_progress_row()  # CHANGED: Use new function
+				_create_initial_progress_row()
 			return
 	
 	print("Response Code: %d" % response_code)
@@ -673,11 +665,10 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			if res == null:
 				print("Failed to parse JSON response")
 				print("\nNo valid cloud progress - Creating initial cloud save")
-				_create_initial_progress_row()  # CHANGED: Use new function
+				_create_initial_progress_row()
 				return
 			
 			if typeof(res) == TYPE_ARRAY and res.size() > 0:
-				# ... existing sync code stays the same ...
 				var row = res[0]
 				
 				var cloud_times = row.get("level_times", {})
@@ -780,18 +771,17 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				
 			else:
 				print("\nNo cloud progress found - Creating initial cloud save")
-				_create_initial_progress_row()  # CHANGED: Use new function
+				_create_initial_progress_row()
 		else:
 			print("SaveManager: fetch_progress failed:", response_code, body_text.substr(0, min(200, body_text.length())))
 			
 			if response_code == 406:
 				print("No cloud data exists yet - will create on first save")
 	
-	elif _pending_request == "create_progress":  # NEW HANDLER
+	elif _pending_request == "create_progress":
 		_pending_request = ""
 		if response_code in [200, 201, 204]:
 			print("✅ Initial progress row created successfully")
-			# Now do a regular update to ensure everything is synced
 			await get_tree().create_timer(0.3).timeout
 			push_all_to_supabase()
 		else:
@@ -804,7 +794,6 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 		else:
 			print("❌ Cloud save failed:", response_code, body_text.substr(0, min(200, body_text.length())))
 			
-			# If PATCH fails because row doesn't exist, create it
 			if response_code == 406 or response_code == 404:
 				print("   Row doesn't exist, creating initial row...")
 				_create_initial_progress_row()
@@ -892,54 +881,38 @@ func get_username_from_user_id(user_id: String) -> String:
 	var current_user = Global.get_current_user()
 	
 	if current_user.has("id") and str(current_user["id"]) == user_id:
-		# It's the current user
 		return current_user.get("email", "Player").split("@")[0]
 	else:
-		# Different user - return generic name for now
-		# TODO: Fetch from user table when available
 		return "Player"
 
 func _merge_level_times(local_times: Dictionary, cloud_times: Dictionary) -> Dictionary:
 	"""Merge level times, keeping the best (lowest) time for each level"""
 	var merged = {}
 	
-	# Add all local times
 	for key in local_times:
 		merged[key] = local_times[key]
 	
-	# Compare with cloud times and keep the better ones
 	for key in cloud_times:
 		if not merged.has(key):
-			# Cloud has a time we don't have locally
 			merged[key] = cloud_times[key]
 		else:
-			# Keep the better (lower) time
 			merged[key] = min(merged[key], cloud_times[key])
 	
 	return merged
 
 # Collectable Management Functions
 func collect_item(collectable_id: String, collectable_type: String = "generic") -> void:
-	"""Record a collected item"""
-	if not data.has("collectables"):
-		data["collectables"] = []
+	"""Record a collected item by storing in abilities for cloud sync"""
+	if not data["progress"].has("abilities"):
+		data["progress"]["abilities"] = {}
 	
-	# Check if already collected
-	for item in data["collectables"]:
-		if item.get("id") == collectable_id:
-			print("SaveManager: Item already collected: %s" % collectable_id)
-			return
+	# Already collected, skip
+	if data["progress"]["abilities"].get(collectable_id, false):
+		print("SaveManager: Item already collected: %s" % collectable_id)
+		return
 	
-	# Add new collectable
-	var collectable_data = {
-		"id": collectable_id,
-		"type": collectable_type,
-		"floor": Global.current_floor,
-		"level": Global.current_level,
-		"collected_at": Time.get_datetime_string_from_system()
-	}
-	
-	data["collectables"].append(collectable_data)
+	# Store collectable ID as a key in abilities with value true
+	data["progress"]["abilities"][collectable_id] = true
 	_save_local()
 	
 	print("SaveManager: Collected item - %s (Type: %s) at Floor %d Level %d" % [
@@ -949,59 +922,39 @@ func collect_item(collectable_id: String, collectable_type: String = "generic") 
 		Global.current_level
 	])
 	
-	# Sync to cloud if logged in
+	# Sync to cloud since abilities is already pushed via push_all_to_supabase
 	if current_user_id != "":
 		push_all_to_supabase()
 
 func is_collectable_collected(collectable_id: String) -> bool:
-	"""Check if a collectable has been collected"""
-	if not data.has("collectables"):
-		return false
-	
-	for item in data["collectables"]:
-		if item.get("id") == collectable_id:
-			return true
-	
-	return false
+	"""Check if a collectable has been collected via abilities dictionary"""
+	return data["progress"].get("abilities", {}).get(collectable_id, false)
 
 func get_collected_items_by_type(collectable_type: String) -> Array:
-	"""Get all collected items of a specific type"""
+	"""Get all collected items of a specific type from abilities dictionary"""
 	var items = []
-	
-	if not data.has("collectables"):
-		return items
-	
-	for item in data["collectables"]:
-		if item.get("type") == collectable_type:
-			items.append(item)
-	
-	return items
-
-func get_collected_items_in_level(floor: int, level: int) -> Array:
-	"""Get all collectables collected in a specific level"""
-	var items = []
-	
-	if not data.has("collectables"):
-		return items
-	
-	for item in data["collectables"]:
-		if item.get("floor") == floor and item.get("level") == level:
-			items.append(item)
-	
+	var abilities = data["progress"].get("abilities", {})
+	for key in abilities:
+		# Skip the core ability keys
+		if key in ["double_jump", "attack", "dash", "shine"]:
+			continue
+		items.append(key)
 	return items
 
 func get_total_collected_count() -> int:
-	"""Get total number of collected items"""
-	if not data.has("collectables"):
-		return 0
-	return data["collectables"].size()
-
-func get_collected_count_by_type(collectable_type: String) -> int:
-	"""Get count of collected items by type"""
-	return get_collected_items_by_type(collectable_type).size()
+	"""Get total number of collected items (excludes core abilities)"""
+	var abilities = data["progress"].get("abilities", {})
+	var count = 0
+	for key in abilities:
+		if key not in ["double_jump", "attack", "dash", "shine"]:
+			count += 1
+	return count
 
 func reset_collectables() -> void:
 	"""Reset all collectables (useful for testing)"""
-	data["collectables"] = []
+	var abilities = data["progress"].get("abilities", {})
+	for key in abilities.keys():
+		if key not in ["double_jump", "attack", "dash", "shine"]:
+			abilities.erase(key)
 	_save_local()
 	print("SaveManager: All collectables reset")

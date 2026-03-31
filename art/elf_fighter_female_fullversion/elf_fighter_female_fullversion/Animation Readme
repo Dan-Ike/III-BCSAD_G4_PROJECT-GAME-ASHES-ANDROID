@@ -1,0 +1,30 @@
+This readme file will help you out with some animation information.
+
+Idle, duck will transition into most animations... Idle -> Jump -> Idle, Duck -> Dropdown ect.
+
+Pixel Size per frame of animation is 32x32, 32x64 and 64x32. This depends on the animation.
+
+
+
+elf_attack_1hit
+elf_attack_1hit_v2
+elf_attack_3hit_forward
+elf_clime_ladder        "a demo ladder is included with the files, use it to measure pixel height"
+elf_clime_ladder_slide
+elf_dash_greenfx        "different variation of dash, only the Fx is changed"
+elf_dash
+elf_death
+elf_dropdown      "works best when in duck position"
+elf_duck_attack
+elf_duck
+elf_getting_hit      
+elf_Idle
+elf_jump_attack
+elf_jump
+elf_run       "The last two frames are to transition from running animation to Idle, If you want a contenues run loop, remove the last two frames" 
+elf_slide
+elf_turn        "Use this animation for turning from side to side, left to right and right to left"
+elf_walk
+elf_wallgrab_clime_up     "starts from wall grab animation, last frame"
+elf_wallgrab_jumpoff      "starts from wall grab animation, last frame"
+elf_wallgrab

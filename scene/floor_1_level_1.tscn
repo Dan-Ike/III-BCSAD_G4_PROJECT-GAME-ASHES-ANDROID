@@ -1,4 +1,4 @@
-[gd_scene load_steps=161 format=3 uid="uid://chbjd6wiul8ee"]
+[gd_scene load_steps=162 format=3 uid="uid://chbjd6wiul8ee"]
 
 [ext_resource type="Script" uid="uid://ch61gfwtur3cu" path="res://script/floor_1_lvl_1.gd" id="1_bhfcj"]
 [ext_resource type="Texture2D" uid="uid://bbyycjd0cxjyj" path="res://art/free.png" id="2_g15xi"]
@@ -65,6 +65,7 @@
 [ext_resource type="PackedScene" uid="uid://dvy3onkhwomlw" path="res://scene/tutorial_dialogue.tscn" id="60_r47y8"]
 [ext_resource type="PackedScene" uid="uid://dyaeq8v61rx4w" path="res://scene/npc_working.tscn" id="65_r47y8"]
 [ext_resource type="PackedScene" uid="uid://cxkhrcbudsbk3" path="res://scene/dialogue_player.tscn" id="66_acu4p"]
+[ext_resource type="PackedScene" uid="uid://3yvbp6tjn1pa" path="res://scene/collectable.tscn" id="66_r47y8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_j21ip"]
 texture = ExtResource("2_rwy0f")
@@ -9737,9 +9738,12 @@ visible = false
 visible = false
 
 [node name="npc_working" parent="." instance=ExtResource("65_r47y8")]
-position = Vector2(575, 598)
+position = Vector2(575, 601)
 
 [node name="DialoguePlayer" parent="npc_working" instance=ExtResource("66_acu4p")]
+
+[node name="Collectable" parent="." instance=ExtResource("66_r47y8")]
+position = Vector2(358, 592)
 
 [connection signal="body_entered" from="floor1lvl2" to="." method="_on_floor_1_lvl_2_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

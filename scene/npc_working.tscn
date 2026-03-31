@@ -1,18 +1,69 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyaeq8v61rx4w"]
+[gd_scene load_steps=11 format=3 uid="uid://dyaeq8v61rx4w"]
 
-[ext_resource type="Texture2D" uid="uid://clq44olk6kym5" path="res://icon.svg" id="1_gh102"]
 [ext_resource type="Script" uid="uid://dqyksv1a7n5g" path="res://script/npc_working.gd" id="1_j0ky4"]
+[ext_resource type="Texture2D" uid="uid://do87xi82n2ooj" path="res://art/elf_fighter_female_fullversion/elf_fighter_female_fullversion/elf_png/elf_Idle.png" id="3_7t43f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j0ky4"]
 size = Vector2(48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vpgp5"]
+atlas = ExtResource("3_7t43f")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkvv3"]
+atlas = ExtResource("3_7t43f")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0todr"]
+atlas = ExtResource("3_7t43f")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ej6av"]
+atlas = ExtResource("3_7t43f")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c362l"]
+atlas = ExtResource("3_7t43f")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tjrhe"]
+atlas = ExtResource("3_7t43f")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_73dfm"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vpgp5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dkvv3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0todr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ej6av")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c362l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tjrhe")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}]
 
 [node name="npc_working" type="Area2D"]
 collision_mask = 2
 script = ExtResource("1_j0ky4")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("1_gh102")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_j0ky4")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 8)
+sprite_frames = SubResource("SpriteFrames_73dfm")
+animation = &"idle"

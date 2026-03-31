@@ -122,9 +122,9 @@ func _show_step(step: TutorialStep) -> void:
 		print("[Tutorial] Waiting for Kanun to be killed...")
 
 	elif step == TutorialStep.COMPLETE:
-		player_frozen = true
+		player_frozen = false
 		if player:
-			player.tutorial_frozen = true
+			player.tutorial_frozen = false
 		tutorial_dialogue.show_dialogue(dialogues[step])
 		await get_tree().create_timer(2.5).timeout
 		_end_tutorial()

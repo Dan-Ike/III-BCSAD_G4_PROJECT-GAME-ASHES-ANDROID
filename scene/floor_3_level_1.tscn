@@ -1,4 +1,4 @@
-[gd_scene load_steps=88 format=3 uid="uid://hyj4g0oxvv2k"]
+[gd_scene load_steps=90 format=3 uid="uid://hyj4g0oxvv2k"]
 
 [ext_resource type="Script" uid="uid://dqi167rq0ectf" path="res://script/floor_3_level_1.gd" id="1_u2qvc"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_l8b3l"]
@@ -27,6 +27,8 @@
 [ext_resource type="Script" uid="uid://dwr4nip3hybpn" path="res://script/tutorial_dialogue_2.gd" id="25_453fs"]
 [ext_resource type="Script" uid="uid://tv8jfsev8uq7" path="res://script/tutorial_manager_6.gd" id="26_44361"]
 [ext_resource type="PackedScene" uid="uid://c7lqya5mfkqw0" path="res://scene/kanun.tscn" id="27_453fs"]
+[ext_resource type="PackedScene" uid="uid://ce86rk8eoalll" path="res://scene/npc_floor_3.tscn" id="28_aooby"]
+[ext_resource type="PackedScene" uid="uid://dsfg1k4nqbyi8" path="res://scene/dialogue_player_3.tscn" id="29_ds5fh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l8b3l"]
 texture = ExtResource("2_l8b3l")
@@ -2269,6 +2271,12 @@ script = ExtResource("26_44361")
 
 [node name="Kanun" parent="." instance=ExtResource("27_453fs")]
 position = Vector2(1538, -131)
+
+[node name="npc_floor_3" parent="." instance=ExtResource("28_aooby")]
+position = Vector2(973, -362)
+
+[node name="DialoguePlayer3" parent="npc_floor_3" instance=ExtResource("29_ds5fh")]
+layer = 128
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor3lvl2" to="." method="_on_floor_3_lvl_2_body_entered"]
