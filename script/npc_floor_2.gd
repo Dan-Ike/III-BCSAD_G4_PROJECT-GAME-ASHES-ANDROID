@@ -1,12 +1,17 @@
 extends Area2D
-
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 
 func _ready() -> void:
 	animated_sprite_2d.play("idle")
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("b") and len(get_overlapping_bodies()) > 0:
+	if len(get_overlapping_bodies()) == 0:
+		return
+	
+	var tapped = event is InputEventScreenTouch and event.pressed
+	var pressed_b = event.is_action_pressed("b")
+	
+	if tapped or pressed_b:
 		face_player()
 		find_and_use_dialogue()
 

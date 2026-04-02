@@ -9743,7 +9743,12 @@ position = Vector2(575, 601)
 [node name="DialoguePlayer" parent="npc_working" instance=ExtResource("66_acu4p")]
 
 [node name="Collectable" parent="." instance=ExtResource("66_r47y8")]
-position = Vector2(358, 592)
+position = Vector2(375, 598)
+collectable_id = "floor_1_lvl_1_shard"
+collectable_type = "memory_shard"
+trigger_cutscene = true
+cutscene_scene_path = "uid://rmwokro2qpwg"
+cutscene_id = "floor_1_lvl_1_shard"
 
 [connection signal="body_entered" from="floor1lvl2" to="." method="_on_floor_1_lvl_2_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

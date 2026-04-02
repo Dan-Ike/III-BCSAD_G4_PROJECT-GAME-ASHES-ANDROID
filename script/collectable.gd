@@ -1,5 +1,6 @@
 extends Area2D
 class_name Collectable
+
 @onready var animated_sprite_2d_2: AnimatedSprite2D = $AnimatedSprite2D2
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -11,11 +12,16 @@ signal collected(collectable_id: String)
 
 @export_group("Cutscene")
 @export var trigger_cutscene: bool = false
-@export var cutscene_scene_path: String = ""
+@export_file("*.tscn") var cutscene_scene_path: String = ""
+@export var cutscene_id: String = ""
 
 @export_group("Visual")
 @export var sprite: Sprite2D
 @export var animation_player: AnimationPlayer
+
+## DEV ONLY: Toggle this in the editor to wipe all collected items on next run
+@export_group("Debug")
+@export var dev_reset_collectables: bool = false
 
 var is_collected: bool = false
 var player_in_range: bool = false
@@ -27,15 +33,18 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	
+	# DEV: wipe collectables from abilities before checking status
+	if dev_reset_collectables:
+		_dev_reset_all_collectables()
+	
 	if collectable_id == "":
 		collectable_id = generate_default_id()
 	
 	_check_collection_status()
-	
-	# Start with idle animation visible
 	_play_idle()
 	
 	print("[Collectable] Ready: %s (Type: %s)" % [collectable_id, collectable_type])
+
 
 func _play_idle() -> void:
 	animated_sprite_2d.visible = true
@@ -99,19 +108,31 @@ func _trigger_cutscene() -> void:
 		_hide_collectable()
 		return
 	
-	_hide_collectable()
-	
 	var level_node = get_tree().current_scene
+	
+	get_tree().paused = true
+	var touch_controls = level_node.get_node_or_null("TouchControls")
+	if touch_controls and touch_controls.has_method("disable_all_controls"):
+		touch_controls.disable_all_controls()
+	
 	var cutscene_instance = cutscene_scene.instantiate()
+	cutscene_instance.process_mode = Node.PROCESS_MODE_ALWAYS
 	level_node.add_child(cutscene_instance)
 	
 	if cutscene_instance.has_method("start_cutscene"):
-		cutscene_instance.start_cutscene(collectable_id)
+		cutscene_instance.start_cutscene(cutscene_id)
 	
 	if cutscene_instance.has_signal("cutscene_finished"):
 		await cutscene_instance.cutscene_finished
 	
+	# Always unpause regardless of whether cutscene played or skipped
+	get_tree().paused = false
+	if touch_controls and touch_controls.has_method("enable_pause"):
+		touch_controls.enable_pause()
+		touch_controls.visible = true
+	
 	print("[Collectable] Cutscene finished for: %s" % collectable_id)
+	_hide_collectable()
 
 func _hide_collectable() -> void:
 	animated_sprite_2d.visible = false
@@ -126,3 +147,12 @@ func _hide_collectable() -> void:
 func collect_manually() -> void:
 	if not is_collected and player_in_range:
 		_collect()
+
+func _dev_reset_all_collectables() -> void:
+	var abilities = SaveManager.get_data()["progress"].get("abilities", {})
+	var core_keys = ["double_jump", "attack", "dash", "shine"]
+	for key in abilities.keys():
+		if key not in core_keys:
+			abilities.erase(key)
+	SaveManager.save()
+	print("[DEV] All collectables reset locally. Supabase NOT updated.")
