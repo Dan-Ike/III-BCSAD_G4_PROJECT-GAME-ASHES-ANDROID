@@ -26,59 +26,76 @@ signal cutscene_finished
 
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f01.png",
 		"texts": [
-			"\"Memory shard 1 text sample\"",
-			"sample"
+			"Laughter, innocence, warmth and love."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f02.jpg",
 		"texts": [
-			"\"The Breath I Didn't Take\"",
-			"The world moved. I didn't."
+			"All that can be felt from the small child in the arms of the lady."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f03.png",
 		"texts": [
-			"\"Eyes That Remember\"",
-			"The ash clung to me. Like memory. Like guilt."
+			"\"What should we name her?\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f03.jpg",
 		"texts": [
-			"\"The Tower That Waited\"",
-			"It had waited. Not for heroes. But for the broken."
+			"..."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f04.png",
 		"texts": [
-			"\"The Pull Beneath the Smoke\"",
-			"Something called to me. Not with words. But with memory."
+			"\"Alice\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f05.jpg",
 		"texts": [
-			"\"The Step Into Silence\"",
-			"I didn't know what waited inside. Only that I had to enter."
+			"..."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f07 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f06.jpg",
 		"texts": [
-			"\"The Door That Closed\"",
-			"And the world forgot me. Just as I had forgotten it."
+			"\"It suits her, don’t you think so too?\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f07.jpg",
+		"texts": [
+			"\"Dante?\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f08.jpg",
+		"texts": [
+			"Darkness befalls, memories suddenly pour, but seems alien and incomplete."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f09.jpg",
+		"texts": [
+			"Questions answered, yet resulted in more questions."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/2 - memory fragment 1 (level 1.1)-20260404T080250Z-3-001/2 - memory fragment 1 (level 1.1)/memfrag1 - f10.jpg",
+		"texts": [
+			"The trial, it doesn’t seem just a trial anymore."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "He stayed still while the world moved on. Guilt clung to him. The tower called to the broken, and he entered without knowing why. Once inside, the world forgot him as he had forgotten it."
+	"text": "A warm memory shows a loving family naming a child Alice, with Dante present. The memory feels incomplete and unfamiliar, raising more questions and hinting that the trial is more than it seems."
 }
 
 # State variables

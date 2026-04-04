@@ -27,66 +27,64 @@ signal cutscene_finished
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f01.jpg",
 		"texts": [
-			"\"The Descent Begins\"",
-			"This floor didn’t greet me. It judged me."
+			"Memories are regained, yet the flame still burns."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f02.jpg",
 		"texts": [
-			"\"Violence – The Echoes of Impact",
-			"Violence didn’t strike me. It waited for me to choose."
+			"Yet strangely, it feels cold."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f03.jpg",
 		"texts": [
-			"\"Fraud – The Shifting Path\"",
-			"Fraud didn’t lie to me. It let me lie to myself."
+			"The end, yes, You feel that the end is within the next challenge."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f04.jpg",
 		"texts": [
-			"\"Treachery – The Frozen Crossing\"",
-			"Treachery didn’t accuse me. It remembered me."
+			"All the enemies slain, traps and quests completed."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f05.jpg",
 		"texts": [
-			"\"The Final Platform\"",
-			"The final boss didn’t rise. He had always been there."
+			"Leads at this end."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f06.jpg",
 		"texts": [
-			"\"The Mirror\"",
-			"I wasn’t fighting a monster. I was facing the one I used to be."
+			"Strangely the voice in your head seems to be quiet."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f07 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f07.jpg",
 		"texts": [
-			"\"The Duel Within\"",
-			"I didn’t fight to win. I fought to change."
+			"..."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/6 - After 3.3/f08  - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f08.jpg",
 		"texts": [
-			"\"The Door That Waits\"",
-			"I wasn’t running anymore. I was fulfilling it."
+			"\"The final fight indeed, prove your repentance, defeat your past self and accept who you are, mortal\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/7 - 3.3 -20260404T080448Z-3-001/7 - 3.3/3.3 - f09.jpg",
+		"texts": [
+			"The door opens and you fall."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The floor judged him. Violence waited for his choice, fraud let him deceive himself, and treachery remembered him. The final enemy was always there—it was his past self. He didn’t fight to win, but to change. He wasn’t running anymore—he was finishing it."
+	"text": "With his memories restored, Dante nears the end. The guiding voice falls silent until it declares his final trial: to defeat his past self and accept who he truly is. He steps forward into the final confrontation."
 }
 
 

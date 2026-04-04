@@ -1,0 +1,34 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://ctyitdpyuy8pq"
+path="res://.godot/imported/memfrag2 - f12.jpg-cef7b1405096ad87f358f029fe7eb510.ctex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/4 -  memory fragment 2 (level 2.1)-20260404T080332Z-3-001/4 -  memory fragment 2 (level 2.1)/memfrag2 - f12.jpg"
+dest_files=["res://.godot/imported/memfrag2 - f12.jpg-cef7b1405096ad87f358f029fe7eb510.ctex"]
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=false
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1

@@ -27,59 +27,100 @@ signal cutscene_finished
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f01.jpg",
 		"texts": [
-			"\"The Tower Sleeps\"",
-			"The tower didn’t fall. It simply stopped waiting."
+			"\"You have proven yourself, Dante\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f02.jpg",
 		"texts": [
-			"\"The Path Behind\"",
-			"He didn’t erase the past. He carried it."
+			"\"The heavens welcome you\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f03.jpg",
 		"texts": [
-			"\"The Witnesses\"",
-			"They didn’t cheer. They didn’t mourn. They remembered."
+			"A light suddenly befalls Dante and lifts him up."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f04.jpg",
 		"texts": [
-			"\"The Mark\"",
-			"He didn’t leave a monument. He left a mark."
+			"The flame burns especially brightly today."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f05.jpg",
 		"texts": [
-			"\"The Walk\"",
-			"He didn’t ascend. He continued."
+			"Yet the warmth is comforting."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f06.jpg",
 		"texts": [
-			"\"The Boy Survived\"",
-			"He didn’t vanish. He endured."
+			"The bones turned to ashes, yet the soul ascended."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/8 - Epilogue (Good Ending)/f07 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f07.jpg",
 		"texts": [
-			"\"The Echo\"",
-			"He didn’t rewrite the story. He made space for another to begin."
+			"\"Another soul ascended, what a pleasant day it is\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f08.jpg",
+		"texts": [
+			"Number of souls ascended at the last stage: 2,453,999/2,454,000 "
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f09.jpg",
+		"texts": [
+			"..."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f10.jpg",
+		"texts": [
+			"Warmth, Love and Innocence."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f11.jpg",
+		"texts": [
+			"All can be felt towards the small hand that holds your finger."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f12.jpg",
+		"texts": [
+			"\"I knew you can reach us here\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f13.jpg",
+		"texts": [
+			"\"Say hello to your Father\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f14.jpg",
+		"texts": [
+			"\"Alice\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/9 - good ending-20260404T080512Z-3-001/9 - good ending/good - f15.jpg",
+		"texts": [
+			"..."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "He accepted the past and moved forward. He made an impact without trying to be remembered. He survived and allowed a new story to begin. The tower stopped waiting, and people simply remembered."
+	"text": "Dante accepts his past and proves his repentance. He is welcomed into heaven as his soul ascends. Reunited with warmth, love, and his daughter Alice, he finds peace among the countless souls who achieved redemption."
 }
 
 

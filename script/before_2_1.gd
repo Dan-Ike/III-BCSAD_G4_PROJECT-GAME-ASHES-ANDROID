@@ -27,58 +27,64 @@ signal cutscene_finished
 var cutscene_data = [
 
 	{
-		"background":"res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f01.jpg",
 		"texts": [
-			"\"Limbo was quiet. Too quiet. Like the world had stopped breathing.\""
+			"The first stage, cleared, yet it was not the end."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f02.jpg",
 		"texts": [
-			"\"If I stopped, I’d vanish too.\""
+			"A new beginning after the end, it does not sound pleasant."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f03.jpg",
 		"texts": [
-			"\"Lust burned. Not with desire. But with regret.\""
+			"Questions remain, \"what’s my purpose, what did I do to fall here\"."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f04.jpg",
 		"texts": [
-			"\"I ran faster. I didn’t dare look back.\""
+			"The Silence still remains to be loud in this endless space."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f05.jpg",
 		"texts": [
-			"\"Gluttony devours everything. Even the ground.\""
+			"\"Move forward, Don’t stop.\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f06.jpg",
 		"texts": [
-			"\"I couldn’t breathe. Just run.\""
+			"Yet the voice in my head seems to be loud and fills the entire space."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f07 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f07.jpg",
 		"texts": [
-			"\"I didn’t escape. I endured.\""
+			"Challenges conquered, yet it was never the end."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/2 - After 1.3/f08  - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f08.jpg",
 		"texts": [
-			"\"I thought I’d earned rest. But the tower doesn’t reward. It reveals.\""
+			"Yet the flame seems to burn much more brightly."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/3 - 2.1-20260404T080310Z-3-001/3 - 2.1/2.1 - f09.jpg",
+		"texts": [
+			"Moving forward, yes, that’s my purpose."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "The place felt lifeless, and stopping meant disappearing. Regret hit hard, so he kept running without looking back, even when everything around him was collapsing. He struggled to breathe but continued. He didn’t escape—he endured. He expected rest, but the tower doesn’t give rewards, only truth."
+	"text": "After clearing the first stage, Dante realizes the journey is only beginning. Haunted by questions about his past and purpose, he pushes forward as an inner voice urges him on. Despite uncertainty, his determination, and the flame within him,grows stronger."
 }
 
 

@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dap1mgqxqaaoj" path="res://art/Untitled 3-77fc.png" id="2_w1vmr"]
 
 [node name="DialoguePlayer2" type="CanvasLayer"]
+layer = 128
 script = ExtResource("1_gw52x")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]

@@ -26,59 +26,64 @@ signal cutscene_finished
 
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f01.jpg",
 		"texts": [
-			"\"The Coffin Beneath the Sky\"",
-			"The world moved. I didn't."
+			"Amidst the war, a lonely soldier stood alone, dead."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f02.png",
 		"texts": [
-			"\"The Breath I Didn't Take\"",
-			"The world moved. I didn't."
+			"Bodies scattered around, vultures circling the area, a battlefield."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f03.jpg",
 		"texts": [
-			"\"Eyes That Remember\"",
-			"The ash clung to me. Like memory. Like guilt."
+			"But then, light shone towards the single standing dead soldier."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f04.jpg",
 		"texts": [
-			"\"The Tower That Waited\"",
-			"It had waited. Not for heroes. But for the broken."
+			"Judgement befall, the body burned, all left was ashes."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f05.jpg",
 		"texts": [
-			"\"The Pull Beneath the Smoke\"",
-			"Something called to me. Not with words. But with memory."
+			"A voice was heard."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f06.jpg",
 		"texts": [
-			"\"The Step Into Silence\"",
-			"I didn't know what waited inside. Only that I had to enter."
+			"\"A life full of sins, hell is most suitable for what you have done.\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/1 - Prologue/f07 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f07.jpg",
 		"texts": [
-			"\"The Door That Closed\"",
-			"And the world forgot me. Just as I had forgotten it."
+			"\"But all is fair, conquer the tower and prove your repentance.\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f08.jpg",
+		"texts": [
+			"\"Once done, you’ll be welcomed, until then, suffer.\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/1 - prologue-20260404T080227Z-3-001/1 - prologue/prologue - f09.png",
+		"texts": [
+			"Darkness befall, yet a flame burns in the eyes of the soldier, Dante."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "He stayed still while the world moved on. Guilt clung to him. The tower called to the broken, and he entered without knowing why. Once inside, the world forgot him as he had forgotten it."
+	"text": "A dead soldier, Dante, stands alone on a battlefield filled with corpses. A divine light judges him, declaring his sins too great for heaven but offering a chance at redemption by conquering a tower. Reduced to ashes, he is reborn anew, with a burning flame in his eyes and a purpose to atone."
 }
 
 # State variables

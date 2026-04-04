@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://d318ltwu37gti"]
+[gd_scene load_steps=57 format=3 uid="uid://d318ltwu37gti"]
 
 [ext_resource type="Script" uid="uid://bkxj4rm42sjs1" path="res://script/testflr_2_lvl_1.gd" id="1_w1861"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_7fund"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://bb1rglp4pjrgy" path="res://script/tutorial_manager_4.gd" id="10_j5b6t"]
 [ext_resource type="PackedScene" uid="uid://bvjcpi1xixec2" path="res://scene/npc_floor_2.tscn" id="11_52ps3"]
 [ext_resource type="PackedScene" uid="uid://doe3jqmodducu" path="res://scene/dialogue_player_2.tscn" id="12_y0027"]
+[ext_resource type="PackedScene" uid="uid://3yvbp6tjn1pa" path="res://scene/collectable.tscn" id="13_y0027"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cj7gn"]
 texture = ExtResource("2_7fund")
@@ -1327,6 +1328,14 @@ script = ExtResource("10_j5b6t")
 position = Vector2(1281, 40)
 
 [node name="DialoguePlayer2" parent="npc_floor_2" instance=ExtResource("12_y0027")]
+
+[node name="Collectable" parent="." instance=ExtResource("13_y0027")]
+position = Vector2(1917, 37)
+collectable_id = "floor_2_lvl_1_shard"
+collectable_type = "memory_shard"
+trigger_cutscene = true
+cutscene_scene_path = "uid://vqohi0amfn"
+cutscene_id = "floor_2_lvl_1_shard"
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor2lvl2" to="." method="_on_floor_2_lvl_2_body_entered"]

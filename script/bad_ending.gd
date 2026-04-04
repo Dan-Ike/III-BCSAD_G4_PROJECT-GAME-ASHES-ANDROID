@@ -27,40 +27,58 @@ signal cutscene_finished
 # Cutscene data structure - Multiple texts per background
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f01.jpg",
 		"texts": [
-			"\"I reached the edge. I said nothing.\""
+			"\"A shame, It seems your belief is still shaken\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f02.jpg",
 		"texts": [
-			"\"She didn't ask for forgiveness. She waited. I gave her silence.\""
+			"\"As expected, it seems only hell awaits for you\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f03.jpg",
 		"texts": [
-			"\"I didn't carry guilt. I buried it.\""
+			"The flame that holds you seems to burn especially bright today."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f04.jpg",
 		"texts": [
-			"\"There was no heaven. No fire. Just forgetting\""
+			"Yet now you feel the pain, it seems surreal yet you feel bitter."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/bad ending/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f05.jpg",
 		"texts": [
-			"\"The tower didn't punish me. It let me repeat.\""
+			"Eternal hell, yes maybe you deserve it."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f06.jpg",
+		"texts": [
+			"Flame bursts and the land collapses and a hand drags the fallen soldier, Dante."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f07.jpg",
+		"texts": [
+			"\"Another poor soul fallen, a real shame, he reached the last stage\""
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/8 - bad ending-20260404T080459Z-3-001/8 - bad ending/bad - f08.jpg",
+		"texts": [
+			"Number of soul fallen at the last stage: 1/1"
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "He stayed silent and didn’t seek forgiveness. Instead of dealing with guilt, he buried it. There was no reward or punishment—just forgetting. The tower didn’t punish him; it let him repeat his mistakes."
+	"text": "Dante fails to accept his past. Judged unworthy, he is condemned to hell. The flame becomes painful as he is dragged into eternal suffering, becoming another lost soul who almost reached redemption."
 }
 
 

@@ -26,52 +26,58 @@ signal cutscene_finished
 
 var cutscene_data = [
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f01 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f01.jpg",
 		"texts": [
-			"\"Greed – The Hollow Vault\"",
-			"Greed offered everything. But nothing was ever mine."
+			"The last floor, you knew instinctively."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f02 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f02.jpg",
 		"texts": [
-			"\"Anger – The Furnace Path\"",
-			"Anger didn’t burn me. It built me."
+			"\"The challenges here will be the last, yes\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f03 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f03.jpg",
 		"texts": [
-			"\"Heresy – The Tower of Echoes\"",
-			"Heresy didn’t question me. It reminded me."
+			"\"But in here you will fight\""
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f04 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f04.jpg",
 		"texts": [
-			"\"The Realization\"",
-			"I wasn’t here to survive. I was here to finish what I started."
+			"The voice said so in my head."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f05 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f05.jpg",
 		"texts": [
-			"\"The Door Ahead\"",
-			"The tower doesn’t forgive. But it remembers. And so do I."
+			"A sword, pulled, swung."
 		]
 	},
 	{
-		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/NEW VERSION/4 - After 2.3/f06 - new.png",
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f06.jpg",
 		"texts": [
-			"\"The Fulfillment\"",
-			"This time, I won’t run. I’ll fulfill it."
+			"All seems eerily familiar."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f07.jpg",
+		"texts": [
+			"The flame burns ever so brightly at the moment."
+		]
+	},
+	{
+		"background": "res://CUTSCENES - ASHES-20251012T022412Z-1-001/CUTSCENES - ASHES/5 - 3.1-20260404T080348Z-3-001/5 - 3.1/3.1 - f08.jpg",
+		"texts": [
+			"All leads at this end, and all questions will be answered."
 		]
 	}
 ]
 
 var summary_data = {
 	"title": "Story Summary",
-	"text": "Greed promised everything but gave nothing. Anger made him stronger. Heresy reminded him of his purpose. He wasn’t there just to survive but to finish what he started. The tower remembers—and so does he. This time, he won’t run."
+	"text": "Dante senses he has reached the final floor. Guided by a voice, he prepares for a final battle, feeling a strange familiarity with combat. His resolve burns at its strongest as he moves toward the end where all answers await."
 }
 
 
