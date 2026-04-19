@@ -9812,9 +9812,10 @@ visible = false
 position = Vector2(1005, 630)
 
 [node name="npc_working" parent="." instance=ExtResource("63_faa06")]
-position = Vector2(1245, 534)
+position = Vector2(1001, -6432)
 
 [node name="DialoguePlayer" parent="npc_working" instance=ExtResource("64_lunaj")]
+npc_id = "npc_1.3"
 
 [connection signal="body_entered" from="floor2lvl1" to="." method="_on_floor_2_lvl_1_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

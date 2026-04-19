@@ -376,6 +376,10 @@ script = ExtResource("1_2e4gn")
 sprite_frames = SubResource("SpriteFrames_01hmn")
 animation = &"idle"
 
+[node name="RayCast2D" type="RayCast2D" parent="AnimatedSprite2D"]
+target_position = Vector2(124, 0)
+collision_mask = 2
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
 position = Vector2(1, 2)

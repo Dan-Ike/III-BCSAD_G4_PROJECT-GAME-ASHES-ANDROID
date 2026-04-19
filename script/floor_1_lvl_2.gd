@@ -57,7 +57,7 @@ func _on_floor_1_lvl_3_body_entered(body: Node2D) -> void:
 		SaveManager.advance_to_level(1, 3)
 		
 		# Disable touch controls
-		body.touch_controls.disable_all_controls()
+		#body.touch_controls.disable_all_controls()
 		
 		# Show level completed screen
 		var game_over_scene = preload("res://scene/game_over.tscn")

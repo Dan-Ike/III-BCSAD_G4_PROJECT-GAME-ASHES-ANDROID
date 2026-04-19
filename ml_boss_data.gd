@@ -22,9 +22,6 @@ var learning_data = {
 		"jump_up_attack": 0.5,
 		"jump_down_attack": 0.5
 	},
-	"adaptation_level": 1.0,
-	"speed_multiplier": 1.0,
-	"attack_speed_multiplier": 1.0
 }
 
 func _ready():
@@ -119,20 +116,13 @@ func record_encounter():
 
 func record_player_death():
 	learning_data.player_deaths += 1
-	# Gradually increase adaptation
-	learning_data.adaptation_level = min(2.0, 1.0 + (learning_data.player_deaths * 0.05))
-	learning_data.speed_multiplier = min(1.5, 1.0 + (learning_data.player_deaths * 0.02))
-	learning_data.attack_speed_multiplier = min(1.4, 1.0 + (learning_data.player_deaths * 0.015))
 	save_data()
-	print("[ML Boss] Player died! Adaptation: %.2f, Speed: %.2f" % [learning_data.adaptation_level, learning_data.speed_multiplier])
-
+	print("[ML Boss] Player died! Total deaths: ", learning_data.player_deaths)
+	
 func record_boss_death():
 	learning_data.boss_deaths += 1
-	# Boss learns from losses but gets more cautious
-	learning_data.adaptation_level = min(2.0, learning_data.adaptation_level + 0.1)
-	learning_data.player_behavior_patterns.retreat_frequency = min(0.8, learning_data.player_behavior_patterns.retreat_frequency + 0.05)
 	save_data()
-	print("[ML Boss] Boss died! Learning from mistakes. Retreats: %.2f" % [learning_data.player_behavior_patterns.retreat_frequency])
+	print("[ML Boss] Boss died! Total boss deaths: ", learning_data.boss_deaths)
 
 func record_attack_result(attack_type: String, hit: bool):
 	if attack_type not in learning_data.attack_success_rates:

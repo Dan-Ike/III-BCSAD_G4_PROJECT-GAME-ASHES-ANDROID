@@ -27,6 +27,33 @@ var data := {
 	"tutorial_preference": "play_once"  
 }
 
+var _web_progress_received: bool = false
+
+func _process(_delta: float) -> void:
+	if not OS.has_feature("web"):
+		return
+	if _web_progress_received:
+		return
+	# Check if parent page has sent back progress data
+	var raw = JavaScriptBridge.eval("window.__ashes_progress_data__")
+	if raw == null or raw == "":
+		return
+	_web_progress_received = true
+	# Clear it immediately so we don't process twice
+	JavaScriptBridge.eval("window.__ashes_progress_data__ = null;")
+	print("SaveManager: Received cloud progress from parent page")
+	# Parse and handle the same way as native fetch_progress response
+	var res = JSON.parse_string(str(raw))
+	if typeof(res) == TYPE_ARRAY:
+		# Simulate the HTTP response handling
+		var fake_body = PackedByteArray()
+		var json_str = JSON.stringify(res)
+		fake_body.resize(json_str.length())
+		for i in range(json_str.length()):
+			fake_body[i] = json_str.unicode_at(i)
+		_pending_request = "fetch_progress"
+		_on_http_request_completed(0, 200, [], fake_body)
+
 func save_level_time(floor: int, level: int, time: float) -> void:
 	"""Save the completion time for a specific level"""
 	var level_key = "%d_%d" % [floor, level]
@@ -99,10 +126,47 @@ func get_data() -> Dictionary:
 	"""Get the entire save data dictionary"""
 	return data
 
+func push_to_web_parent(payload: Dictionary) -> void:
+	"""On web, send save data to parent page via postMessage instead of direct HTTP"""
+	if not OS.has_feature("web"):
+		return
+	var json_str = JSON.stringify(payload)
+	JavaScriptBridge.eval("""
+		window.parent.postMessage({
+			type: 'ashes_save_progress',
+			payload: %s
+		}, '*');
+	""" % json_str)
+	print("SaveManager: Sent progress to parent page via postMessage")
+
 func push_all_to_supabase() -> void:
 	if current_user_id == "":
 		print("SaveManager: cannot push - no logged-in user")
 		return
+
+	# On web, delegate to parent page
+	if OS.has_feature("web"):
+		var current_user = Global.get_current_user()
+		var user_metadata = current_user.get("user_metadata", {})
+		var avatar_url = user_metadata.get("avatar_url", "")
+		var username = current_user.get("email", "Player").split("@")[0]
+		
+		var payload = {
+			"user_id": current_user_id,
+			"floor_number": int(data["progress"]["current_floor"]),
+			"level_number": int(data["progress"]["current_level"]),
+			"is_completed": false,
+			"abilities": data["progress"].get("abilities", {}),
+			"completed_levels": data["progress"].get("completed_levels", {}),
+			"level_times": data.get("level_times", {}),
+			"best_run_time": data.get("best_run_time", 0.0),
+			"avatar_url": avatar_url,
+			"username": username
+		}
+		push_to_web_parent(payload)
+		return
+
+	# Native (Android) path — existing HTTP code unchanged
 	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
 		print("SaveManager: HTTP busy, skipping push")
 		return
@@ -125,11 +189,11 @@ func push_all_to_supabase() -> void:
 	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
 	
 	var headers = [
-		"apikey: %s" % SUPABASE_KEY,
-		"Authorization: Bearer %s" % Global.session_token,
-		"Content-Type: application/json",
-		"Prefer: return=minimal,resolution=merge-duplicates"
-	]
+	"apikey: %s" % SUPABASE_KEY,
+	"Authorization: Bearer %s" % Global.session_token,
+	"Content-Type: application/json",
+	"Prefer: return=minimal,resolution=merge-duplicates"
+]
 	
 	if OS.has_feature("web"):
 		headers.append("Accept-Encoding: identity")
@@ -148,8 +212,7 @@ func push_all_to_supabase() -> void:
 		"username": username
 	}
 	
-	# Use PATCH instead of POST to update existing rows
-	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+	var err = http.request("%s/rest/v1/progress" % SUPABASE_URL, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 	if err != OK:
 		print("SaveManager: HTTP request failed to start (update_progress):", err)
 	else:
@@ -157,6 +220,21 @@ func push_all_to_supabase() -> void:
 
 
 func push_times_to_supabase() -> void:
+	if current_user_id == "":
+		return
+	if OS.has_feature("web"):
+		var payload = {
+			"user_id": current_user_id,
+			"level_times": data.get("level_times", {}),
+			"best_run_time": data.get("best_run_time", 0.0)
+		}
+		JavaScriptBridge.eval("""
+			window.parent.postMessage({
+				type: 'ashes_save_times',
+				payload: %s
+			}, '*');
+		""" % JSON.stringify(payload))
+		return
 	"""Push level times and best run time to Supabase"""
 	if current_user_id == "":
 		print("SaveManager: cannot push times - no logged-in user")
@@ -171,29 +249,29 @@ func push_times_to_supabase() -> void:
 	
 	_pending_request = "update_times"
 	
-	# Use PATCH with user_id filter
-	var url = "%s/rest/v1/progress?user_id=eq.%s" % [SUPABASE_URL, current_user_id]
+	var url = "%s/rest/v1/progress" % SUPABASE_URL  # no filter — POST handles upsert
 	
 	var headers = [
 		"apikey: %s" % SUPABASE_KEY,
 		"Authorization: Bearer %s" % Global.session_token,
 		"Content-Type: application/json",
-		"Prefer: return=minimal"
+		"Prefer: return=minimal,resolution=merge-duplicates"
 	]
 	
 	if OS.has_feature("web"):
 		headers.append("Accept-Encoding: identity")
 	
 	var payload = {
-		"level_times": data.get("level_times", {}),
+		"user_id":       current_user_id,  # required for upsert to match the row
+		"level_times":   data.get("level_times", {}),
 		"best_run_time": data.get("best_run_time", 0.0),
 		"last_played_at": "now()"
 	}
 	
-	# Use PATCH to update
-	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+	# POST with merge-duplicates = upsert: inserts if new, updates if exists
+	var err = http.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 	if err != OK:
-		print("SaveManager: HTTP request failed to start (update_times):", err)
+		print("SaveManager: HTTP request failed to start (push_times):", err)
 
 func reset_tutorial() -> void:
 	data["tutorial_completed"] = false
@@ -544,26 +622,30 @@ func sync_from_supabase(user_id: String) -> void:
 	if user_id == "":
 		print("SaveManager: sync_from_supabase called with empty user_id")
 		return
-	
-	print("\nSTARTING SUPABASE SYNC")
-	print("   Local Progress BEFORE sync:")
-	print("   Floor: %d, Level: %d" % [data["progress"]["current_floor"], data["progress"]["current_level"]])
-	print("   Completed Levels: " + str(data["progress"]["completed_levels"]))
-	print("   Abilities: " + str(data["progress"]["abilities"]))
-	
+
 	current_user_id = user_id
+
+	# On web, the iframe can't reach Supabase directly — ask the parent page to fetch
+	if OS.has_feature("web"):
+		print("SaveManager: Requesting cloud sync via parent postMessage")
+		JavaScriptBridge.eval("""
+			window.parent.postMessage({
+				type: 'ashes_fetch_progress',
+				user_id: '%s'
+			}, '*');
+		""" % user_id)
+		# Result will come back via ashes_progress_data message — handled in _process
+		return
+
+	# Native path — direct HTTP as before
+	print("\nSTARTING SUPABASE SYNC")
 	_pending_request = "fetch_progress"
 	var url = "%s/rest/v1/progress?user_id=eq.%s&select=*" % [SUPABASE_URL, user_id]
-	
 	var headers = [
 		"apikey: %s" % SUPABASE_KEY,
 		"Authorization: Bearer %s" % Global.session_token,
 		"Content-Type: application/json"
 	]
-	
-	if OS.has_feature("web"):
-		headers.append("Accept-Encoding: identity")
-	
 	var err = http.request(url, headers, HTTPClient.METHOD_GET)
 	if err != OK:
 		print("SaveManager: HTTP request failed to start (fetch_progress):", err)

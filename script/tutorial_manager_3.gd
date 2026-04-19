@@ -21,9 +21,9 @@ var target_indicator_alt: Sprite2D = null
 var target_radius: float = 20.0
 
 var dialogues = {
-	TutorialStep.INTRO: "Welcome, traveler. Let me teach you the basics of movement.",
-	TutorialStep.DOUBLE_JUMP: "Now try to [color=yellow]DOUBLE JUMP[/color]! Jump once, then jump again in mid-air.",
-	TutorialStep.COMPLETE: "Perfect! You've mastered the basics.\n[color=cyan]Survive and reach the end![/color]"
+	TutorialStep.INTRO: "Let me teach you your new ability.",
+	TutorialStep.DOUBLE_JUMP: "Try to [color=yellow]DOUBLE JUMP[/color]! Jump once, then jump again in mid-air.",
+	TutorialStep.COMPLETE: "Perfect! You've mastered your ability.\n[color=cyan]Survive and reach the end![/color]"
 }
 
 func _ready() -> void:
@@ -69,7 +69,7 @@ func _setup_target_positions() -> void:
 		return
 	var start_pos = player.global_position
 	target_positions[TutorialStep.DOUBLE_JUMP] = start_pos + Vector2(100, 0)
-	target_positions_alt[TutorialStep.DOUBLE_JUMP] = start_pos + Vector2(100, -150)
+	target_positions_alt[TutorialStep.DOUBLE_JUMP] = start_pos + Vector2(250, -150)
 
 func check_and_start_tutorial() -> void:
 	print("[Tutorial] check_and_start_tutorial called")
@@ -127,22 +127,31 @@ func start_tutorial() -> void:
 
 func _show_step(step: TutorialStep) -> void:
 	current_step = step
-	player_frozen = true
-	if player:
-		player.tutorial_frozen = true
-		player.velocity.x = 0
+	
+	# Don't freeze player on COMPLETE — lava is rising!
+	if step != TutorialStep.COMPLETE:
+		player_frozen = true
+		if player:
+			player.tutorial_frozen = true
+			player.velocity.x = 0
+	
 	if step == TutorialStep.DOUBLE_JUMP:
 		target_indicator.global_position = target_positions[step]
 		target_indicator.visible = true
 		target_indicator_alt.global_position = target_positions_alt[step]
 		target_indicator_alt.visible = true
+	
 	tutorial_dialogue.show_dialogue(dialogues[step])
 	await tutorial_dialogue.dialogue_finished
 	print("[Tutorial] Dialogue finished for step: ", TutorialStep.keys()[step])
-	player_frozen = false
-	if player:
-		player.tutorial_frozen = false
-		player.velocity.x = 0
+	
+	# Only unfreeze if we froze in the first place
+	if step != TutorialStep.COMPLETE:
+		player_frozen = false
+		if player:
+			player.tutorial_frozen = false
+			player.velocity.x = 0
+	
 	if step == TutorialStep.INTRO:
 		player_frozen = true
 		if player:
@@ -158,10 +167,15 @@ func _show_step(step: TutorialStep) -> void:
 func _next_step() -> void:
 	if not tutorial_dialogue:
 		return
-	player_frozen = true
-	if player:
-		player.tutorial_frozen = true
-		player.velocity.x = 0
+	
+	# Don't freeze if we're about to show COMPLETE
+	var next_is_complete = (current_step == TutorialStep.DOUBLE_JUMP)
+	if not next_is_complete:
+		player_frozen = true
+		if player:
+			player.tutorial_frozen = true
+			player.velocity.x = 0
+	
 	tutorial_dialogue.hide_dialogue()
 	await get_tree().create_timer(0.5).timeout
 	match current_step:
@@ -174,12 +188,11 @@ func _process(_delta: float) -> void:
 	if not tutorial_active or not player or player_frozen:
 		return
 	if current_step == TutorialStep.DOUBLE_JUMP:
+		# Only check the alt (upper) target — 1st target is visual guide only
 		var dist_alt = player.global_position.distance_to(target_positions_alt[current_step])
 		if dist_alt <= target_radius:
 			target_indicator.visible = false
 			target_indicator_alt.visible = false
-			if player.animated_sprite:
-				player.animated_sprite.play("idle")
 			double_jump_completed = true
 			_next_step()
 

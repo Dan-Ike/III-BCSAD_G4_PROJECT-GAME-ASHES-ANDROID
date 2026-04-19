@@ -18,7 +18,7 @@ var player_frozen: bool = false
 var dialogues = {
 	TutorialStep.INTRO: "An enemy blocks your path. Defeat it!",
 	TutorialStep.KILL_ENEMY: "Use your [color=red]ATTACK[/color]! Defeat the [color=yellow]Kanun[/color] to proceed.",
-	TutorialStep.COMPLETE: "Well done, warrior!\n[color=cyan]Press forward![/color]"
+	TutorialStep.COMPLETE: "Well done, Soldier!\n[color=cyan]Survive and Persist![/color]"
 }
 
 func _ready() -> void:

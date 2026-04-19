@@ -34,7 +34,7 @@ var dialogues = {
 	TutorialStep.MOVE_RIGHT: "First, try moving [color=yellow]RIGHT[/color] using the button or joystick.",
 	TutorialStep.MOVE_LEFT: "Good! Now try moving [color=yellow]LEFT[/color].",
 	TutorialStep.JUMP: "Excellent! Now try to [color=yellow]JUMP[/color].",
-	TutorialStep.TALK_TO_NPC: "Now, approach the NPC and press [color=yellow]B[/color] to talk.", 
+	TutorialStep.TALK_TO_NPC: "Now, approach the NPC and [color=yellow]touch[/color] anywhere on the screen to talk.", 
 	TutorialStep.COMPLETE: "Perfect! You've mastered the basics.\n[color=cyan]Survive and reach the end![/color]"
 }
 

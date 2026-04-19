@@ -1,4 +1,4 @@
-[gd_scene load_steps=152 format=3 uid="uid://cbt5vamt3obeb"]
+[gd_scene load_steps=151 format=3 uid="uid://cbt5vamt3obeb"]
 
 [ext_resource type="Script" uid="uid://bm5hiyjwtbwgi" path="res://script/floor_1_lvl_2.gd" id="1_57eg5"]
 [ext_resource type="Texture2D" uid="uid://b8c2ojddu2yre" path="res://art/free-dungeon-platformer-pixel-art-tileset/PNG/Background/Bright/Background.png" id="2_ikqoc"]
@@ -9277,9 +9277,6 @@ sources/55 = SubResource("TileSetAtlasSource_5tnol")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j21ip"]
 size = Vector2(24, 823)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_a3oia"]
-size = Vector2(5277, 124.5)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fcyts"]
 size = Vector2(316, 18.5)
 
@@ -9401,10 +9398,6 @@ layer_5/tile_data = PackedInt32Array(1572876, 40, 0, 1638412, 40, 1, 1572877, 65
 [node name="CollisionShape2D15" type="CollisionShape2D" parent="floor_collision"]
 position = Vector2(-8, 468.5)
 shape = SubResource("RectangleShape2D_j21ip")
-
-[node name="CollisionShape2D16" type="CollisionShape2D" parent="floor_collision"]
-position = Vector2(2605.5, -2.25)
-shape = SubResource("RectangleShape2D_a3oia")
 
 [node name="CollisionShape2D14" type="CollisionShape2D" parent="floor_collision"]
 position = Vector2(275, 631)
@@ -9678,9 +9671,10 @@ offset_bottom = 40.0
 visible = false
 
 [node name="npc_working" parent="." instance=ExtResource("62_80a1t")]
-position = Vector2(1411, 534)
+position = Vector2(1410, 534)
 
 [node name="DialoguePlayer" parent="npc_working" instance=ExtResource("63_bmp06")]
+npc_id = "npc_1.2"
 
 [connection signal="body_entered" from="floor1lvl3" to="." method="_on_floor_1_lvl_3_body_entered"]
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

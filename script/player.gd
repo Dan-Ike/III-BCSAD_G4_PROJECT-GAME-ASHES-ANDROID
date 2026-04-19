@@ -770,10 +770,8 @@ func handle_death_animation() -> void:
 	var died_on_level = Global.current_level
 	print("[Player] Died on Floor %d, Level %d after %.2f seconds" % [died_on_floor, died_on_level, time_survived])
 	
-	# CRITICAL FIX: Reset the flag BEFORE instantiating
 	Global.game_over_active = false
 	
-	# Use deferred call to ensure scene tree is ready
 	call_deferred("_show_game_over_screen", died_on_floor, died_on_level, time_survived)
 
 # New separate function for deferred instantiation

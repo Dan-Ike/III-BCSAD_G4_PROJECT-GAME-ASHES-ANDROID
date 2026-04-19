@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://cxkhrcbudsbk3"]
+[gd_scene load_steps=5 format=3 uid="uid://cxkhrcbudsbk3"]
 
 [ext_resource type="Script" uid="uid://cha17j3h68j2n" path="res://dialogue_player.gd" id="1_1tqnm"]
-[ext_resource type="Texture2D" uid="uid://dap1mgqxqaaoj" path="res://art/Untitled 3-77fc.png" id="2_vou3l"]
+[ext_resource type="Texture2D" uid="uid://cp6ej1pv740uw" path="res://art/Elf_DialogueBox.png" id="2_1tqnm"]
+[ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="3_24jnd"]
+[ext_resource type="Texture2D" uid="uid://bfekwl5swm08a" path="res://art/Dante_DialogueBox.png" id="3_vou3l"]
 
 [node name="DialoguePlayer" type="CanvasLayer"]
 layer = 128
@@ -16,33 +18,78 @@ anchor_bottom = 0.36
 offset_top = -0.120003
 offset_bottom = -0.200012
 grow_horizontal = 2
-texture = ExtResource("2_vou3l")
-region_rect = Rect2(8, 8.02377, 18.249, 10.4762)
+texture = ExtResource("2_1tqnm")
 
 [node name="Name" type="RichTextLabel" parent="NinePatchRect"]
+modulate = Color(0, 0, 0, 1)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.018
-anchor_top = 0.062
-anchor_right = 0.357
-anchor_bottom = 0.255
-offset_left = -0.128
-offset_top = 0.103999
-offset_right = 0.127991
-offset_bottom = -0.0400047
+anchor_left = 0.25
+anchor_top = 0.139
+anchor_right = 0.536
+anchor_bottom = 0.293
+offset_top = 0.0879974
+offset_right = -0.256012
+offset_bottom = 0.0559959
+theme_override_fonts/normal_font = ExtResource("3_24jnd")
 text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Message" type="RichTextLabel" parent="NinePatchRect"]
+modulate = Color(0, 0, 0, 1)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.018
-anchor_top = 0.37
-anchor_right = 0.786
-anchor_bottom = 0.678
-offset_left = -0.128
-offset_top = 0.0400009
-offset_right = -0.255981
-offset_bottom = -0.0240021
+anchor_left = 0.205
+anchor_top = 0.409
+anchor_right = 0.937
+anchor_bottom = 0.832
+offset_left = 0.319992
+offset_top = -0.0719986
+offset_right = 0.447998
+offset_bottom = -0.0559998
+theme_override_fonts/normal_font = ExtResource("3_24jnd")
+text = "Message"
+
+[node name="NinePatchRect2" type="NinePatchRect" parent="."]
+anchors_preset = -1
+anchor_left = 0.15
+anchor_top = 0.071
+anchor_right = 0.85
+anchor_bottom = 0.36
+offset_top = -0.120003
+offset_bottom = -0.200012
+grow_horizontal = 2
+texture = ExtResource("3_vou3l")
+
+[node name="Name" type="RichTextLabel" parent="NinePatchRect2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.295
+anchor_top = 0.139
+anchor_right = 0.562
+anchor_bottom = 0.293
+offset_left = -0.320007
+offset_top = 0.0879974
+offset_right = 0.447968
+offset_bottom = 0.0559959
+theme_override_fonts/normal_font = ExtResource("3_24jnd")
+text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Message" type="RichTextLabel" parent="NinePatchRect2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.295
+anchor_top = 0.409
+anchor_right = 0.937
+anchor_bottom = 0.832
+offset_left = -0.320007
+offset_top = -0.0719986
+offset_right = 0.447998
+offset_bottom = -0.0559998
+theme_override_fonts/normal_font = ExtResource("3_24jnd")
 text = "Message"
 
 [node name="Timer" type="Timer" parent="."]

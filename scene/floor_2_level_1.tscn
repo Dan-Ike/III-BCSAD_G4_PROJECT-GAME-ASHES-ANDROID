@@ -1328,6 +1328,7 @@ script = ExtResource("10_j5b6t")
 position = Vector2(1281, 40)
 
 [node name="DialoguePlayer2" parent="npc_floor_2" instance=ExtResource("12_y0027")]
+npc_id = "npc_2.1"
 
 [node name="Collectable" parent="." instance=ExtResource("13_y0027")]
 position = Vector2(1917, 37)
@@ -1336,6 +1337,8 @@ collectable_type = "memory_shard"
 trigger_cutscene = true
 cutscene_scene_path = "uid://vqohi0amfn"
 cutscene_id = "floor_2_lvl_1_shard"
+requires_shine = true
+requires_floor_2_3_cleared = true
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor2lvl2" to="." method="_on_floor_2_lvl_2_body_entered"]

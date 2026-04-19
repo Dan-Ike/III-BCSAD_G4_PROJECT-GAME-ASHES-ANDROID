@@ -157,7 +157,7 @@ func _ready() -> void:
 	
 	if has_node("DealDamageArea"):
 		Global.batDamageZone = $DealDamageArea
-	Global.batDamageAmount = damage_to_deal
+	#Global.batDamageAmount = damage_to_deal
 	
 	if health_bar:
 		health_bar.max_value = health_max
@@ -184,10 +184,6 @@ func _initialize_ml_system() -> void:
 	
 	health = health_max  
 	
-	base_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
-	chase_speed *= (1.0 + (ml_difficulty_multiplier - 1.0) * 0.5)
-	damage_to_deal = int(damage_to_deal * ml_difficulty_multiplier)
-	
 	ml_attack_preference = MlEnemyData.learning_data.attack_success_rates.duplicate()
 	
 	print("[ML Enemy] Initialized with difficulty: ", ml_difficulty_multiplier)
@@ -196,9 +192,6 @@ func _initialize_ml_system() -> void:
 	print("[ML Enemy] Player behavior data: ", MlEnemyData.learning_data.player_behavior_patterns)
 	MlEnemyData.record_encounter()
 	ml_difficulty_multiplier = MlEnemyData.get_adaptation_multiplier()
-	
-	health_max = int(health_max * ml_difficulty_multiplier)
-	health = health_max
 	
 	if health_bar:
 		health_bar.max_value = health_max
@@ -947,16 +940,19 @@ func _state_attack(delta: float) -> void:
 	if not is_attacking_melee:
 		is_attacking_melee = true
 		can_attack = false
-		
 		target_velocity_x = 0.0
 		
-		should_deal_melee_damage = true
-		melee_damage_timer = MELEE_DAMAGE_DELAY
+		# Telegraph pause before swinging
+		await get_tree().create_timer(0.3).timeout
+		if not is_instance_valid(self) or dead:
+			return
 		
-		await get_tree().create_timer(0.8).timeout
+		# This is the actual swing moment — sync this with your attack animation's hit frame
+		_apply_melee_damage()
+		
+		await get_tree().create_timer(0.5).timeout
 		
 		is_attacking_melee = false
-		should_deal_melee_damage = false
 		_start_attack_recovery()
 		
 		await get_tree().create_timer(attack_cooldown).timeout
@@ -979,18 +975,21 @@ func _apply_melee_damage() -> void:
 	if not player or not Global.playerAlive:
 		return
 	
-	var distance = global_position.distance_to(player.global_position)
-	if distance < 70.0:
-		if player.has_method("take_damage"):
-			player.take_damage(damage_to_deal)
-			print("[Enemy] Hit player for ", damage_to_deal, " damage")
-			
-			if enemy_type == EnemyType.MACHINE_LEARNING:
-				MlEnemyData.record_attack_result("melee", true)
-			
-			if player.has_method("apply_knockback"):
-				var knockback_dir = (player.global_position - global_position).normalized()
-				player.apply_knockback(knockback_dir * KNOCKBACK_FORCE)
+	if attack_area:
+		var overlapping = attack_area.get_overlapping_bodies()
+		for body in overlapping:
+			if body == player or body == Global.playerBody:
+				if player.has_method("take_damage"):
+					player.take_damage(damage_to_deal)
+					print("[Enemy] Hit player for ", damage_to_deal, " damage")
+					
+					if enemy_type == EnemyType.MACHINE_LEARNING:
+						MlEnemyData.record_attack_result("melee", true)
+					
+					if player.has_method("apply_knockback"):
+						var knockback_dir = (player.global_position - global_position).normalized()
+						player.apply_knockback(knockback_dir * KNOCKBACK_FORCE)
+				return
 
 func _shoot_projectile(direction: Vector2) -> void:
 	var projectile_scene_path = "res://scene/enemy_projectile.tscn"
@@ -1061,6 +1060,7 @@ func take_damage(damage: int) -> void:
 		health = 0
 		dead = true
 		animated_sprite.play("death")
+		MlEnemyData.record_boss_death()
 		print("[Enemy] DEFEATED!")
 	else:
 		if animated_sprite:

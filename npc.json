@@ -1,7 +1,42 @@
-[
-	{"name": "NPC", "text": "Hello there"},
-	{"name": "Player", "text": "Hello there 2"},
-	{"name": "NPC", "text": "wdkahsdg"},
-	{"name": "Player", "text": "Hello "},
-	{"name": "NPC", "text": "bye"},
-]
+{
+	"npc_1.1": [
+		{"name": "NPC", "text": "Welcome to floor 1."},
+		{"name": "Player", "text": "..."},
+		{"name": "NPC", "text": "Climb and you'll get the answers to your questions."}
+	],
+	"npc_1.2": [
+		{"name": "NPC", "text": "Welcome to the second level of the 1st floor."},
+		{"name": "Player", "text": "..."},
+		{"name": "NPC", "text": "survive"}
+	],
+	"npc_1.3": [
+		{"name": "NPC", "text": "The last level, im surprised you made it."},
+		{"name": "Player", "text": "..."},
+		{"name": "NPC", "text": "Go back to the 1st level, you'll know some of you."}
+	],
+	"npc_2.1": [
+		{"name": "NPC", "text": "You made it to floor 2."},
+		{"name": "NPC", "text": "Money money money."},
+		{"name": "Player", "text": "..."}
+	],
+	"npc_2.2": [
+		{"name": "NPC", "text": "Money the smell of money"},
+		{"name": "NPC", "text": "Money money money."},
+		{"name": "Player", "text": "..."}
+	],
+	"npc_2.3": [
+		{"name": "NPC", "text": "Want to know a secret?"},
+		{"name": "NPC", "text": "Go back at the 1st level in this floor, use your shine ability near the exit."},
+		{"name": "Player", "text": "..."}
+	],
+	"npc_3.1": [
+		{"name": "NPC", "text": "You made it to floor 3."},
+		{"name": "Player", "text": "..."},
+		{"name": "NPC", "text": "I see you are familiar with the sword, burn brightly soldier.."}
+	],
+	"npc_3.2": [
+		{"name": "NPC", "text": "You made it soldier."},
+		{"name": "NPC", "text": "Steel your mind, you'll get through this."},
+		{"name": "NPC", "text": "Defeat the guardian at the end, you will get what you need and also lead to the last challenge."}
+	]
+}

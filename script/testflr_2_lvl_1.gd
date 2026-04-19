@@ -1,4 +1,6 @@
 extends Node2D
+@onready var collectable: Collectable = $Collectable
+
 @onready var player: Player = $player
 @onready var player_camera = $player/Camera2D
 @onready var canvas_modulate: CanvasModulate = $CanvasModulate
@@ -92,11 +94,11 @@ func _show_floor_title_then_start() -> void:
 	unlock_double_jump()
 	unlock_dash()
 	
-	var tutorial_manager = get_node_or_null("TutorialManager_4")
-	if tutorial_manager:
-		tutorial_manager.check_and_start_tutorial()
-	else:
-		push_error("[Level] TutorialManager_4 not found!")
+	#var tutorial_manager = get_node_or_null("TutorialManager_4")
+	#if tutorial_manager:
+	#	tutorial_manager.check_and_start_tutorial()
+	#else:
+	#	push_error("[Level] TutorialManager_4 not found!")
 
 func _should_show_cutscene() -> bool:
 	"""Determine if cutscene should play based on user preference"""

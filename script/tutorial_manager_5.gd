@@ -15,7 +15,7 @@ var current_step: TutorialStep = TutorialStep.INTRO
 var player_frozen: bool = false
 
 var dialogues = {
-	TutorialStep.INTRO: "Welcome, traveler. A new power awaits you.",
+	TutorialStep.INTRO: "You got a new ability.",
 	TutorialStep.USE_SHINE: "Use your [color=yellow]SHINE[/color] ability! Tap the shine button to activate it.",
 	TutorialStep.COMPLETE: "Well done! Use it wisely.\n[color=cyan]Survive and reach the end![/color]"
 }

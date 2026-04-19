@@ -86,11 +86,26 @@ func _input(event: InputEvent) -> void:
 
 func _ready() -> void:
 	if OS.has_feature("web"):
+		# Set up postMessage listener FIRST before anything else
+		JavaScriptBridge.eval("""
+		  window.addEventListener('message', function(event) {
+			if (event.data && event.data.type === 'ashes_auth') {
+			  console.log('Received auth tokens from parent page');
+			  window.sessionStorage.setItem('oauth_callback_received', 'true');
+			  window.sessionStorage.setItem('oauth_access_token', event.data.access_token || '');
+			  window.sessionStorage.setItem('oauth_refresh_token', event.data.refresh_token || '');
+			  console.log('Tokens stored, notifying Godot...');
+			  // Dispatch a custom event so Godot can poll for it
+			  window.dispatchEvent(new CustomEvent('ashes_tokens_ready'));
+			}
+		  });
+		""")
+		
 		var has_tokens = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received') === 'true'")
 		if has_tokens:
 			_log_debug("OAuth tokens found in sessionStorage")
 			add_child(http)
-			_check_web_oauth_callback() 
+			_check_web_oauth_callback()
 			return
 	
 	add_child(http)
@@ -137,6 +152,7 @@ func _ready() -> void:
 	
 	# If both accepted, proceed with normal initialization
 	_initialize_main_menu()
+	
 
 func _initialize_main_menu() -> void:
 	"""Initialize the main menu after privacy/terms acceptance"""
@@ -196,6 +212,10 @@ void fragment() {
 	material.shader = shader
 	profile.material = material
 	profile.custom_minimum_size = Vector2(64, 64)
+
+	# Make sure the image fills and crops to the circle correctly
+	profile.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	profile.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	
 	# Check internet connectivity FIRST (make it synchronous for initial check)
 	_check_internet_connection_sync()
@@ -717,41 +737,41 @@ func _on_newgame_pressed() -> void:
 		return
 	is_transitioning = true
 	
-	# Small delay to show button press visual feedback
 	await get_tree().create_timer(0.15).timeout
-	
-	# Check if user is logged in
-	if Global.get_current_user().size() > 0:
-		is_transitioning = false  # Reset flag before showing dialog
-		transition_out(func():
-			main_btns.visible = false
-			background.visible = false
-			bg_2.visible = true
-			new_game_logged_in.visible = true
-			title.visible = false  
-			version.visible = false
-			transition_in([bg_2, new_game_logged_in])
-		)
-		return
 	
 	var current_floor = SaveManager.data["progress"]["current_floor"]
 	var current_level = SaveManager.data["progress"]["current_level"]
 	var has_progress = (current_floor > 1) or (current_floor == 1 and current_level >= 2)
 	
-	# If no progress, just start the game directly
+	# If no progress, just start directly — regardless of login state
 	if not has_progress:
-		# Reset high scores for new game
 		SaveManager.reset_level_times()
 		Global.is_retrying_level = false
 		slide_in_transition("res://scene/floor.tscn")
+		return
+	
+	# Has progress — show appropriate warning dialog
+	if Global.get_current_user().size() > 0:
+		# Logged in with progress — warn that cloud save will be overwritten
+		is_transitioning = false
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			new_game_logged_in.visible = true
+			title.visible = false
+			version.visible = false
+			transition_in([bg_2, new_game_logged_in])
+		)
 	else:
-		is_transitioning = false  # Reset flag before showing dialog
+		# Guest with progress — warn about local save
+		is_transitioning = false
 		transition_out(func():
 			main_btns.visible = false
 			background.visible = false
 			bg_2.visible = true
 			new_game_confirm.visible = true
-			title.visible = false  
+			title.visible = false
 			version.visible = false
 			transition_in([bg_2, new_game_confirm])
 		)
@@ -1121,8 +1141,15 @@ func _session_invalid() -> void:
 	google.set_process_input(true)
 	profile.visible = false
 
+var _web_token_poll: bool = false
+
 func _process(_delta: float) -> void:
-	# Only handle desktop OAuth callback
+	# Poll for postMessage tokens on web
+	if OS.has_feature("web") and not _web_token_poll:
+		var has_tokens = JavaScriptBridge.eval("window.sessionStorage.getItem('oauth_callback_received') === 'true'")
+		if has_tokens:
+			_web_token_poll = true
+			_check_web_oauth_callback()
 	if not OS.has_feature("web") and not OS.has_feature("Android"):
 		if local_server != null and local_server.is_connection_available():
 			auth_connection = local_server.take_connection()
@@ -1495,12 +1522,14 @@ func _clear_session_file() -> void:
 
 func _update_google_profile_image(avatar_url: String):
 	if avatar_url == "":
-		_load_cached_profile_image()  # Try to load from cache first
+		_load_cached_profile_image()
 		if profile.texture == null:
 			_update_profile_placeholder()
 		return
 	
-	if not internet_connected:
+	# On web, skip the internet_connected check — it's unreliable due to async timing
+	# Just attempt the fetch and fall back if it fails
+	if not internet_connected and not OS.has_feature("web"):
 		print("No internet - using cached profile image")
 		_load_cached_profile_image()
 		if profile.texture == null:
@@ -1515,10 +1544,10 @@ func _update_google_profile_image(avatar_url: String):
 			var img = Image.new()
 			if img.load_jpg_from_buffer(body) == OK or img.load_png_from_buffer(body) == OK:
 				profile.texture = ImageTexture.create_from_image(img)
-				_save_profile_image_locally(img)  # Save to cache
+				_save_profile_image_locally(img)
 				print("Profile picture loaded and cached")
 			else:
-				_load_cached_profile_image()  # Fallback to cache
+				_load_cached_profile_image()
 				if profile.texture == null:
 					_update_profile_placeholder()
 		else:
@@ -1865,4 +1894,18 @@ func _on_play_credits_pressed() -> void:
 
 
 func _on_leaderboard_pressed() -> void:
-	get_tree().change_scene_to_file("res://scene/leaderboard.tscn")
+	if not internet_connected:
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			components.visible = false
+			no_net.visible = true
+			title.visible = false
+			version.visible = false
+			
+			transition_in([bg_2, no_net])
+		)
+		return
+	OS.shell_open("https://ashes-web-game.netlify.app/")
+	#get_tree().change_scene_to_file("res://scene/leaderboard.tscn")

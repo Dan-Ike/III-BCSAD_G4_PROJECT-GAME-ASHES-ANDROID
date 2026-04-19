@@ -9748,6 +9748,7 @@ visible = false
 position = Vector2(575, 601)
 
 [node name="DialoguePlayer" parent="npc_working" instance=ExtResource("66_acu4p")]
+npc_id = "npc_1.1"
 
 [node name="Collectable" parent="." instance=ExtResource("66_r47y8")]
 position = Vector2(35, 440)

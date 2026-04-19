@@ -8,6 +8,7 @@ extends Node2D
 @onready var floor_title: CanvasLayer = $FloorTitle
 @onready var player: Player = $player
 @onready var gate: CollisionShape2D = $StaticBody2D2/gate
+@onready var gate2: CollisionShape2D = $StaticBody2D2/gate2
 @onready var flr_3_lvl_3: Area2D = $flr3lvl3
 @onready var advanced_enemy: AdvancedEnemy = $AdvancedEnemy
 
@@ -44,6 +45,9 @@ func _on_advanced_enemy_died() -> void:
 	# Remove the gate collision when enemy dies
 	if gate:
 		gate.disabled = true
+		print("[Level] Gate opened - Advanced Enemy defeated!")
+	if gate2:
+		gate2.disabled = true
 		print("[Level] Gate opened - Advanced Enemy defeated!")
 	if $TileMap2:  
 			$TileMap2.visible = false

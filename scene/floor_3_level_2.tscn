@@ -1,4 +1,4 @@
-[gd_scene load_steps=86 format=3 uid="uid://cmdimuxgdyk8y"]
+[gd_scene load_steps=88 format=3 uid="uid://cmdimuxgdyk8y"]
 
 [ext_resource type="Script" uid="uid://ba075uomoctgp" path="res://script/floor_3_level_2.gd" id="1_gxohb"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_fi1ph"]
@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" uid="uid://d0kturq8grqmg" path="res://scene/advanced_enemy.tscn" id="20_gxohb"]
 [ext_resource type="PackedScene" uid="uid://dewu6l5j8fknm" path="res://scene/floor_title.tscn" id="21_fyhkv"]
 [ext_resource type="PackedScene" uid="uid://3yvbp6tjn1pa" path="res://scene/collectable.tscn" id="22_656x5"]
+[ext_resource type="PackedScene" uid="uid://ce86rk8eoalll" path="res://scene/npc_floor_3.tscn" id="23_7rpx2"]
+[ext_resource type="PackedScene" uid="uid://dsfg1k4nqbyi8" path="res://scene/dialogue_player_3.tscn" id="24_x1jo8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l8b3l"]
 texture = ExtResource("2_fi1ph")
@@ -1265,7 +1267,7 @@ size = Vector2(96.5, 64)
 size = Vector2(80, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_se5h4"]
-size = Vector2(80, 20)
+size = Vector2(80, 75)
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_fyhkv"]
 vertices = PackedVector2Array(1569.82, -438.094, 1576.09, -366.031, 585.508, -368.969, 581.523, -448.883)
@@ -1572,7 +1574,11 @@ position = Vector2(536, -200)
 shape = SubResource("RectangleShape2D_3q3sg")
 
 [node name="gate" type="CollisionShape2D" parent="StaticBody2D2"]
-position = Vector2(6296, -789)
+position = Vector2(6296, -759)
+shape = SubResource("RectangleShape2D_se5h4")
+
+[node name="gate2" type="CollisionShape2D" parent="StaticBody2D2"]
+position = Vector2(6212, -1416.5)
 shape = SubResource("RectangleShape2D_se5h4")
 
 [node name="floor3lvl2" type="Area2D" parent="."]
@@ -1600,7 +1606,7 @@ position = Vector2(4568, -1009)
 
 [node name="AdvancedEnemy" parent="." instance=ExtResource("20_gxohb")]
 position = Vector2(6205, -831)
-enemy_type = 2
+enemy_type = 3
 health = 150
 health_max = 150
 damage_to_deal = 5
@@ -1669,15 +1675,21 @@ navigation_polygon = SubResource("NavigationPolygon_07y8j")
 [node name="TileMap2" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_656x5")
 format = 2
-layer_0/tile_data = PackedInt32Array(-3276409, 65536, 0, -3276408, 131072, 0, -3276407, 131072, 0, -3276406, 131072, 0, -3276405, 196608, 0, -3210869, 196608, 2, -3210872, 131072, 2, -3210871, 131072, 2, -3210870, 131072, 2, -3210873, 65536, 2)
+layer_0/tile_data = PackedInt32Array(-3276409, 65536, 0, -3276408, 131072, 0, -3276407, 131072, 0, -3276406, 131072, 0, -3276405, 196608, 0, -3210869, 196608, 2, -3210872, 131072, 2, -3210871, 131072, 2, -3210870, 131072, 2, -3210873, 65536, 2, -5963386, 196608, 0, -5897850, 196608, 1, -5832314, 196608, 1, -5766778, 196608, 1, -5701242, 196608, 1, -5963387, 65536, 0, -5897851, 65536, 1, -5832315, 65536, 1, -5766779, 65536, 1, -5701243, 65536, 1)
 
 [node name="Collectable" parent="." instance=ExtResource("22_656x5")]
-position = Vector2(1015, -677)
+position = Vector2(5406, -1419)
 collectable_id = "floor_3_lvl_2_shard"
 collectable_type = "memory_shard"
 trigger_cutscene = true
 cutscene_scene_path = "uid://dspmw88yx11hs"
 cutscene_id = "floor_3_lvl_2_shard"
+
+[node name="npc_floor_3" parent="." instance=ExtResource("23_7rpx2")]
+position = Vector2(4991, -1113)
+
+[node name="DialoguePlayer3" parent="npc_floor_3" instance=ExtResource("24_x1jo8")]
+npc_id = "npc_3.2"
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]
 [connection signal="body_entered" from="floor3lvl2" to="." method="_on_floor_3_lvl_2_body_entered"]

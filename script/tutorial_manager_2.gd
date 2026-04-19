@@ -19,9 +19,9 @@ var target_indicator: Sprite2D = null
 var target_radius: float = 20.0
 
 var dialogues = {
-	TutorialStep.INTRO: "Welcome, traveler. Let me teach you the basics of movement.",
-	TutorialStep.DASH: "Great! Now try to [color=yellow]DASH[/color] using the dash button or double-tap.",
-	TutorialStep.COMPLETE: "Perfect! You've mastered the basics.\n[color=cyan]Survive and reach the end![/color]"
+	TutorialStep.INTRO: "Welcome, traveler. Let me teach you the new ability you got.",
+	TutorialStep.DASH: "Try to [color=yellow]DASH[/color] using the dash button.",
+	TutorialStep.COMPLETE: "Perfect! You've mastered the Dash ability.\n[color=cyan]Survive and reach the end![/color]"
 }
 
 func _ready() -> void:
@@ -36,7 +36,7 @@ func _create_target_indicator() -> void:
 	add_child(target_indicator)
 	target_indicator.texture = _create_circle_texture(32, Color(1, 1, 0, 0.7))
 	target_indicator.visible = false
-	target_indicator.z_index = 100
+	target_indicator.z_index = 10
 	var tween = create_tween().set_loops()
 	tween.tween_property(target_indicator, "scale", Vector2(1.2, 1.2), 0.8)
 	tween.tween_property(target_indicator, "scale", Vector2(1.0, 1.0), 0.8)
@@ -57,7 +57,7 @@ func _setup_target_positions() -> void:
 	if not player:
 		return
 	var start_pos = player.global_position
-	target_positions[TutorialStep.DASH] = start_pos + Vector2(350, 0)
+	target_positions[TutorialStep.DASH] = start_pos + Vector2(80, 20)
 
 func check_and_start_tutorial() -> void:
 	print("[Tutorial] check_and_start_tutorial called")

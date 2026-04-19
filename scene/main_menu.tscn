@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://35d2e686py27"]
+[gd_scene load_steps=43 format=3 uid="uid://35d2e686py27"]
 
 [ext_resource type="Script" uid="uid://0jadaq0futba" path="res://script/main_menu.gd" id="1_2fwvj"]
 [ext_resource type="Texture2D" uid="uid://c2thoj84krhoy" path="res://art/components/Sample Only.png" id="2_by01r"]
@@ -30,6 +30,8 @@
 [ext_resource type="Texture2D" uid="uid://tu1rnodqye2s" path="res://art/components/ExitGame_Button.png" id="20_r3wny"]
 [ext_resource type="Texture2D" uid="uid://cna2tdbqoineb" path="res://art/components/ExitGame_Button (1).png" id="21_ruj6x"]
 [ext_resource type="FontFile" uid="uid://bexp3wxrpb7qa" path="res://fonts/vcr_osd_mono/VCR_OSD_MONO_1.001.ttf" id="24_xyo3m"]
+[ext_resource type="Texture2D" uid="uid://dro2vn71ix6g8" path="res://art/Leaderboard_Button (2).png" id="25_teg8v"]
+[ext_resource type="Texture2D" uid="uid://dkkk44mcxbwqx" path="res://art/Leaderboard_Button (3).png" id="26_371lp"]
 [ext_resource type="Texture2D" uid="uid://e4mt6s6fc4o0" path="res://art/components/PlayVideo_Button.png" id="30_kj8il"]
 [ext_resource type="Texture2D" uid="uid://8hxqohejfs5p" path="res://art/components/PlayVideo_Button (1).png" id="31_xyo3m"]
 [ext_resource type="Texture2D" uid="uid://bht7q7d83mq15" path="res://art/components/Retry_Button (2).png" id="33_5dp28"]
@@ -712,9 +714,8 @@ offset_right = 50.3998
 offset_bottom = 50.08
 
 [node name="leaderboard" type="TouchScreenButton" parent="components/Control6"]
-scale = Vector2(2, 2)
-texture_normal = ExtResource("14_unisd")
-texture_pressed = ExtResource("15_2nbnt")
+texture_normal = ExtResource("25_teg8v")
+texture_pressed = ExtResource("26_371lp")
 
 [node name="Mainbtn" type="Control" parent="."]
 layout_mode = 1
