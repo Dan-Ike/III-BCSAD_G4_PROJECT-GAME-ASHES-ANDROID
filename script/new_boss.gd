@@ -143,10 +143,7 @@ func _ready() -> void:
 	_disable_all_damage_areas()
 	Global.bossDamageZone = hitbox2
 	print("[Boss] Hitbox registered for player damage")
-	
 	add_to_group("boss")
-	
-	# Initialize ML system
 	ml_system = load("res://ml_boss_data.gd").new()
 	add_child(ml_system)
 	ml_system.record_encounter()
@@ -469,25 +466,13 @@ func _state_attack_ready(delta: float) -> void:
 	
 	# Phase 2: Prioritize dash attacks
 	if current_phase == 2:
-		# Player above? Jump to them
 		if vertical_distance < -80 and can_jump:
 			change_state(State.JUMPING)
 			return
-		
-		# Player airborne? Jump to intercept
 		if not player.is_on_floor() and can_jump and vertical_distance < -30:
 			change_state(State.JUMPING)
 			return
-		
-		# Close range: Prioritize dash attacks, then slashes
-		if dash_attack_cooldown <= 0 and distance_to_player >= 40:
-			_perform_dash_attack()
-			return
-		elif special_dash_cooldown <= 0 and distance_to_player >= 40:
-			_perform_special_dash()
-			return
-		elif vertical_slash_cooldown <= 0 and down_slash_cooldown <= 0:
-			# Both available, alternate randomly
+		if vertical_slash_cooldown <= 0 and down_slash_cooldown <= 0:
 			if randi() % 2 == 0:
 				_perform_vertical_slash()
 			else:
@@ -542,14 +527,21 @@ func _start_dash() -> void:
 	can_dash = false
 	dash_cooldown_timer = DASH_COOLDOWN
 	animated_sprite_2d.play("dash")
-	velocity.y = 0  # Cancel gravity during dash
+	velocity.y = 0
+	
+	# Phase 2: dash deals damage
+	if current_phase == 2:
+		_enable_damage_area(deal_damage_area_vertical_slash)
+	
 	print("[Boss] Dashing toward player!")
 
 func _end_dash() -> void:
 	dashing = false
-	print("[Boss] Dash ended")
 	
-	# After dash, check if we should attack
+	# Clear damage area when dash ends
+	_disable_all_damage_areas()
+	
+	print("[Boss] Dash ended")
 	if player and not player.dead:
 		var distance_to_player = global_position.distance_to(player.global_position)
 		if distance_to_player <= ATTACK_RANGE and attack_cooldown <= 0:
@@ -589,70 +581,6 @@ func _perform_down_slash() -> void:
 	
 	await get_tree().create_timer(0.7).timeout
 	_disable_all_damage_areas()
-	
-	if current_state == State.ATTACKING:
-		change_state(State.CHASE)
-
-func _perform_dash_attack() -> void:
-	change_state(State.ATTACKING)
-	is_dash_attacking = true
-	is_invulnerable = true
-	can_take_damage = false
-	animated_sprite_2d.play("dash_attack")
-	dash_attack_cooldown = get_dash_attack_cooldown()
-	attack_cooldown = get_attack_cooldown()
-	print("[Boss] Dash Attack!")
-	
-	_enable_damage_area(deal_damage_area_vertical_slash)
-	
-	var dash_direction = facing_direction
-	var dash_distance = 0.0
-	var target_distance = 80.0  # Match sprite animation distance
-	
-	while dash_distance < target_distance:
-		if not is_instance_valid(self):
-			return
-		velocity.x = dash_direction * DASH_ATTACK_SPEED
-		move_and_slide()
-		dash_distance += abs(velocity.x) * get_physics_process_delta_time()
-		await get_tree().process_frame
-	
-	_disable_all_damage_areas()
-	is_dash_attacking = false
-	is_invulnerable = false
-	can_take_damage = true
-	
-	if current_state == State.ATTACKING:
-		change_state(State.CHASE)
-
-func _perform_special_dash() -> void:
-	change_state(State.ATTACKING)
-	is_dash_attacking = true
-	is_invulnerable = true
-	can_take_damage = false
-	animated_sprite_2d.play("special_dash")
-	special_dash_cooldown = get_special_dash_cooldown()
-	attack_cooldown = get_attack_cooldown()
-	print("[Boss] Special Dash!")
-	
-	_enable_damage_area(deal_damage_area_vertical_slash)
-	
-	var dash_direction = facing_direction
-	var dash_distance = 0.0
-	var target_distance = 80.0  # Match sprite animation distance
-	
-	while dash_distance < target_distance:
-		if not is_instance_valid(self):
-			return
-		velocity.x = dash_direction * SPECIAL_DASH_SPEED
-		move_and_slide()
-		dash_distance += abs(velocity.x) * get_physics_process_delta_time()
-		await get_tree().process_frame
-	
-	_disable_all_damage_areas()
-	is_dash_attacking = false
-	is_invulnerable = false
-	can_take_damage = true
 	
 	if current_state == State.ATTACKING:
 		change_state(State.CHASE)
@@ -881,9 +809,7 @@ func _state_jumping(delta: float) -> void:
 		velocity.x = lerp(velocity.x, direction_to_player * CHASE_SPEED * 0.8, 0.25)
 
 func _state_attacking(delta: float) -> void:
-	# Keep velocity during dash attacks, stop for others
-	if not is_dash_attacking:
-		velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10.0)
+	velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10.0)
 
 func _state_hurt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10.0)
@@ -949,7 +875,6 @@ func _exit_state(state: State) -> void:
 func _update_sprite_direction() -> void:
 	if facing_direction != 0:
 		animated_sprite_2d.flip_h = facing_direction < 0
-		# Flip damage areas too
 		deal_damage_area_vertical_slash.scale.x = facing_direction
 		deal_damage_area_jump_up_attack.scale.x = facing_direction
 		deal_damage_area_jump_down_attack.scale.x = facing_direction

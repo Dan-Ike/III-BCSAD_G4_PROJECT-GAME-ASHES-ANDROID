@@ -281,8 +281,8 @@ radius = 188.096
 radius = 66.0076
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_soat0"]
-radius = 11.0
-height = 48.0
+radius = 28.0
+height = 56.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pf8ga"]
 radius = 15.0
@@ -294,6 +294,11 @@ script = ExtResource("1_k0njy")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_hb0h1")
 animation = &"idle"
+
+[node name="RayCast2D" type="RayCast2D" parent="AnimatedSprite2D"]
+position = Vector2(0, 11)
+target_position = Vector2(125, 0)
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
@@ -315,7 +320,6 @@ shape = SubResource("CircleShape2D_7gp33")
 debug_color = Color(0, 0, 0, 0.42)
 
 [node name="AttackArea" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 position = Vector2(-1, 9)
@@ -324,7 +328,6 @@ shape = SubResource("CircleShape2D_siaxf")
 debug_color = Color(0.999109, 0, 0.123329, 0.42)
 
 [node name="DealDamageArea_Attack" type="Area2D" parent="."]
-visible = false
 collision_layer = 16
 collision_mask = 2
 

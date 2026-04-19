@@ -1409,7 +1409,7 @@ layer_2/tile_data = PackedInt32Array(-327638, 131084, 4, -327637, 131084, 4, -32
 layer_3/name = "gate"
 
 [node name="player" parent="." instance=ExtResource("13_hny4h")]
-position = Vector2(3413, -841)
+position = Vector2(227, -136)
 
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)
@@ -1591,27 +1591,49 @@ position = Vector2(-8, 18)
 
 [node name="FlameWizard2" parent="." instance=ExtResource("18_gxohb")]
 position = Vector2(1550, -414)
-enemy_type = 1
+enemy_type = 0
+health = 100
+health_min = 0
+health_max = 100
+damage = 10
+patrol_speed = 50.0
+chase_speed = 120.0
+use_navigation_bounds = true
+manual_patrol_distance = 500.0
 
 [node name="FlameWizard3" parent="." instance=ExtResource("18_gxohb")]
 position = Vector2(1964, -699)
-enemy_type = 1
+enemy_type = 0
+health = 100
+health_min = 0
+health_max = 100
+damage = 10
+patrol_speed = 50.0
+chase_speed = 120.0
+use_navigation_bounds = true
+manual_patrol_distance = 500.0
 
 [node name="FlameWizard6" parent="." instance=ExtResource("18_gxohb")]
 position = Vector2(4207, -551)
-enemy_type = 1
+enemy_type = 0
+health = 100
+health_min = 0
+health_max = 100
+damage = 10
+patrol_speed = 50.0
+chase_speed = 120.0
+use_navigation_bounds = true
+manual_patrol_distance = 500.0
 
 [node name="Warlock2" parent="." instance=ExtResource("19_fyhkv")]
 position = Vector2(2624, -1006)
-enemy_type = 1
 
 [node name="Warlock3" parent="." instance=ExtResource("19_fyhkv")]
 position = Vector2(4568, -1009)
-enemy_type = 1
 
 [node name="AdvancedEnemy" parent="." instance=ExtResource("20_gxohb")]
 position = Vector2(6205, -831)
-enemy_type = 2
+enemy_type = 3
 health = 150
 health_max = 150
 damage_to_deal = 5

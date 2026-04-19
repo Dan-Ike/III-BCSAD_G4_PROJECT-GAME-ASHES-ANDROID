@@ -407,6 +407,11 @@ script = ExtResource("1_mulje")
 sprite_frames = SubResource("SpriteFrames_pk3ud")
 animation = &"idle"
 
+[node name="RayCast2D" type="RayCast2D" parent="AnimatedSprite2D"]
+position = Vector2(0, 25)
+target_position = Vector2(125, 0)
+collision_mask = 2
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
 position = Vector2(0, 19)
@@ -429,7 +434,6 @@ shape = SubResource("CircleShape2D_nu1af")
 debug_color = Color(0, 0, 0, 0.42)
 
 [node name="AttackArea" type="Area2D" parent="."]
-visible = false
 collision_layer = 4
 collision_mask = 2
 
@@ -440,7 +444,6 @@ shape = SubResource("CircleShape2D_1lmp2")
 debug_color = Color(0.999109, 0, 0.123329, 0.42)
 
 [node name="DealDamageArea_UpwardAttack" type="Area2D" parent="."]
-visible = false
 collision_layer = 16
 collision_mask = 2
 
@@ -450,7 +453,6 @@ rotation = 1.5708
 shape = SubResource("CapsuleShape2D_6ohhe")
 
 [node name="DealDamageArea_DownwardAttack" type="Area2D" parent="."]
-visible = false
 collision_layer = 16
 collision_mask = 2
 

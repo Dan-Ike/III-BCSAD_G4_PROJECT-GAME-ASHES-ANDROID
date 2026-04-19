@@ -1,4 +1,4 @@
-[gd_scene load_steps=98 format=3 uid="uid://d5oerf8phnpm"]
+[gd_scene load_steps=92 format=3 uid="uid://d5oerf8phnpm"]
 
 [ext_resource type="Script" uid="uid://bh0jmbq4nysau" path="res://script/new_boss.gd" id="1_8arul"]
 [ext_resource type="Texture2D" uid="uid://brmwepnr5k6r2" path="res://art/enemies/SHADOW Series - The Free Assets/SHADOW Series - The Blind Huntress/Sprite Sheet/6 - dash.png" id="2_etj48"]
@@ -36,14 +36,6 @@ region = Rect2(720, 0, 240, 128)
 [sub_resource type="AtlasTexture" id="AtlasTexture_d25u6"]
 atlas = ExtResource("3_8arul")
 region = Rect2(0, 0, 240, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ywwnh"]
-atlas = ExtResource("3_8arul")
-region = Rect2(240, 0, 240, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ex6fr"]
-atlas = ExtResource("3_8arul")
-region = Rect2(480, 0, 240, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7ke2s"]
 atlas = ExtResource("3_h3lj5")
@@ -277,22 +269,6 @@ region = Rect2(1680, 0, 240, 128)
 atlas = ExtResource("15_r8fku")
 region = Rect2(0, 0, 240, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_gnmyn"]
-atlas = ExtResource("15_r8fku")
-region = Rect2(240, 0, 240, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fneye"]
-atlas = ExtResource("15_r8fku")
-region = Rect2(480, 0, 240, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rfmol"]
-atlas = ExtResource("15_r8fku")
-region = Rect2(720, 0, 240, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s3knl"]
-atlas = ExtResource("15_r8fku")
-region = Rect2(960, 0, 240, 128)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_p4vyx"]
 atlas = ExtResource("16_jruke")
 region = Rect2(0, 0, 240, 128)
@@ -327,12 +303,6 @@ animations = [{
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_d25u6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ywwnh")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ex6fr")
 }],
 "loop": false,
 "name": &"dash_attack",
@@ -557,18 +527,6 @@ animations = [{
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_qnjq5")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gnmyn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_fneye")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rfmol")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_s3knl")
 }],
 "loop": false,
 "name": &"special_dash",
@@ -616,15 +574,15 @@ radius = 7.0
 height = 28.0
 
 [node name="AdvancedEnemy" type="CharacterBody2D"]
+collision_layer = 2
 script = ExtResource("1_8arul")
 metadata/_custom_type_script = "uid://ckxwmmk44cq7t"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3d2wm")
-animation = &"idle"
+animation = &"special_dash"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(0, -1)
 shape = SubResource("CapsuleShape2D_rrd6h")
 
