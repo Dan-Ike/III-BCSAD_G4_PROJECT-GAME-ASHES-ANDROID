@@ -26,6 +26,17 @@ var dialogues = {
 	TutorialStep.COMPLETE: "Perfect! You've mastered your ability.\n[color=cyan]Survive and reach the end![/color]"
 }
 
+var dialogues_controller = {
+	TutorialStep.INTRO: "Let me teach you your new ability.",
+	TutorialStep.DOUBLE_JUMP: "Try to [color=yellow]DOUBLE JUMP[/color]! Jump once, then jump again in mid-air.",
+	TutorialStep.COMPLETE: "Perfect! You've mastered your ability.\n[color=cyan]Survive and reach the end![/color]"
+}
+
+func _get_dialogue(step: TutorialStep) -> String:
+	if Global.control_type == 2:
+		return dialogues_controller.get(step, "")
+	return dialogues.get(step, "")
+
 func _ready() -> void:
 	print("[Tutorial] TutorialManager _ready() called")
 	add_to_group("tutorial_manager")
@@ -141,7 +152,8 @@ func _show_step(step: TutorialStep) -> void:
 		target_indicator_alt.global_position = target_positions_alt[step]
 		target_indicator_alt.visible = true
 	
-	tutorial_dialogue.show_dialogue(dialogues[step])
+	#tutorial_dialogue.show_dialogue(dialogues[step])
+	tutorial_dialogue.show_dialogue(_get_dialogue(step))
 	await tutorial_dialogue.dialogue_finished
 	print("[Tutorial] Dialogue finished for step: ", TutorialStep.keys()[step])
 	

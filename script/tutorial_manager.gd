@@ -30,13 +30,28 @@ var target_radius: float = 20.0  # Distance to reach target
 var npc_dialogue_finished: bool = false
 # Tutorial dialogue texts
 var dialogues = {
-	TutorialStep.INTRO: "Welcome, traveler. Let me teach you the basics of movement.",
-	TutorialStep.MOVE_RIGHT: "First, try moving [color=yellow]RIGHT[/color] using the button or joystick.",
-	TutorialStep.MOVE_LEFT: "Good! Now try moving [color=yellow]LEFT[/color].",
-	TutorialStep.JUMP: "Excellent! Now try to [color=yellow]JUMP[/color].",
-	TutorialStep.TALK_TO_NPC: "Now, approach the NPC and [color=yellow]touch[/color] anywhere on the screen to talk.", 
+	TutorialStep.INTRO: "Welcome, Challenger. Let me teach you the basics of movement. Later on, press the settings icon or C key and pause icon or P key to pause the game. touch anywhere or the B key to proceed to the next text.",
+	TutorialStep.MOVE_RIGHT: "First, try moving [color=yellow]RIGHT[/color] using the button or →/D key.",
+	TutorialStep.MOVE_LEFT: "Good! Now try moving [color=yellow]LEFT[/color] using the button or ←/A key.",
+	TutorialStep.JUMP: "Excellent! Now try to [color=yellow]JUMP[/color] using the button or ↑/W/spacebar key.",
+	TutorialStep.TALK_TO_NPC: "Now, approach the NPC and [color=yellow]touch[/color] anywhere on the screen to talk or using the B key.", 
 	TutorialStep.COMPLETE: "Perfect! You've mastered the basics.\n[color=cyan]Survive and reach the end![/color]"
 }
+
+var dialogues_controller = {
+	TutorialStep.INTRO: "Ano button dito ha controller to Welcome, Challenger. Let me teach you the basics of movement. Later on, press the settings icon or C key and pause icon or P key to pause the game. touch anywhere or the B key to proceed to the next text.",
+	TutorialStep.MOVE_RIGHT: "First, try moving [color=yellow]RIGHT[/color] using the X button.",
+	TutorialStep.MOVE_LEFT: "Good! Now try moving [color=yellow]LEFT[/color] using the A button",
+	TutorialStep.JUMP: "Excellent! Now try to [color=yellow]JUMP[/color] using the C button.",
+	TutorialStep.TALK_TO_NPC: "Now, approach the NPC and press [color=yellow]B/Circle[/color] to talk.", 
+	TutorialStep.COMPLETE: "Perfect! You've mastered the basics.\n[color=cyan]Survive and reach the end![/color]"
+}
+
+func _get_dialogue(step: TutorialStep) -> String:
+	if Global.control_type == 2:
+		return dialogues_controller.get(step, "")
+	return dialogues.get(step, "")
+
 
 func _ready() -> void:
 	print("[Tutorial] TutorialManager _ready() called")
@@ -174,7 +189,8 @@ func _show_step(step: TutorialStep) -> void:
 		target_indicator.global_position = target_positions[step]
 		target_indicator.visible = true
 	
-	tutorial_dialogue.show_dialogue(dialogues[step])
+	#tutorial_dialogue.show_dialogue(dialogues[step])
+	tutorial_dialogue.show_dialogue(_get_dialogue(step))
 	
 	# Wait for dialogue to finish
 	await tutorial_dialogue.dialogue_finished

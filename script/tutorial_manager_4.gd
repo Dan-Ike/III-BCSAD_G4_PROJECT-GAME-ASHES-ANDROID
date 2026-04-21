@@ -14,9 +14,19 @@ var current_step: TutorialStep = TutorialStep.INTRO
 var player_frozen: bool = false
 
 var dialogues = {
-	TutorialStep.INTRO: "Welcome, traveler. Let me teach you the basics of movement.",
-	TutorialStep.COMPLETE: "Perfect! You've mastered the basics.\n[color=cyan]Survive and reach the end![/color]"
+	TutorialStep.INTRO: "Welcome to the 2nd Floor.",
+	TutorialStep.COMPLETE: "In this floor, the light is your way out\n[color=cyan]Talk to the npc to find out more.[/color]"
 }
+
+var dialogues_controller = {
+	TutorialStep.INTRO: "Welcome to the 2nd Floor.",
+	TutorialStep.COMPLETE: "In this floor, the light is your way out\n[color=cyan]Talk to the npc to find out more.[/color]"
+}
+
+func _get_dialogue(step: TutorialStep) -> String:
+	if Global.control_type == 2:
+		return dialogues_controller.get(step, "")
+	return dialogues.get(step, "")
 
 func _ready() -> void:
 	print("[Tutorial] TutorialManager _ready() called")
@@ -100,7 +110,8 @@ func _show_step(step: TutorialStep) -> void:
 	if player:
 		player.tutorial_frozen = true
 		player.velocity.x = 0
-	tutorial_dialogue.show_dialogue(dialogues[step])
+	#tutorial_dialogue.show_dialogue(dialogues[step])
+	tutorial_dialogue.show_dialogue(_get_dialogue(step))
 	await get_tree().create_timer(2.5).timeout
 	print("[Tutorial] Dialogue finished for step: ", TutorialStep.keys()[step])
 	if step == TutorialStep.INTRO:

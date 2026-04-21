@@ -1394,7 +1394,6 @@ script = ExtResource("1_gxohb")
 metadata/_edit_vertical_guides_ = [288.0]
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="TileMap" type="TileMap" parent="."]
@@ -1409,7 +1408,7 @@ layer_2/tile_data = PackedInt32Array(-327638, 131084, 4, -327637, 131084, 4, -32
 layer_3/name = "gate"
 
 [node name="player" parent="." instance=ExtResource("13_hny4h")]
-position = Vector2(3413, -841)
+position = Vector2(103, -116)
 
 [node name="Camera2D2" type="Camera2D" parent="player"]
 position = Vector2(0, 2.14407)

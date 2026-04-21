@@ -613,7 +613,6 @@ size = Vector2(32.625, 31.25)
 script = ExtResource("1_dtog8")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="TileMap" type="TileMap" parent="."]

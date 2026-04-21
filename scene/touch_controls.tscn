@@ -1081,7 +1081,6 @@ popup/item_0/id = 0
 popup/item_1/text = "Joystick"
 popup/item_1/id = 1
 
-[connection signal="pressed" from="Control/Control8/settings" to="." method="_on_option_pressed"]
 [connection signal="pressed" from="PauseMenu/Control3/back_exit" to="." method="_on_pause_pressed"]
 [connection signal="pressed" from="PauseMenu/Control4/retry" to="." method="_on_retry_pressed"]
 [connection signal="pressed" from="PauseMenu/Control6/main_menu" to="." method="_on_exit_pressed"]

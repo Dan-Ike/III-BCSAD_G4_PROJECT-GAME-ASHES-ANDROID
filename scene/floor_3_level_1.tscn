@@ -1979,7 +1979,6 @@ metadata/_edit_vertical_guides_ = [288.0]
 [node name="FadeLayer" type="CanvasLayer" parent="."]
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="TileMap" type="TileMap" parent="."]

@@ -427,7 +427,7 @@ func handle_input(delta: float) -> void:
 	if Input.is_action_just_pressed("shine") and Global.touchshine:
 		if shine_available and not shine_active and not shine_on_cooldown:
 			_activate_shine()
-	if Input.is_action_just_pressed("dash") and not dashing and not dash_on_cooldown:
+	if Input.is_action_just_pressed("dash") and not dashing and not dash_on_cooldown and Global.touchdash:
 		if is_on_floor() and not ground_dash_used:
 			ground_dash_used = true
 			start_dash()
@@ -446,7 +446,6 @@ func handle_input(delta: float) -> void:
 		sfx_jump.play()
 		return
 	if Input.is_action_just_pressed("jump") and jumps_left > 0 and not current_attack:
-		#print("[JUMP] Jump button pressed! Playing jump sound...")
 		Input.vibrate_handheld(20)
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
@@ -455,8 +454,6 @@ func handle_input(delta: float) -> void:
 		await get_tree().process_frame
 		sfx_jump.stream_paused = false
 		sfx_jump.play()
-		#print("[JUMP] Jump sound playing:", sfx_jump.playing)
-		#print("[JUMP] Jump sound stream:", sfx_jump.stream)
 	if not current_attack and not dashing and Input.is_action_just_pressed("z"):
 		start_attack()
 	if not dashing and attack_push_time <= 0.0:
@@ -464,7 +461,7 @@ func handle_input(delta: float) -> void:
 			var dirf := Input.get_axis("left", "right")
 			if abs(dirf) > 0.01:
 				facing_dir = sign(dirf)
-				velocity.x = lerp(velocity.x, dirf * SPEED, 0.3)  
+				velocity.x = lerp(velocity.x, dirf * SPEED, 0.3)
 				toggle_split_sprite(facing_dir)
 			else:
 				velocity.x = move_toward(velocity.x, 0.0, SPEED * delta * 5.0)

@@ -327,8 +327,8 @@ func _on_agree_google_pressed() -> void:
 		if _start_local_server():
 			auth_in_progress = true
 			_start_google_oauth_flow()
-		else:
-			_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
+		#else:
+			#_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
 
 func _setup_scrollable_notice(scroll_container: ScrollContainer, label: Label) -> void:
 	if not scroll_container:
@@ -464,7 +464,7 @@ func _parse_oauth_callback(url: String):
 	
 	if fragment == "":
 		_log_debug("No tokens found in OAuth callback URL")
-		_show_error("No tokens found in OAuth callback URL")
+		#_show_error("No tokens found in OAuth callback URL")
 		return
 	
 	_log_debug("Fragment data: " + fragment)
@@ -493,7 +493,7 @@ func _parse_oauth_callback(url: String):
 		_perform_login(access_token, refresh_token)
 	else:
 		_log_debug("No access token found in callback")
-		_show_error("No access token found in callback")
+		#_show_error("No access token found in callback")
 
 func _exit_tree():
 	_stop_local_server()
@@ -599,8 +599,8 @@ func _on_google_pressed() -> void:
 		if _start_local_server():
 			auth_in_progress = true
 			_start_google_oauth_flow()
-		else:
-			_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
+		#else:
+			#_show_error("Failed to start local server for OAuth.\nPlease check if port %d is available." % DESKTOP_CALLBACK_PORT)
 
 func _start_web_oauth_flow():
 	_log_debug("Starting web OAuth flow...")
@@ -1193,8 +1193,8 @@ func _check_web_oauth_callback():
 				_perform_login(access_token, refresh_token)
 			else:
 				_perform_login(access_token, "")
-		else:
-			_show_error("No access token found in callback")
+		#else:
+			#_show_error("No access token found in callback")
 
 func _periodic_intent_check() -> void:
 	if auth_in_progress and OS.has_feature("Android"):
@@ -1238,7 +1238,7 @@ func _start_local_server() -> bool:
 	
 	if err != OK:
 		push_error("Failed to start local OAuth server: %s" % error_string(err))
-		_show_error("Failed to start OAuth server.\n\nPlease close any programs using port %d and try again.\n\nYou can check with:\nWindows: netstat -ano | findstr :%d\nMac/Linux: lsof -i :%d" % [DESKTOP_CALLBACK_PORT, DESKTOP_CALLBACK_PORT, DESKTOP_CALLBACK_PORT])
+		#_show_error("Failed to start OAuth server.\n\nPlease close any programs using port %d and try again.\n\nYou can check with:\nWindows: netstat -ano | findstr :%d\nMac/Linux: lsof -i :%d" % [DESKTOP_CALLBACK_PORT, DESKTOP_CALLBACK_PORT, DESKTOP_CALLBACK_PORT])
 		local_server = null
 		return false
 	
@@ -1332,7 +1332,7 @@ func _parse_oauth_callback_from_url(url_path: String) -> void:
 		fragment = parts[1] if parts.size() > 1 else ""
 	
 	if fragment == "":
-		_show_error("No tokens found in OAuth callback")
+		#_show_error("No tokens found in OAuth callback")
 		return
 	
 	var params = fragment.split("&")
@@ -1353,8 +1353,8 @@ func _parse_oauth_callback_from_url(url_path: String) -> void:
 	if access_token != "":
 		print("Tokens extracted successfully!")
 		_perform_login(access_token, refresh_token)
-	else:
-		_show_error("No access token found in callback")
+	#else:
+		#_show_error("No access token found in callback")
 
 func _check_android_intent():
 	if not Engine.has_singleton("JavaClassWrapper"):
@@ -1395,7 +1395,7 @@ func _perform_login(access_token: String, refresh_tok: String = ""):
 	var err = http.request(url, headers, HTTPClient.METHOD_GET)
 	if err != OK:
 		print("❌ HTTP request failed immediately:", err)
-		_show_error("Network request failed")
+		#_show_error("Network request failed")
 
 func _on_user_info_request_completed(result, response_code, headers, body, access_token, refresh_tok, start_time):
 	var elapsed = Time.get_ticks_msec() - start_time
@@ -1426,14 +1426,14 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 			
 			print("⚡ Total login time: %d ms" % (Time.get_ticks_msec() - start_time))
 		else:
-			_show_error("Invalid user data received")
+			#_show_error("Invalid user data received")
 			_handle_login_failure()
 	else:
 		if response_code == 403 or response_code == 401:
 			print("🔄 Token expired, refreshing...")
 			_refresh_access_token()
 		else:
-			_show_error("Login failed (Code: " + str(response_code) + ")")
+			#_show_error("Login failed (Code: " + str(response_code) + ")")
 			_handle_login_failure()
 
 func _background_sync(user_id: String) -> void:
@@ -1457,7 +1457,7 @@ func _handle_login_failure() -> void:
 func _refresh_access_token():
 	var stored_refresh = Global.refresh_token
 	if stored_refresh == "":
-		_show_error("No refresh token stored. Please login again.")
+		#_show_error("No refresh token stored. Please login again.")
 		_handle_refresh_failure()
 		return
 	
@@ -1488,10 +1488,10 @@ func _on_refresh_token_response(result, response_code, headers, body):
 			Global.set_session(current_user, new_access, new_refresh)
 			_save_session(new_access, new_refresh, current_user)
 		else:
-			_show_error("Token refresh failed")
+			#_show_error("Token refresh failed")
 			_handle_refresh_failure()
 	else:
-		_show_error("Token refresh failed (" + str(response_code) + ")")
+		#_show_error("Token refresh failed (" + str(response_code) + ")")
 		_handle_refresh_failure()
 
 func _handle_refresh_failure():
@@ -1894,18 +1894,19 @@ func _on_play_credits_pressed() -> void:
 
 
 func _on_leaderboard_pressed() -> void:
-	if not internet_connected:
-		transition_out(func():
-			main_btns.visible = false
-			background.visible = false
-			bg_2.visible = true
-			components.visible = false
-			no_net.visible = true
-			title.visible = false
-			version.visible = false
+	#comment muna para maayos sa web
+	#if not internet_connected:
+	#	transition_out(func():
+	#		main_btns.visible = false
+	#		background.visible = false
+	#		bg_2.visible = true
+	#		components.visible = false
+	#		no_net.visible = true
+	#		title.visible = false
+	#		version.visible = false
 			
-			transition_in([bg_2, no_net])
-		)
-		return
+	#		transition_in([bg_2, no_net])
+	#	)
+	#	return
 	OS.shell_open("https://ashes-web-game.netlify.app/")
 	#get_tree().change_scene_to_file("res://scene/leaderboard.tscn")

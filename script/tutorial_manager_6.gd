@@ -17,9 +17,20 @@ var player_frozen: bool = false
 
 var dialogues = {
 	TutorialStep.INTRO: "An enemy blocks your path. Defeat it!",
-	TutorialStep.KILL_ENEMY: "Use your [color=red]ATTACK[/color]! Defeat the [color=yellow]Kanun[/color] to proceed.",
+	TutorialStep.KILL_ENEMY: "Use your [color=red]ATTACK[/color]! button or using the Z key, Defeat the [color=yellow]Kanun[/color] to proceed.",
 	TutorialStep.COMPLETE: "Well done, Soldier!\n[color=cyan]Survive and Persist![/color]"
 }
+
+var dialogues_controller = {
+	TutorialStep.INTRO: "An enemy blocks your path. Defeat it!",
+	TutorialStep.KILL_ENEMY: "Use your [color=red]ATTACK[/color]! button or using the Z key, Defeat the [color=yellow]Kanun[/color] to proceed.",
+	TutorialStep.COMPLETE: "Well done, Soldier!\n[color=cyan]Survive and Persist![/color]"
+}
+
+func _get_dialogue(step: TutorialStep) -> String:
+	if Global.control_type == 2:
+		return dialogues_controller.get(step, "")
+	return dialogues.get(step, "")
 
 func _ready() -> void:
 	print("[Tutorial] TutorialManager _ready() called")
@@ -108,7 +119,8 @@ func _show_step(step: TutorialStep) -> void:
 		if player:
 			player.tutorial_frozen = true
 			player.velocity.x = 0
-		tutorial_dialogue.show_dialogue(dialogues[step])
+		#tutorial_dialogue.show_dialogue(dialogues[step])
+		tutorial_dialogue.show_dialogue(_get_dialogue(step))
 		await get_tree().create_timer(2.5).timeout
 		_next_step()
 

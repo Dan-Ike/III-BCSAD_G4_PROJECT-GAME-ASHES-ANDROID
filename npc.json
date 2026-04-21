@@ -12,19 +12,26 @@
 	"npc_1.3": [
 		{"name": "NPC", "text": "The last level, im surprised you made it."},
 		{"name": "Player", "text": "..."},
-		{"name": "NPC", "text": "Go back to the 1st level, you'll know some of you."}
+		{"name": "NPC", "text": "Go back to the 1st level, go towards the left side of the map."},
+		{"name": "NPC", "text": "I'm pretty sure you already saw it, but can't reach it."},
+		{"name": "NPC", "text": "Go back, after you reached the next floor."}
 	],
 	"npc_2.1": [
 		{"name": "NPC", "text": "You made it to floor 2."},
 		{"name": "NPC", "text": "Money money money."},
-		{"name": "Player", "text": "..."}
+		{"name": "Player", "text": "..."},
+		{"name": "NPC", "text": "What?"}
 	],
 	"npc_2.2": [
-		{"name": "NPC", "text": "Money the smell of money"},
-		{"name": "NPC", "text": "Money money money."},
-		{"name": "Player", "text": "..."}
+		{"name": "NPC", "text": "Money, the smell of money"},
+		{"name": "NPC", "text": "You, Yes, find and go near the light, it will open the way for you later"},
+		{"name": "NPC", "text": "Right now find the exit, memorize the pattern to light your way out"},
+		{"name": "Player", "text": "..."},
+		{"name": "NPC", "text": "I bet on you, that you will reach all the way to the 3rd floor."},
+		{"name": "NPC", "text": "Money money money."}
 	],
 	"npc_2.3": [
+		{"name": "NPC", "text": "Money, the sweet smeel of money, I knew I'd get my worth in you"},
 		{"name": "NPC", "text": "Want to know a secret?"},
 		{"name": "NPC", "text": "Go back at the 1st level in this floor, use your shine ability near the exit."},
 		{"name": "Player", "text": "..."}
@@ -32,7 +39,9 @@
 	"npc_3.1": [
 		{"name": "NPC", "text": "You made it to floor 3."},
 		{"name": "Player", "text": "..."},
-		{"name": "NPC", "text": "I see you are familiar with the sword, burn brightly soldier.."}
+		{"name": "NPC", "text": "I see you are familiar with the sword, burn brightly soldier.."},
+		{"name": "NPC", "text": "To move to the next level, defeat the guardian, his powers are blocking the way out."},
+		{"name": "Player", "text": "..."}
 	],
 	"npc_3.2": [
 		{"name": "NPC", "text": "You made it soldier."},

@@ -16,9 +16,20 @@ var player_frozen: bool = false
 
 var dialogues = {
 	TutorialStep.INTRO: "You got a new ability.",
-	TutorialStep.USE_SHINE: "Use your [color=yellow]SHINE[/color] ability! Tap the shine button to activate it.",
+	TutorialStep.USE_SHINE: "Use your [color=yellow]SHINE[/color] ability! Tap the shine button or using the D key to activate it.",
 	TutorialStep.COMPLETE: "Well done! Use it wisely.\n[color=cyan]Survive and reach the end![/color]"
 }
+
+var dialogues_controller = {
+	TutorialStep.INTRO: "You got a new ability.",
+	TutorialStep.USE_SHINE: "Use your [color=yellow]SHINE[/color] ability! Tap the shine button or using the D key to activate it.",
+	TutorialStep.COMPLETE: "Well done! Use it wisely.\n[color=cyan]Survive and reach the end![/color]"
+}
+
+func _get_dialogue(step: TutorialStep) -> String:
+	if Global.control_type == 2:
+		return dialogues_controller.get(step, "")
+	return dialogues.get(step, "")
 
 func _ready() -> void:
 	print("[Tutorial] TutorialManager _ready() called")
@@ -104,7 +115,8 @@ func _show_step(step: TutorialStep) -> void:
 		if player:
 			player.tutorial_frozen = true
 			player.velocity.x = 0
-		tutorial_dialogue.show_dialogue(dialogues[step])
+		#tutorial_dialogue.show_dialogue(dialogues[step])
+		tutorial_dialogue.show_dialogue(_get_dialogue(step))
 		await get_tree().create_timer(2.5).timeout
 		_next_step()
 

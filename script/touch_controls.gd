@@ -15,6 +15,7 @@ extends CanvasLayer
 #@onready var control_choice: OptionButton = $Options/ControlChoice
 @onready var edit: Button = $Options/edit
 @onready var shine: TouchScreenButton = $Control/Control7/shine
+@onready var settings_btn: TouchScreenButton = $Control/Control8/settings
 
 @onready var hud: Control = $HUD
 @onready var health_bar_simple: Control = $HUD/HealthBarSimple
@@ -52,11 +53,12 @@ func _ready() -> void:
 	Global.control_type_changed.connect(_on_control_type_changed)
 	
 	# Always process pause-related nodes
-	for node in [pause, pause_menu, option, exit, settings]:
+	for node in [pause, settings_btn, pause_menu, option, exit, settings]:
 		node.process_mode = Node.PROCESS_MODE_ALWAYS
-	
-	# Connect signals
-	pause.pressed.connect(_on_pause_pressed)
+
+	#pause.pressed.connect(_on_pause_pressed)
+	#settings_btn.pressed.connect(_on_option_pressed)
+	back.pressed.connect(_on_back_settings_pressed)
 	option.pressed.connect(_on_option_pressed)
 	exit.pressed.connect(_on_exit_pressed)
 	resume.pressed.connect(_on_resume_pressed)
@@ -75,9 +77,29 @@ func _ready() -> void:
 	control_choice.clear()
 	control_choice.add_item("Button", 0)
 	control_choice.add_item("Joystick", 1)
+	control_choice.add_item("Controller", 2)
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_mode_selected)
 	Global.control_type_changed.connect(_sync_with_global)
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch or event is InputEventMouseButton:
+		var pressed = false
+		var pos = Vector2.ZERO
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			pressed = true
+			pos = event.position
+		elif event is InputEventScreenTouch and event.pressed:
+			pressed = true
+			pos = event.position
+		
+		if pressed:
+			if pause.visible and pause.get_parent().get_global_rect().has_point(pos):
+				_on_pause_pressed()
+				return
+			if settings_btn.visible and settings_btn.get_parent().get_global_rect().has_point(pos):
+				_on_option_pressed()
+				return
 
 # ---------------------------
 # HAPTIC FEEDBACK FUNCTIONS
@@ -169,8 +191,25 @@ func _apply_layout_to_control(control, layout_data: Dictionary) -> void:
 # PROCESS & INPUT
 # ---------------------------
 func _process(_delta: float) -> void:
+	if settings.visible:
+		return
+	if is_paused:
+		return
 	if Input.is_action_just_pressed("ui_cancel") and pause_enabled:
 		_on_pause_pressed()
+	if Input.is_action_just_pressed("pause") and pause_enabled:
+		_on_pause_pressed()
+	if Input.is_action_just_pressed("settings") and pause_enabled and not is_paused:
+		_on_option_pressed()
+
+func _on_back_settings_pressed() -> void:
+	delayed_action(0.2, func():
+		is_paused = false
+		get_tree().paused = false
+		settings.visible = false
+		pause_menu.visible = false
+		_update_controls_visibility()
+	)
 
 func _on_control_mode_selected(index: int) -> void:
 	Global.set_control_type(index)
@@ -180,6 +219,9 @@ func _sync_with_global() -> void:
 
 func _update_controls_visibility() -> void:
 	if is_paused:
+		_hide_all_controls()
+		return
+	if Global.control_type == 2:
 		_hide_all_controls()
 		return
 	if Global.is_button_mode():
@@ -207,6 +249,7 @@ func _update_controls_visibility() -> void:
 	dash.visible = Global.touchdash
 	shine.visible = Global.touchshine
 	pause.visible = pause_enabled
+	settings_btn.visible = pause_enabled
 	settings.visible = false
 
 func hide_for_editor() -> void:
@@ -220,17 +263,15 @@ func _hide_all_controls() -> void:
 	virtual_joystick.hide()
 	virtual_joystick.set_process(false)
 	virtual_joystick.set_block_signals(true)
+	pause.visible = false
+	settings_btn.visible = false
 
 # ---------------------------
 # PAUSE MENU HANDLERS
 # ---------------------------
 func _on_pause_pressed() -> void:
 	delayed_action(0.2, func():
-		# BLOCK pause completely during cutscenes
 		if Global.cutscene_playing:
-			return
-		# Don't allow pause if controls are disabled
-		if not self.visible:
 			return
 		if not pause_enabled:
 			return
@@ -243,7 +284,6 @@ func _on_pause_pressed() -> void:
 		else:
 			_update_controls_visibility()
 	)
-
 func _on_resume_pressed() -> void:
 	delayed_action(0.2, func():
 		_on_pause_pressed()
@@ -257,29 +297,21 @@ func _on_exit_pressed() -> void:
 	)
 
 func _on_option_pressed() -> void:
+	if Global.cutscene_playing:
+		return
+	if not pause_enabled:
+		return
+	if is_paused:
+		return
+	is_paused = true
 	delayed_action(0.2, func():
-		# BLOCK pause completely during cutscenes
-		if Global.cutscene_playing:
-			return
-		# Don't allow pause if controls are disabled
-		if not self.visible:
-			return
-		if not pause_enabled:
-			return
-		is_paused = !is_paused
-		get_tree().paused = is_paused
-		pause_menu.visible = is_paused
+		get_tree().paused = true
 		settings.visible = true
 		pause_menu.visible = false
-		if is_paused:
-			_hide_all_controls()
-		else:
-			_update_controls_visibility()
+		_hide_all_controls()
+		pause.visible = false
+		settings_btn.visible = false
 	)
-	
-	
-	#pause_menu.visible = false
-	#options.visible = true
 
 func disable_pause() -> void:
 	pause_enabled = false
