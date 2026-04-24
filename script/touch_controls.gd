@@ -77,7 +77,7 @@ func _ready() -> void:
 	control_choice.clear()
 	control_choice.add_item("Button", 0)
 	control_choice.add_item("Joystick", 1)
-	control_choice.add_item("Controller", 2)
+	#control_choice.add_item("Controller", 2)
 	control_choice.select(Global.control_type)
 	control_choice.item_selected.connect(_on_control_mode_selected)
 	Global.control_type_changed.connect(_sync_with_global)

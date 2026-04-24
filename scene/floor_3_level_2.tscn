@@ -1610,7 +1610,7 @@ enemy_type = 1
 
 [node name="AdvancedEnemy" parent="." instance=ExtResource("20_gxohb")]
 position = Vector2(6205, -831)
-enemy_type = 2
+enemy_type = 3
 health = 150
 health_max = 150
 damage_to_deal = 5

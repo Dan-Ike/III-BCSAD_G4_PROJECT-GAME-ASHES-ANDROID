@@ -77,7 +77,7 @@ func _should_run_tutorial() -> bool:
 	if preference == "always":
 		return true
 	
-	return not SaveManager.get_data().get("tutorial_completed", false)
+	return not SaveManager.get_data().get("tutorial_completed_6", false)
 
 func _ensure_buttons_visible() -> void:
 	if not touch_controls:
@@ -171,7 +171,7 @@ func _end_tutorial() -> void:
 	if touch_controls:
 		touch_controls.enable_pause()
 	
-	SaveManager.data["tutorial_completed"] = true
+	SaveManager.data["tutorial_completed_6"] = true
 	SaveManager._save_local()
 	
 	print("[Tutorial] Tutorial completed and saved!")

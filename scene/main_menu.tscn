@@ -265,13 +265,11 @@ offset_bottom = 23.72
 theme_override_fonts/font = ExtResource("24_xyo3m")
 theme_override_font_sizes/font_size = 32
 selected = 0
-item_count = 3
+item_count = 2
 popup/item_0/text = "Button"
 popup/item_0/id = 0
 popup/item_1/text = "Joystick"
 popup/item_1/id = 1
-popup/item_2/text = "Controller"
-popup/item_2/id = 2
 
 [node name="CutsceneChoice" type="OptionButton" parent="Settings"]
 layout_mode = 1

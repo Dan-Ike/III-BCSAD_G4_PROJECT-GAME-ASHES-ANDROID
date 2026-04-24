@@ -1421,8 +1421,8 @@ func _on_user_info_request_completed(result, response_code, headers, body, acces
 				await _background_sync(user_id)
 				
 				# Force push avatar data to database immediately
-				print("🔄 Pushing avatar data to database...")
-				SaveManager.push_all_to_supabase()
+				#print("🔄 Pushing avatar data to database...")
+				#SaveManager.push_all_to_supabase()
 			
 			print("⚡ Total login time: %d ms" % (Time.get_ticks_msec() - start_time))
 		else:
@@ -1908,5 +1908,6 @@ func _on_leaderboard_pressed() -> void:
 	#		transition_in([bg_2, no_net])
 	#	)
 	#	return
-	OS.shell_open("https://ashes-web-game.netlify.app/")
+	OS.shell_open("https://incredible-cucurucho-4d9bb9.netlify.app")
+	#OS.shell_open("https://ashes-web-game.netlify.app/")
 	#get_tree().change_scene_to_file("res://scene/leaderboard.tscn")

@@ -23,7 +23,12 @@ var data := {
 	"control_layout": {},
 	"level_times": {},  
 	"best_run_time": 0.0,
-	"tutorial_completed": false,        
+	"tutorial_completed": false,    
+	"tutorial_completed_2": false,    
+	"tutorial_completed_3": false,
+	"tutorial_completed_4": false,
+	"tutorial_completed_5": false,
+	"tutorial_completed_6": false,
 	"tutorial_preference": "play_once"  
 }
 
@@ -275,8 +280,13 @@ func push_times_to_supabase() -> void:
 
 func reset_tutorial() -> void:
 	data["tutorial_completed"] = false
+	data["tutorial_completed_2"] = false
+	data["tutorial_completed_3"] = false
+	data["tutorial_completed_4"] = false
+	data["tutorial_completed_5"] = false
+	data["tutorial_completed_6"] = false
 	_save_local()
-	print("SaveManager: Tutorial reset")
+	print("SaveManager: All tutorials reset")
 
 func get_tutorial_preference() -> String:
 	return data.get("tutorial_preference", "play_once")
@@ -476,6 +486,16 @@ func _load_local() -> void:
 					data["best_run_time"] = 0.0
 				if not data.has("tutorial_completed"):
 					data["tutorial_completed"] = false
+				if not data.has("tutorial_completed_2"):
+					data["tutorial_completed_2"] = false
+				if not data.has("tutorial_completed_3"):
+					data["tutorial_completed_3"] = false
+				if not data.has("tutorial_completed_4"):
+					data["tutorial_completed_4"] = false
+				if not data.has("tutorial_completed_5"):
+					data["tutorial_completed_5"] = false
+				if not data.has("tutorial_completed_6"):
+					data["tutorial_completed_6"] = false
 				if not data.has("tutorial_preference"):
 					data["tutorial_preference"] = "play_once"
 				print("SaveManager: Loaded level_times: ", data.get("level_times", {}))
@@ -848,8 +868,8 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 				_save_local()
 				_apply_abilities_to_global()
 				
-				await get_tree().create_timer(0.5).timeout
-				push_all_to_supabase()
+				#await get_tree().create_timer(0.5).timeout
+				#push_all_to_supabase()
 				
 			else:
 				print("\nNo cloud progress found - Creating initial cloud save")
