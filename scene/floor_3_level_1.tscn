@@ -1972,7 +1972,7 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(112, -22, 650, -20, 652
 size = Vector2(35, 65)
 
 [node name="floor_3_level_1" type="Node2D"]
-position = Vector2(1057, 465)
+position = Vector2(1076, 465)
 script = ExtResource("1_u2qvc")
 metadata/_edit_vertical_guides_ = [288.0]
 

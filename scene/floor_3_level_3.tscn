@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://cgobdytreawen"]
+[gd_scene load_steps=41 format=3 uid="uid://cgobdytreawen"]
 
 [ext_resource type="Script" uid="uid://bbpxkprdhibkt" path="res://script/boss_level_normal.gd" id="1_congw"]
 [ext_resource type="Texture2D" uid="uid://bbl0lm1w15wr" path="res://art/Dungeon Tile Set.png" id="2_xvmuc"]
@@ -385,6 +385,11 @@ size = Vector2(721, 311)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xvmuc"]
 size = Vector2(80, 31)
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_l5b74"]
+vertices = PackedVector2Array(3582, -165.023, 3582, -76.9766, 1720, -75.0078, 1720, -168.969)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(1710, -179, 1710, -65, 3592, -67, 3592, -175)])
+
 [node name="floor_3_level_1" type="Node2D"]
 script = ExtResource("1_congw")
 metadata/_edit_vertical_guides_ = [288.0]
@@ -493,5 +498,9 @@ visible = false
 
 [node name="before_boss_normal" parent="." instance=ExtResource("17_lftvs")]
 visible = false
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+position = Vector2(0, 20)
+navigation_polygon = SubResource("NavigationPolygon_l5b74")
 
 [connection signal="body_entered" from="spike_collision" to="." method="_on_spike_collision_body_entered"]

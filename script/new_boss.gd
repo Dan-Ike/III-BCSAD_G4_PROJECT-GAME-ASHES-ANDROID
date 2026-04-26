@@ -17,9 +17,10 @@ const BEHAVIOR_CHECK_INTERVAL = 1.0
 @onready var deal_damage_area_jump_down_attack: Area2D = $DealDamageArea_JumpDownAttack
 @onready var deal_damage_area_down_slash: Area2D = $DealDamageArea_DownSlash
 @onready var hitbox2: Area2D = $Hitbox
+var navigation_agent: NavigationAgent2D = null
 
 # Boss settings
-@export var can_attack_through_platforms: bool = false  # Toggle for upward attacks through platforms
+@export var can_attack_through_platforms: bool = false
 
 # Attack types
 var vertical_slash_cooldown: float = 0.0
@@ -31,7 +32,7 @@ const DOWN_SLASH_COOLDOWN_TIME = 1.5
 const DASH_SPEED = 400.0
 const DASH_DURATION = 0.3
 const DASH_COOLDOWN = 1.0
-const DASH_TRIGGER_DISTANCE = 50.0  # Use dash if player is this far
+const DASH_TRIGGER_DISTANCE = 50.0
 
 var dashing: bool = false
 var dash_time: float = 0.0
@@ -41,17 +42,17 @@ var can_dash: bool = true
 # Pathfinding
 var last_player_x: float = 0.0
 var direction_lock_timer: float = 0.0
-const DIRECTION_LOCK_TIME = 0.3  # Lock direction for smooth movement
+const DIRECTION_LOCK_TIME = 0.3
 
 # AI Intelligence
-var player_jump_count: int = 0  # Track how many times player jumped recently
+var player_jump_count: int = 0
 var player_last_on_ground: bool = true
 var anticipate_jump_timer: float = 0.0
-const ANTICIPATE_WINDOW = 0.8  # Time to anticipate player jump
+const ANTICIPATE_WINDOW = 0.8
 var jump_decision_cooldown: float = 0.0
-const JUMP_DECISION_COOLDOWN_TIME = 1.5  # Don't spam jump decisions
+const JUMP_DECISION_COOLDOWN_TIME = 1.5
 
-# Damage tracking to prevent multi-hits
+# Damage tracking
 var players_hit_this_attack: Array = []
 
 # States
@@ -78,13 +79,13 @@ const GRAVITY = 980.0
 # Health system
 var health: int = 300
 var health_max: int = 300
-var health_min: int = 0  
+var health_min: int = 0
 var can_take_damage: bool = true
 
 # Detection and attack ranges
 const DETECTION_RANGE = 500.0
-const ATTACK_RANGE = 100.0  # Half of attack area, boss stops here
-const CHASE_STOP_DISTANCE = 60.0  # Minimum distance before stopping
+const ATTACK_RANGE = 100.0
+const CHASE_STOP_DISTANCE = 60.0
 
 # Boss properties
 var player: CharacterBody2D = null
@@ -92,6 +93,7 @@ var facing_direction: int = 1
 var is_player_detected: bool = false
 var can_jump: bool = true
 var jump_cooldown: float = 0.0
+var jump_count_reset_timer: float = 0.0
 const JUMP_COOLDOWN_TIME = 0.5
 
 # Attack properties
@@ -106,13 +108,13 @@ var special_dash_cooldown: float = 0.0
 const SPECIAL_DASH_COOLDOWN_TIME = 6.0
 const DASH_ATTACK_SPEED = 500.0
 const SPECIAL_DASH_SPEED = 600.0
-const DASH_ATTACK_DISTANCE = 80.0  # Match sprite movement
+const DASH_ATTACK_DISTANCE = 80.0
 var is_dash_attacking: bool = false
 
 # Phase system
 var current_phase: int = 1
 var phase_2_triggered: bool = false
-var phase_2_health_threshold: float = 0.5  # 50% health
+var phase_2_health_threshold: float = 0.5
 
 # Knockback and invulnerability
 var is_invulnerable: bool = false
@@ -122,8 +124,8 @@ const KNOCKBACK_FORCE = 200.0
 var time_attacking: float = 0.0
 var is_resting: bool = false
 var rest_timer: float = 0.0
-const PHASE1_ATTACK_DURATION = 60.0  # 1 minute
-const PHASE2_ATTACK_DURATION = 120.0  # 2 minutes
+const PHASE1_ATTACK_DURATION = 60.0
+const PHASE2_ATTACK_DURATION = 120.0
 const REST_DURATION = 5.0
 var shockwave_triggered: bool = false
 
@@ -134,33 +136,41 @@ const RETREAT_DURATION = 3.0
 const RETREAT_DISTANCE = 250.0
 
 # Attack telegraph delays
-const ATTACK_TELEGRAPH_TIME = 0.2  # Delay before damage is dealt
+const ATTACK_TELEGRAPH_TIME = 0.2
 var attack_telegraph_timer: float = 0.0
 var is_telegraphing: bool = false
+
+# Hurt state timer (fixed - no await)
+var hurt_timer: float = 0.0
+const HURT_DURATION: float = 0.3
+
+# Jump air velocity tracking
+var jump_air_velocity_x: float = 0.0
 
 func _ready() -> void:
 	change_state(State.IDLE)
 	_disable_all_damage_areas()
 	Global.bossDamageZone = hitbox2
-	print("[Boss] Hitbox registered for player damage")
 	add_to_group("boss")
 	ml_system = load("res://ml_boss_data.gd").new()
 	add_child(ml_system)
 	ml_system.record_encounter()
-	print("[Boss] ML System initialized!")
+
+	navigation_agent = NavigationAgent2D.new()
+	add_child(navigation_agent)
+	navigation_agent.path_desired_distance = 10.0
+	navigation_agent.target_desired_distance = 20.0
+	navigation_agent.max_speed = CHASE_SPEED
+	navigation_agent.avoidance_enabled = false
 
 func _check_proactive_aerial_attack() -> bool:
 	if not player or not can_jump or not is_on_floor():
 		return false
-	
 	var vertical_distance = player.global_position.y - global_position.y
 	var horizontal_distance = abs(player.global_position.x - global_position.x)
-	
-	# Player is significantly above us and within horizontal range
 	if vertical_distance < -100 and horizontal_distance < 200:
 		print("[Boss] Proactively jumping to attack player above!")
 		return true
-	
 	return false
 
 func _start_rest() -> void:
@@ -169,82 +179,61 @@ func _start_rest() -> void:
 	rest_timer = 0.0
 	time_attacking = 0.0
 	shockwave_triggered = false
-	should_retreat = false  # Stop retreating
+	should_retreat = false
 	retreat_timer = 0.0
 	change_state(State.RESTING)
 
 func _end_rest() -> void:
-	# Check if boss still exists before triggering shockwave
 	if not is_instance_valid(self):
 		return
-	
 	if not shockwave_triggered:
 		_trigger_shockwave()
-		
-		# Wait for shockwave, but check if boss still exists
 		await get_tree().create_timer(0.5).timeout
 		if not is_instance_valid(self):
 			return
-	
 	is_resting = false
-	is_invulnerable = false  # ADDED: Make sure boss can take damage again
-	can_take_damage = true   # ADDED: Double check this is enabled
+	is_invulnerable = false
+	can_take_damage = true
 	print("[Boss] Rest complete! Resuming battle!")
 	change_state(State.CHASE)
 
 func _perform_jump_over_player() -> void:
-	# Intelligent jump to position above player for jump down attack
 	if not player:
 		return
-	
 	print("[Boss] Jumping over player for aerial attack!")
 	change_state(State.JUMPING)
-	velocity.y = JUMP_VELOCITY * 1.2  # Higher jump
-	
-	# Calculate direction to land past player
+	velocity.y = JUMP_VELOCITY * 1.2
 	var direction_to_player = sign(player.global_position.x - global_position.x)
 	facing_direction = direction_to_player
-	velocity.x = direction_to_player * CHASE_SPEED * 1.5
-
+	jump_air_velocity_x = direction_to_player * CHASE_SPEED * 1.5
 
 func _trigger_shockwave() -> void:
-	# Check if boss still exists
 	if not is_instance_valid(self):
 		return
-	
 	shockwave_triggered = true
 	print("[Boss] SHOCKWAVE!")
-	
-	# Visual effect
 	if animated_sprite_2d and is_instance_valid(animated_sprite_2d):
 		var original_modulate = animated_sprite_2d.modulate
 		animated_sprite_2d.modulate = Color(2.0, 2.0, 2.0)
-		
 		await get_tree().create_timer(0.2).timeout
-		
-		# Check again after await
 		if not is_instance_valid(self) or not is_instance_valid(animated_sprite_2d):
 			return
-		
 		animated_sprite_2d.modulate = original_modulate
-	
-	# Knockback and damage player if close enough
 	if player and is_instance_valid(player) and not player.dead:
 		var distance = global_position.distance_to(player.global_position)
-		if distance < 150:  # Shockwave range
+		if distance < 150:
 			var direction = sign(player.global_position.x - global_position.x)
 			var knockback = Vector2(direction * 300, -200)
-			
 			if player.has_method("apply_knockback"):
 				player.apply_knockback(knockback)
-			
-			# Phase 2: Deal damage
 			if current_phase == 2 and player.has_method("take_damage"):
 				player.take_damage(5)
 				print("[Boss] Shockwave damaged player!")
 
 func _physics_process(delta: float) -> void:
-	# ML: Track player behavior
+	if not ml_system or not animated_sprite_2d:
+		return
+
 	if player and ml_system:
 		behavior_check_timer += delta
 		if behavior_check_timer >= BEHAVIOR_CHECK_INTERVAL:
@@ -254,75 +243,75 @@ func _physics_process(delta: float) -> void:
 			var jumped = not player.is_on_floor()
 			ml_system.record_player_behavior(distance, false, moved_toward_boss, jumped)
 			last_player_position = player.global_position
-	
-	# Debug rest system
+
 	if not is_resting:
 		var attack_threshold = PHASE2_ATTACK_DURATION if current_phase == 2 else PHASE1_ATTACK_DURATION
 		var time_until_rest = attack_threshold - time_attacking
-		if int(time_until_rest) % 10 == 0 and int(time_until_rest * 10) % 10 == 0:  # Print every 10 seconds
+		if int(time_until_rest) % 10 == 0 and int(time_until_rest * 10) % 10 == 0:
 			print("[Boss] Time until rest: %.1f seconds (Phase %d)" % [time_until_rest, current_phase])
-		
+
 	# Update cooldowns
 	if jump_cooldown > 0:
 		jump_cooldown -= delta
 		if jump_cooldown <= 0:
 			can_jump = true
-	
+
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
-	
+
 	if vertical_slash_cooldown > 0:
 		vertical_slash_cooldown -= delta
-	
+
 	if down_slash_cooldown > 0:
 		down_slash_cooldown -= delta
-	
+
 	if dash_cooldown_timer > 0:
 		dash_cooldown_timer -= delta
 		if dash_cooldown_timer <= 0:
 			can_dash = true
-	
+
 	if dash_attack_cooldown > 0:
 		dash_attack_cooldown -= delta
-	
+
 	if special_dash_cooldown > 0:
 		special_dash_cooldown -= delta
-	
+
+	if direction_lock_timer > 0:
+		direction_lock_timer -= delta
+
+	# Handle dash timer
 	if dashing:
 		dash_time -= delta
 		if dash_time <= 0:
 			_end_dash()
-	
-	if direction_lock_timer > 0:
-		direction_lock_timer -= delta
-	
-	# Track attack time for rest system - count ALL combat time (not just attacking)
+
+	# Track attack time
 	if current_state != State.IDLE and current_state != State.RESTING and current_state != State.DEAD:
 		if not is_resting and is_player_detected:
 			time_attacking += delta
-			
 			var attack_threshold = PHASE2_ATTACK_DURATION if current_phase == 2 else PHASE1_ATTACK_DURATION
 			if time_attacking >= attack_threshold:
 				_start_rest()
-	
-	# Handle rest state
+
+	# Handle rest timer
 	if is_resting:
 		rest_timer += delta
 		if rest_timer >= REST_DURATION:
 			_end_rest()
-	
+
 	# Apply gravity
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	else:
 		if current_state == State.JUMPING:
 			change_state(State.CHASE)
-	
-	# Get player reference if not set
+
+	# Get player reference
 	if not player and Global.playerBody:
 		player = Global.playerBody
 	if player:
 		_track_player_behavior(delta)
+
 	# State machine
 	match current_state:
 		State.IDLE:
@@ -337,25 +326,37 @@ func _physics_process(delta: float) -> void:
 			_state_attacking(delta)
 		State.HURT:
 			_state_hurt(delta)
-		State.RESTING:  # Add this
+		State.RESTING:
 			_state_resting(delta)
 		State.DEAD:
 			_state_dead(delta)
-	
+
 	# Move the boss
 	move_and_slide()
-	
-	# Check if boss is hitting player
+
+	# Force velocity after move_and_slide to prevent web zeroing it
+	if player and not is_resting:
+		var direction_to_player = sign(player.global_position.x - global_position.x)
+		if direction_to_player != 0:
+			facing_direction = direction_to_player
+		var distance_to_player = global_position.distance_to(player.global_position)
+
+		match current_state:
+			State.CHASE:
+				if dashing:
+					velocity.x = facing_direction * DASH_SPEED
+				elif distance_to_player > CHASE_STOP_DISTANCE:
+					velocity.x = facing_direction * CHASE_SPEED
+			State.JUMPING:
+				# Force horizontal air movement
+				velocity.x = jump_air_velocity_x
+
 	_check_damage_to_player()
-	
-	# Update sprite direction
 	_update_sprite_direction()
 
 func _state_idle(delta: float) -> void:
 	animated_sprite_2d.play("idle")
 	velocity.x = move_toward(velocity.x, 0, SPEED * delta * 5.0)
-	
-	# Check for player
 	if player and not player.dead:
 		var distance_to_player = global_position.distance_to(player.global_position)
 		if distance_to_player <= DETECTION_RANGE:
@@ -366,110 +367,102 @@ func _state_chase(delta: float) -> void:
 	if not player or player.dead:
 		change_state(State.IDLE)
 		return
-	
+
 	if not dashing:
 		animated_sprite_2d.play("run")
-	
+
 	var distance_to_player = global_position.distance_to(player.global_position)
 	var direction_to_player = sign(player.global_position.x - global_position.x)
 	var vertical_distance = player.global_position.y - global_position.y
-	
-	# ML: Adjust chase speed
 	var ml_speed_mult = ml_system.get_speed_multiplier() if ml_system else 1.0
 	var adjusted_chase_speed = CHASE_SPEED * ml_speed_mult
-	
-	# Handle retreat behavior (ML aware)
+
+	if direction_to_player != 0:
+		facing_direction = direction_to_player
+
+	# Handle retreat
 	if should_retreat or (ml_system and ml_system.should_retreat_more() and time_attacking > 30):
 		retreat_timer -= delta
 		if retreat_timer <= 0:
 			should_retreat = false
-		
 		facing_direction = -direction_to_player
+		if facing_direction == 0:
+			facing_direction = 1
 		velocity.x = lerp(velocity.x, facing_direction * adjusted_chase_speed, 0.3)
-		
 		if distance_to_player > RETREAT_DISTANCE:
 			velocity.x = 0
 			animated_sprite_2d.play("idle")
 		return
-	
-	# PRIORITY 1: Attack if in close range and on ground
-	if distance_to_player <= ATTACK_RANGE and not dashing and is_on_floor() and attack_cooldown <= 0:
+
+	# PRIORITY 1: Attack if in close range
+	if distance_to_player <= ATTACK_RANGE and attack_cooldown <= 0 and is_on_floor():
 		change_state(State.ATTACK_READY)
 		return
-	
-	# PRIORITY 2: Use normal dash for movement if player is far
-	if can_dash and distance_to_player > DASH_TRIGGER_DISTANCE and is_on_floor():
+
+	# PRIORITY 2: Dash if available
+	if can_dash and distance_to_player > DASH_TRIGGER_DISTANCE and is_on_floor() and not dashing:
 		_start_dash()
 		return
-	
+
 	# PRIORITY 3: Jump if player is above
-	if vertical_distance < -80:
-		facing_direction = direction_to_player
-		
-		if can_jump and is_on_floor() and abs(player.global_position.x - global_position.x) < 200:
+	if vertical_distance < -80 and can_jump and is_on_floor():
+		if abs(player.global_position.x - global_position.x) < 200:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
-	else:
-		facing_direction = direction_to_player
-	
-	# PRIORITY 4: Jump if player is airborne nearby
+
+	# PRIORITY 4: Jump if player airborne nearby
 	if not player.is_on_floor() and vertical_distance < -50:
 		if can_jump and is_on_floor() and distance_to_player < 150:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
-	
-	# Move towards player
+
+	# PRIORITY 5: Normal movement
 	if not dashing:
 		if distance_to_player > CHASE_STOP_DISTANCE:
 			velocity.x = lerp(velocity.x, facing_direction * adjusted_chase_speed, 0.3)
 		else:
 			velocity.x = move_toward(velocity.x, 0, SPEED * delta * 5.0)
-	else:
-		velocity.x = facing_direction * DASH_SPEED * ml_speed_mult
 
 func _state_attack_ready(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10.0)
-	
+
 	if not player or player.dead or is_resting:
 		change_state(State.IDLE)
 		return
-	
+
 	var distance_to_player = global_position.distance_to(player.global_position)
 	var vertical_distance = player.global_position.y - global_position.y
-	
-	# Check if should retreat (rest phase coming)
+
 	var attack_threshold = PHASE2_ATTACK_DURATION if current_phase == 2 else PHASE1_ATTACK_DURATION
 	var time_until_rest = attack_threshold - time_attacking
 	if time_until_rest < 10.0 and not should_retreat:
 		should_retreat = true
 		retreat_timer = RETREAT_DURATION
 		print("[Boss] Need to retreat soon for rest!")
-	
-	# If retreating, back away
+
 	if should_retreat:
 		change_state(State.CHASE)
 		return
-	
-	# Player escaped range (increased threshold to prevent flickering)
+
 	if distance_to_player > ATTACK_RANGE + 80:
 		change_state(State.CHASE)
 		return
-	
+
 	facing_direction = sign(player.global_position.x - global_position.x)
-	
-	# Attack cooldown check
+
 	if attack_cooldown > 0:
 		animated_sprite_2d.play("idle")
 		return
-	
-	# DECISION TREE: Choose best attack based on situation
-	
-	# Phase 2: Prioritize dash attacks
+
 	if current_phase == 2:
 		if vertical_distance < -80 and can_jump:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
 		if not player.is_on_floor() and can_jump and vertical_distance < -30:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
 		if vertical_slash_cooldown <= 0 and down_slash_cooldown <= 0:
@@ -485,22 +478,18 @@ func _state_attack_ready(delta: float) -> void:
 			_perform_down_slash()
 			return
 		elif can_jump:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
-	
-	# Phase 1: Simpler attacks
 	else:
-		# Player above? Jump
 		if vertical_distance < -80 and can_jump:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
-		
-		# Player airborne? Jump to meet them
 		if not player.is_on_floor() and can_jump and vertical_distance < -30:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
-		
-		# Close range: Alternate slashes
 		if vertical_slash_cooldown <= 0 and down_slash_cooldown <= 0:
 			if randi() % 2 == 0:
 				_perform_vertical_slash()
@@ -514,40 +503,38 @@ func _state_attack_ready(delta: float) -> void:
 			_perform_down_slash()
 			return
 		elif can_jump:
+			jump_air_velocity_x = facing_direction * CHASE_SPEED
 			change_state(State.JUMPING)
 			return
-	
-	# Nothing available? Chase to reposition
+
 	if attack_cooldown <= 0:
 		change_state(State.CHASE)
 
 func _start_dash() -> void:
+	if not player:
+		return
+	var dir = sign(player.global_position.x - global_position.x)
+	if dir == 0:
+		dir = 1
+	facing_direction = dir
 	dashing = true
 	dash_time = DASH_DURATION
 	can_dash = false
 	dash_cooldown_timer = DASH_COOLDOWN
 	animated_sprite_2d.play("dash")
-	velocity.y = 0
-	
-	# Phase 2: dash deals damage
 	if current_phase == 2:
 		_enable_damage_area(deal_damage_area_vertical_slash)
-	
-	print("[Boss] Dashing toward player!")
+	print("[Boss] Dashing toward player! Direction: ", facing_direction)
 
 func _end_dash() -> void:
 	dashing = false
-	
-	# Clear damage area when dash ends
 	_disable_all_damage_areas()
-	
 	print("[Boss] Dash ended")
 	if player and not player.dead:
 		var distance_to_player = global_position.distance_to(player.global_position)
 		if distance_to_player <= ATTACK_RANGE and attack_cooldown <= 0:
 			change_state(State.ATTACK_READY)
 			return
-	
 	if current_state == State.CHASE:
 		animated_sprite_2d.play("run")
 
@@ -556,15 +543,13 @@ func _perform_vertical_slash() -> void:
 	print("[Boss] Vertical Slash!")
 	vertical_slash_cooldown = get_vertical_slash_cooldown()
 	attack_cooldown = get_attack_cooldown()
-	
-	# Delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	if not is_instance_valid(self): return
 	animated_sprite_2d.play("vertical_slash")
 	_enable_damage_area(deal_damage_area_vertical_slash)
-	
 	await get_tree().create_timer(0.8).timeout
+	if not is_instance_valid(self): return
 	_disable_all_damage_areas()
-	
 	if current_state == State.ATTACKING:
 		change_state(State.CHASE)
 
@@ -573,15 +558,13 @@ func _perform_down_slash() -> void:
 	print("[Boss] Down Slash!")
 	down_slash_cooldown = get_down_slash_cooldown()
 	attack_cooldown = get_attack_cooldown()
-	
-	# Delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	if not is_instance_valid(self): return
 	animated_sprite_2d.play("down_slash")
 	_enable_damage_area(deal_damage_area_down_slash)
-	
 	await get_tree().create_timer(0.7).timeout
+	if not is_instance_valid(self): return
 	_disable_all_damage_areas()
-	
 	if current_state == State.ATTACKING:
 		change_state(State.CHASE)
 
@@ -589,15 +572,13 @@ func _perform_jump_up_attack() -> void:
 	change_state(State.ATTACKING)
 	print("[Boss] Jump Up Attack!")
 	attack_cooldown = ATTACK_COOLDOWN_TIME
-	
-	# Delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	if not is_instance_valid(self): return
 	animated_sprite_2d.play("jump_up_attack")
 	_enable_damage_area(deal_damage_area_jump_up_attack)
-	
 	await get_tree().create_timer(0.6).timeout
+	if not is_instance_valid(self): return
 	_disable_all_damage_areas()
-	
 	if current_state == State.ATTACKING:
 		change_state(State.JUMPING)
 
@@ -605,15 +586,13 @@ func _perform_idle_up_attack() -> void:
 	change_state(State.ATTACKING)
 	print("[Boss] Idle Up Attack!")
 	attack_cooldown = ATTACK_COOLDOWN_TIME
-	
-	# Delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	if not is_instance_valid(self): return
 	animated_sprite_2d.play("idle_up_attack")
 	_enable_damage_area(deal_damage_area_jump_up_attack)
-	
 	await get_tree().create_timer(0.6).timeout
+	if not is_instance_valid(self): return
 	_disable_all_damage_areas()
-	
 	if current_state == State.ATTACKING:
 		change_state(State.JUMPING)
 
@@ -621,15 +600,13 @@ func _perform_jump_down_attack() -> void:
 	change_state(State.ATTACKING)
 	print("[Boss] Jump Down Attack!")
 	attack_cooldown = ATTACK_COOLDOWN_TIME
-	
-	# Delay before animation and damage
 	await get_tree().create_timer(ATTACK_TELEGRAPH_TIME).timeout
+	if not is_instance_valid(self): return
 	animated_sprite_2d.play("jump_down_attack")
 	_enable_damage_area(deal_damage_area_jump_down_attack)
-	
 	await get_tree().create_timer(0.7).timeout
+	if not is_instance_valid(self): return
 	_disable_all_damage_areas()
-	
 	if current_state == State.ATTACKING:
 		change_state(State.JUMPING)
 
@@ -642,17 +619,14 @@ func _enable_damage_area(damage_area: Area2D) -> void:
 func _check_damage_to_player() -> void:
 	if not is_attacking or not player:
 		return
-	
 	if players_hit_this_attack.has(player):
 		return
-	
 	var active_damage_areas = [
 		deal_damage_area_vertical_slash,
 		deal_damage_area_down_slash,
 		deal_damage_area_jump_up_attack,
 		deal_damage_area_jump_down_attack
 	]
-	
 	for damage_area in active_damage_areas:
 		if damage_area:
 			var overlapping = damage_area.get_overlapping_areas()
@@ -663,13 +637,9 @@ func _check_damage_to_player() -> void:
 						player.take_damage(damage)
 						players_hit_this_attack.append(player)
 						print("[Boss] Hit player for %d damage!" % damage)
-						
-						# ML: Record successful hit
 						if ml_system:
 							var attack_name = animated_sprite_2d.animation
 							ml_system.record_attack_result(attack_name, true)
-						
-						# Apply knockback
 						var direction = sign(player.global_position.x - global_position.x)
 						var knockback = Vector2(direction * KNOCKBACK_FORCE, -100)
 						if player.has_method("apply_knockback"):
@@ -679,134 +649,113 @@ func _check_damage_to_player() -> void:
 func _get_attack_damage() -> int:
 	var anim_name = animated_sprite_2d.animation
 	match anim_name:
-		"vertical_slash":
-			return 5
-		"down_slash":
-			return 6
-		"jump_up_attack":
-			return 7
-		"jump_down_attack":
-			return 7
-		"idle_up_attack":
-			return 6
-		"dash_attack":
-			return 7
-		"special_dash":
-			return 8
-		_:
-			return 5
+		"vertical_slash": return 5
+		"down_slash": return 6
+		"jump_up_attack": return 7
+		"jump_down_attack": return 7
+		"idle_up_attack": return 6
+		"dash_attack": return 7
+		"special_dash": return 8
+		_: return 5
 
 func _track_player_behavior(delta: float) -> void:
 	if anticipate_jump_timer > 0:
 		anticipate_jump_timer -= delta
-	
 	if jump_decision_cooldown > 0:
 		jump_decision_cooldown -= delta
-	
-	# Detect when player jumps
 	var player_on_ground = player.is_on_floor()
 	if player_last_on_ground and not player_on_ground:
 		player_jump_count += 1
 		anticipate_jump_timer = ANTICIPATE_WINDOW
-	
 	player_last_on_ground = player_on_ground
-	
-	# Reset jump count periodically
 	if player_on_ground:
-		await get_tree().create_timer(2.0).timeout
-		if player_jump_count > 0:
-			player_jump_count = max(0, player_jump_count - 1)
+		jump_count_reset_timer += delta
+		if jump_count_reset_timer >= 2.0:
+			jump_count_reset_timer = 0.0
+			if player_jump_count > 0:
+				player_jump_count = max(0, player_jump_count - 1)
+	else:
+		jump_count_reset_timer = 0.0
 
 func _should_jump_intelligently() -> bool:
 	if not can_jump or not is_on_floor():
 		return false
-	
 	if jump_decision_cooldown > 0:
 		return false
-	
 	var vertical_distance = player.global_position.y - global_position.y
 	var horizontal_distance = abs(player.global_position.x - global_position.x)
-	
-	# Don't jump if player is jumping frequently (they're trying to bait us)
 	if player_jump_count >= 3:
 		return false
-	
-	# Jump if player is high above and we can't reach them
 	if vertical_distance < -100 and horizontal_distance < 200:
 		jump_decision_cooldown = JUMP_DECISION_COOLDOWN_TIME
 		return true
-	
-	# Jump if we anticipate player will jump-attack (they're in air moving toward us)
 	if anticipate_jump_timer > 0 and not player.is_on_floor() and horizontal_distance < 120:
 		jump_decision_cooldown = JUMP_DECISION_COOLDOWN_TIME
 		return true
-	
 	return false
 
 func _check_platform_between_player() -> bool:
 	if not player:
 		return false
-	
-	# Raycast from boss to player to detect platforms
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsRayQueryParameters2D.create(global_position, player.global_position)
-	query.exclude = [self]  # Don't hit ourselves
-	query.collision_mask = 1  # Check collision layer 1 (platforms/walls)
-	
+	query.exclude = [self]
+	query.collision_mask = 1
 	var result = space_state.intersect_ray(query)
-	
-	# If we hit something that's not the player, there's a platform between
 	if result and result.collider != player:
 		return true
-	
 	return false
 
 func _state_jumping(delta: float) -> void:
 	animated_sprite_2d.play("jump")
-	
-	# Always try to attack in air if player is close
+
 	if player and not player.dead and not is_attacking and attack_cooldown <= 0:
 		var distance_to_player = global_position.distance_to(player.global_position)
 		var vertical_distance = player.global_position.y - global_position.y
-		
-		# Player below us? Jump down attack
+
+		# Player below us - jump down attack
 		if vertical_distance > 50 and distance_to_player < ATTACK_RANGE * 1.3 and velocity.y > 0:
+			jump_air_velocity_x = 0.0
 			_perform_jump_down_attack()
 			return
-		
-		# Player above us? Jump up attack
+
+		# Player above us - jump up attack
 		elif vertical_distance < -30 and distance_to_player < ATTACK_RANGE:
 			var has_platform = false
 			if not can_attack_through_platforms:
 				has_platform = _check_platform_between_player()
-			
 			if not has_platform:
+				jump_air_velocity_x = 0.0
 				if velocity.y < 0:
 					_perform_jump_up_attack()
 					return
 				else:
 					_perform_idle_up_attack()
 					return
-		
-		# Close enough for slash?
+
+		# Close enough for slash
 		elif distance_to_player < ATTACK_RANGE:
 			if vertical_slash_cooldown <= 0:
+				jump_air_velocity_x = 0.0
 				_perform_vertical_slash()
 				return
 			elif down_slash_cooldown <= 0:
+				jump_air_velocity_x = 0.0
 				_perform_down_slash()
 				return
-	
+
 	# Land and return to chase
 	if is_on_floor() and velocity.y >= 0:
+		jump_air_velocity_x = 0.0
 		change_state(State.CHASE)
 		return
-	
-	# Move toward player in air
+
+	# Update air velocity toward player
 	if player and not player.dead:
 		var direction_to_player = sign(player.global_position.x - global_position.x)
-		facing_direction = direction_to_player
-		velocity.x = lerp(velocity.x, direction_to_player * CHASE_SPEED * 0.8, 0.25)
+		if direction_to_player != 0:
+			facing_direction = direction_to_player
+		jump_air_velocity_x = lerp(jump_air_velocity_x, direction_to_player * CHASE_SPEED * 0.8, 0.25)
 
 func _state_attacking(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10.0)
@@ -814,19 +763,18 @@ func _state_attacking(delta: float) -> void:
 func _state_hurt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10.0)
 	animated_sprite_2d.play("hurt")
-	await get_tree().process_frame
-	
-	if current_state == State.HURT:
-		change_state(State.CHASE)
+	hurt_timer += delta
+	if hurt_timer >= HURT_DURATION:
+		hurt_timer = 0.0
+		if current_state == State.HURT:
+			change_state(State.CHASE)
 
 func _state_resting(delta: float) -> void:
 	velocity.x = 0
-	velocity.y = 0  # Stop all movement including gravity
+	velocity.y = 0
 	animated_sprite_2d.play("idle")
-	can_take_damage = true  # CHANGED: Allow damage during rest
-	is_invulnerable = false  # CHANGED: Not invulnerable during rest
-	
-	# Regenerate health
+	can_take_damage = true
+	is_invulnerable = false
 	var regen_rate = 15.0 if current_phase == 2 else 10.0
 	health = min(health + int(regen_rate * delta), health_max)
 
@@ -839,16 +787,10 @@ func _state_dead(delta: float) -> void:
 func change_state(new_state: State) -> void:
 	if current_state == new_state:
 		return
-	
-	# Exit current state
 	_exit_state(current_state)
-	
 	previous_state = current_state
 	current_state = new_state
-	
-	# Enter new state
 	_enter_state(new_state)
-	
 	print("[Boss] State changed: %s -> %s" % [State.keys()[previous_state], State.keys()[current_state]])
 
 func _enter_state(state: State) -> void:
@@ -863,6 +805,8 @@ func _enter_state(state: State) -> void:
 			var ml_attack_mult = ml_system.get_attack_speed_multiplier() if ml_system else 1.0
 			attack_cooldown = ATTACK_COOLDOWN_TIME / ml_attack_mult
 			players_hit_this_attack.clear()
+		State.HURT:
+			hurt_timer = 0.0
 		State.ATTACK_READY:
 			pass
 
@@ -898,35 +842,24 @@ func _disable_all_damage_areas() -> void:
 			if child is CollisionShape2D:
 				child.disabled = true
 
-# Called when boss takes damage (from parent class or other system)
 func take_damage(damage: int) -> void:
 	if current_state == State.DEAD or not can_take_damage or is_invulnerable:
 		return
-	
 	health -= damage
 	print("[Boss] Took %d damage. Health: %d/%d" % [damage, health, health_max])
-	
-	# Check for Phase 2 transition - ONLY trigger once
 	var health_percentage = float(health) / float(health_max)
 	if not phase_2_triggered and health_percentage <= phase_2_health_threshold:
 		_trigger_phase_2()
-		return  # ADDED: Don't continue to hurt state during phase transition
-	
-	# Change to hurt state briefly
+		return
 	if current_state != State.HURT and health > 0:
 		can_take_damage = false
 		change_state(State.HURT)
 		await get_tree().create_timer(0.3).timeout
-		
-		# Check if boss still exists after await
 		if not is_instance_valid(self):
 			return
-		
 		can_take_damage = true
 		if current_state == State.HURT:
 			change_state(State.CHASE)
-	
-	# Check if dead
 	if health <= 0:
 		die()
 
@@ -934,22 +867,17 @@ func _trigger_phase_2() -> void:
 	phase_2_triggered = true
 	current_phase = 2
 	print("[Boss] ===== PHASE 2 ACTIVATED! =====")
-	
-	# RESET ATTACK TIMER - Phase 2 starts fresh
 	time_attacking = 0.0
 	is_resting = false
 	rest_timer = 0.0
 	should_retreat = false
 	retreat_timer = 0.0
-	
-	# Visual feedback - flash or animation
 	if animated_sprite_2d:
 		var original_modulate = animated_sprite_2d.modulate
-		animated_sprite_2d.modulate = Color(1.5, 0.5, 0.5)  # Red flash
+		animated_sprite_2d.modulate = Color(1.5, 0.5, 0.5)
 		await get_tree().create_timer(0.3).timeout
+		if not is_instance_valid(self): return
 		animated_sprite_2d.modulate = original_modulate
-	
-	# Reset cooldowns to allow immediate use
 	vertical_slash_cooldown = 0.0
 	down_slash_cooldown = 0.0
 	dash_attack_cooldown = 0.0
@@ -972,10 +900,8 @@ func get_attack_cooldown() -> float:
 	return ATTACK_COOLDOWN_TIME * (0.5 if current_phase == 2 else 1.0)
 
 func die() -> void:
-	# ML: Record boss death
 	if ml_system:
 		ml_system.record_boss_death()
-	
 	change_state(State.DEAD)
 	if has_node("CollisionShape2D"):
 		$CollisionShape2D.disabled = true
