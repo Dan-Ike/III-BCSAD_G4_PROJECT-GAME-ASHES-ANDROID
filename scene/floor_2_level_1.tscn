@@ -280,6 +280,7 @@ size = Vector2(32, 31.25)
 script = ExtResource("1_w1861")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
+visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="TileMap" type="TileMap" parent="."]

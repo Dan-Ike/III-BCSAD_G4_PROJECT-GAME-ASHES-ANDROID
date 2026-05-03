@@ -356,6 +356,7 @@ polygon = PackedVector2Array(3416, -1424, 3576, -1424, 3576, -1392, 3416, -1392)
 script = ExtResource("1_jenlw")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
+visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="TileMap" type="TileMap" parent="."]

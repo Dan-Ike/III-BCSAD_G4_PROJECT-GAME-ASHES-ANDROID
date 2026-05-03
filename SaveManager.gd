@@ -34,30 +34,100 @@ var data := {
 
 var _web_progress_received: bool = false
 
+# Replace the entire _process web polling block with this:
 func _process(_delta: float) -> void:
 	if not OS.has_feature("web"):
 		return
 	if _web_progress_received:
 		return
-	# Check if parent page has sent back progress data
+
 	var raw = JavaScriptBridge.eval("window.__ashes_progress_data__")
 	if raw == null or raw == "":
 		return
+
 	_web_progress_received = true
-	# Clear it immediately so we don't process twice
 	JavaScriptBridge.eval("window.__ashes_progress_data__ = null;")
 	print("SaveManager: Received cloud progress from parent page")
-	# Parse and handle the same way as native fetch_progress response
+
+	# ✅ Parse directly — no fake byte array needed
 	var res = JSON.parse_string(str(raw))
 	if typeof(res) == TYPE_ARRAY:
-		# Simulate the HTTP response handling
-		var fake_body = PackedByteArray()
-		var json_str = JSON.stringify(res)
-		fake_body.resize(json_str.length())
-		for i in range(json_str.length()):
-			fake_body[i] = json_str.unicode_at(i)
-		_pending_request = "fetch_progress"
-		_on_http_request_completed(0, 200, [], fake_body)
+		# Reuse existing handler by calling it directly with the parsed data
+		_handle_fetch_progress_response(res)
+	elif typeof(res) == TYPE_DICTIONARY:
+		_handle_fetch_progress_response([res])
+	else:
+		print("SaveManager: Unexpected progress data type:", typeof(res))
+
+func _handle_fetch_progress_response(res: Array) -> void:
+	if res.size() == 0:
+		print("\nNo cloud progress found - Creating initial cloud save")
+		_create_initial_progress_row()
+		return
+
+	var row = res[0]
+
+	var cloud_times = row.get("level_times", {})
+	if cloud_times == null: cloud_times = {}
+	var local_times = data.get("level_times", {})
+	data["level_times"] = _merge_level_times(local_times, cloud_times)
+
+	var cloud_best = float(row.get("best_run_time", 0.0)) if row.get("best_run_time") != null else 0.0
+	var local_best = float(data.get("best_run_time", 0.0))
+	if cloud_best > 0.0 and local_best > 0.0:
+		data["best_run_time"] = min(cloud_best, local_best)
+	elif cloud_best > 0.0:
+		data["best_run_time"] = cloud_best
+	else:
+		data["best_run_time"] = local_best
+
+	var cloud_floor = int(row.get("floor_number", 1))
+	var cloud_level = int(row.get("level_number", 1))
+	var cloud_completed = row.get("completed_levels", {})
+	if cloud_completed == null: cloud_completed = {}
+	var cloud_abilities = row.get("abilities", {})
+	if cloud_abilities == null: cloud_abilities = {}
+	var cloud_watched = row.get("watched_cutscenes", [])
+	if cloud_watched == null: cloud_watched = []
+
+	var local_floor = data["progress"]["current_floor"]
+	var local_level = data["progress"]["current_level"]
+	var local_completed = data["progress"].get("completed_levels", {})
+	var local_abilities = data["progress"].get("abilities", {})
+	var local_watched = data.get("watched_cutscenes", [])
+
+	data["progress"]["completed_levels"] = _merge_completed_levels(local_completed, cloud_completed)
+	data["progress"]["abilities"] = _merge_abilities(local_abilities, cloud_abilities)
+	data["watched_cutscenes"] = _merge_watched_cutscenes(local_watched, cloud_watched)
+
+	# ✅ Always keep the FURTHEST progress, never go backwards
+	var local_highest = _get_highest_completed_level(data["progress"]["completed_levels"])
+	var best_floor = max(local_floor, cloud_floor)
+	var best_level = local_level
+	if best_floor == cloud_floor and best_floor == local_floor:
+		best_level = max(local_level, cloud_level)
+	elif best_floor == cloud_floor:
+		best_level = cloud_level
+	else:
+		best_level = local_level
+
+	# ✅ Never go below what completed_levels implies
+	if local_highest["floor"] > 0:
+		var implied_floor = local_highest["floor"]
+		var implied_level = local_highest["level"] + 1
+		if implied_level > 3:
+			implied_floor += 1
+			implied_level = 1
+		if _compare_progress(implied_floor, implied_level, best_floor, best_level) > 0:
+			best_floor = implied_floor
+			best_level = implied_level
+
+	data["progress"]["current_floor"] = best_floor
+	data["progress"]["current_level"] = best_level
+
+	print("SYNC COMPLETE — Floor %d Level %d" % [best_floor, best_level])
+	_save_local()
+	_apply_abilities_to_global()
 
 func save_level_time(floor: int, level: int, time: float) -> void:
 	"""Save the completion time for a specific level"""
@@ -149,13 +219,27 @@ func push_all_to_supabase() -> void:
 		print("SaveManager: cannot push - no logged-in user")
 		return
 
-	# On web, delegate to parent page
 	if OS.has_feature("web"):
+		# ✅ Don't push if we don't have a valid session yet
+		if Global.session_token == "":
+			print("SaveManager: skipping web push — no session token yet")
+			return
+
 		var current_user = Global.get_current_user()
+		# ✅ Don't push if user data is empty — would blank out username/avatar
+		if current_user.size() == 0:
+			print("SaveManager: skipping web push — user data not loaded yet")
+			return
+
 		var user_metadata = current_user.get("user_metadata", {})
 		var avatar_url = user_metadata.get("avatar_url", "")
-		var username = current_user.get("email", "Player").split("@")[0]
-		
+		# ✅ Prefer stored username from DB over email prefix
+		var username = current_user.get("user_metadata", {}).get("full_name", "") 
+		if username == "":
+			username = current_user.get("email", "").split("@")[0]
+		if username == "":
+			username = "Player"
+
 		var payload = {
 			"user_id": current_user_id,
 			"floor_number": int(data["progress"]["current_floor"]),
@@ -170,7 +254,6 @@ func push_all_to_supabase() -> void:
 		}
 		push_to_web_parent(payload)
 		return
-
 	# Native (Android) path — existing HTTP code unchanged
 	if http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
 		print("SaveManager: HTTP busy, skipping push")
@@ -645,19 +728,25 @@ func sync_from_supabase(user_id: String) -> void:
 
 	current_user_id = user_id
 
-	# On web, the iframe can't reach Supabase directly — ask the parent page to fetch
 	if OS.has_feature("web"):
 		print("SaveManager: Requesting cloud sync via parent postMessage")
+		# ✅ Wait up to 3 seconds for session_token to be populated from postMessage
+		var waited = 0.0
+		while Global.session_token == "" and waited < 3.0:
+			await get_tree().create_timer(0.2).timeout
+			waited += 0.2
+		if Global.session_token == "":
+			print("SaveManager: No token after waiting — skipping web sync")
+			return
 		JavaScriptBridge.eval("""
 			window.parent.postMessage({
 				type: 'ashes_fetch_progress',
 				user_id: '%s'
 			}, '*');
 		""" % user_id)
-		# Result will come back via ashes_progress_data message — handled in _process
 		return
 
-	# Native path — direct HTTP as before
+	# Native path unchanged...
 	print("\nSTARTING SUPABASE SYNC")
 	_pending_request = "fetch_progress"
 	var url = "%s/rest/v1/progress?user_id=eq.%s&select=*" % [SUPABASE_URL, user_id]
@@ -751,8 +840,15 @@ func _on_http_request_completed(result, response_code, headers, body) -> void:
 			print("Empty response received from Supabase")
 			if _pending_request == "fetch_progress":
 				_pending_request = ""
-				print("\nNo cloud progress found - Creating initial cloud save")
-				_create_initial_progress_row()
+				if response_code == 200:
+					var res = JSON.parse_string(body_text)
+					if typeof(res) == TYPE_ARRAY and res.size() > 0:
+						_handle_fetch_progress_response(res)
+					else:
+						print("\nNo cloud progress found - Creating initial cloud save")
+						_create_initial_progress_row()
+				else:
+					print("SaveManager: fetch_progress failed:", response_code)
 			return
 	
 	print("Response Code: %d" % response_code)

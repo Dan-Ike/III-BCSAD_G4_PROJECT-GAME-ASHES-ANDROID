@@ -223,6 +223,7 @@ func _next_step() -> void:
 	if player:
 		player.tutorial_frozen = true
 		player.velocity.x = 0
+		player.stop_looping_sounds()
 	
 	tutorial_dialogue.hide_dialogue()
 	await get_tree().create_timer(0.5).timeout
@@ -273,6 +274,10 @@ func _process(_delta: float) -> void:
 func _end_tutorial() -> void:
 	print("[Tutorial] Ending tutorial...")
 	tutorial_active = false
+	
+	player_frozen = false
+	if player:
+		player.tutorial_frozen = false
 	
 	if tutorial_dialogue:
 		tutorial_dialogue.hide_dialogue()

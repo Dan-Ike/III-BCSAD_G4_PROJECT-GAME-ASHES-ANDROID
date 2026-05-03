@@ -212,30 +212,30 @@ void fragment() {
 	material.shader = shader
 	profile.material = material
 	profile.custom_minimum_size = Vector2(64, 64)
-
-	# Make sure the image fills and crops to the circle correctly
 	profile.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	profile.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	
-	# Check internet connectivity FIRST (make it synchronous for initial check)
+	# Always start with Google visible, profile hidden
+	google.visible = true
+	google.set_process_input(true)
+	profile.visible = false
+	
 	_check_internet_connection_sync()
 	
-	# Then load session
-	if Global.session_token == "":
-		_load_session()
+	# Only try to load session if there's an actual session file
+	# This prevents guest anonymous tokens from showing a profile
+	if Global.session_token == "" or Global.session_token == null:
+		# No real session - just show Google button, nothing else
+		pass
 	else:
-		google.visible = false
-		google.set_process_input(false)
-		profile.visible = true
-		_load_cached_profile_image()
-		
+		_load_session()
+	
 	if OS.has_feature("Android"):
 		_create_debug_label()
 	
 	if OS.has_feature("Android"):
 		_log_debug("Android detected - Setting up deep link handlers")
 		call_deferred("_check_for_deep_link")
-		
 		get_tree().root.connect("focus_entered", _on_app_focus_gained)
 	
 	_update_start_button_text()
@@ -814,17 +814,19 @@ func _reset_local_save() -> void:
 
 func _load_session() -> void:
 	"""Load saved session and auto-login if valid"""
+	
+	# Always default to Google button visible, profile hidden
+	google.visible = true
+	google.set_process_input(true)
+	profile.visible = false
+	
 	if not FileAccess.file_exists("user://session.json"):
 		print("💾 No session file found")
-		google.visible = true
-		profile.visible = false
 		return
 	
 	var f = FileAccess.open("user://session.json", FileAccess.READ)
 	if not f:
 		print("❌ Failed to open session file")
-		google.visible = true
-		profile.visible = false
 		return
 	
 	var text = f.get_as_text()
@@ -833,37 +835,40 @@ func _load_session() -> void:
 	var parsed = JSON.parse_string(text)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		print("❌ Invalid session file format")
-		google.visible = true
-		profile.visible = false
 		return
 	
 	var access = parsed.get("access_token", "")
 	var refresh = parsed.get("refresh_token", "")
 	var user_data = parsed.get("user", {})
 	
-	if access == "" or user_data.size() == 0:
-		print("❌ Session file incomplete")
-		google.visible = true
-		profile.visible = false
+	# Must have all three to be a real session
+	if access == "" or refresh == "" or user_data.size() == 0:
+		print("❌ Session file incomplete - not a real login")
 		return
 	
-	# Check if we have internet before trying to verify
+	# Must have an email to be a real Google login (not anonymous)
+	var email = user_data.get("email", "")
+	if email == "":
+		print("❌ No email in session - likely anonymous/guest, ignoring")
+		return
+	
+	print("💾 Real session found for: ", email)
+	
 	if internet_connected:
-		print("💾 Session found, verifying with server...")
+		print("💾 Verifying session with server...")
 		_verify_and_restore_session(access, refresh)
 	else:
 		print("💾 Offline mode: Restoring session without verification")
-		# Restore session directly without verification when offline
 		Global.set_session(user_data, access, refresh)
 		google.visible = false
+		google.set_process_input(false)
 		profile.visible = true
 		_load_cached_profile_image()
 		
-		# When internet comes back, verify in background
 		if not has_node("OnlineCheckTimer"):
 			var timer = Timer.new()
 			timer.name = "OnlineCheckTimer"
-			timer.wait_time = 30.0  # Check every 30 seconds
+			timer.wait_time = 30.0
 			timer.autostart = true
 			timer.timeout.connect(_check_and_refresh_when_online.bind(access, refresh))
 			add_child(timer)
@@ -1371,16 +1376,15 @@ func _check_android_intent():
 			print("Deep link found via JNI:", data_string)
 			_parse_oauth_callback(data_string)
 
-func _perform_login(access_token: String, refresh_tok: String = ""):
+func _perform_login(access_token: String, refresh_tok: String = "") -> void:
 	print("⚡ Fast login starting...")
 	var start_time = Time.get_ticks_msec()
 	
-	# Immediately show as logged in for better UX
-	google.visible = false
-	profile.visible = true
-	_update_profile_placeholder()
+	# Do NOT show profile yet - wait for confirmed real user data
+	# Keep Google button visible until we confirm a real account
+	google.visible = true
+	profile.visible = false
 	
-	# Disconnect any existing signals first
 	if http.request_completed.is_connected(_on_user_info_request_completed):
 		http.request_completed.disconnect(_on_user_info_request_completed)
 	
@@ -1395,7 +1399,10 @@ func _perform_login(access_token: String, refresh_tok: String = ""):
 	var err = http.request(url, headers, HTTPClient.METHOD_GET)
 	if err != OK:
 		print("❌ HTTP request failed immediately:", err)
-		#_show_error("Network request failed")
+		# Keep Google button visible on failure
+		google.visible = true
+		google.set_process_input(true)
+		profile.visible = false
 
 func _on_user_info_request_completed(result, response_code, headers, body, access_token, refresh_tok, start_time):
 	var elapsed = Time.get_ticks_msec() - start_time
@@ -1579,10 +1586,13 @@ func _load_cached_profile_image() -> void:
 	else:
 		print("No cached profile image found")
 
-func _update_profile_placeholder():
+func _update_profile_placeholder() -> void:
+	# On web with no real login, never show profile
+	# This function should only update the texture, not show the profile
 	var img = Image.create(64, 64, false, Image.FORMAT_RGB8)
 	img.fill(Color(0.2, 0.6, 1.0))
 	profile.texture = ImageTexture.create_from_image(img)
+	# Do NOT set profile.visible = true here
 
 func _on_profile_pressed() -> void:
 	if Global.get_current_user().size() > 0:
@@ -1895,19 +1905,19 @@ func _on_play_credits_pressed() -> void:
 
 func _on_leaderboard_pressed() -> void:
 	#comment muna para maayos sa web
-	#if not internet_connected:
-	#	transition_out(func():
-	#		main_btns.visible = false
-	#		background.visible = false
-	#		bg_2.visible = true
-	#		components.visible = false
-	#		no_net.visible = true
-	#		title.visible = false
-	#		version.visible = false
+	if not internet_connected:
+		transition_out(func():
+			main_btns.visible = false
+			background.visible = false
+			bg_2.visible = true
+			components.visible = false
+			no_net.visible = true
+			title.visible = false
+			version.visible = false
 			
-	#		transition_in([bg_2, no_net])
-	#	)
-	#	return
+			transition_in([bg_2, no_net])
+		)
+		return
 	OS.shell_open("https://incredible-cucurucho-4d9bb9.netlify.app")
 	#OS.shell_open("https://ashes-web-game.netlify.app/")
 	#get_tree().change_scene_to_file("res://scene/leaderboard.tscn")

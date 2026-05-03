@@ -154,6 +154,7 @@ func _next_step() -> void:
 	if not tutorial_dialogue:
 		return
 	tutorial_dialogue.hide_dialogue()
+	#player.stop_looping_sounds()
 	await get_tree().create_timer(0.5).timeout
 	match current_step:
 		TutorialStep.INTRO:
@@ -164,6 +165,10 @@ func _next_step() -> void:
 func _end_tutorial() -> void:
 	print("[Tutorial] Ending tutorial...")
 	tutorial_active = false
+	
+	player_frozen = false
+	if player:
+		player.tutorial_frozen = false
 	
 	if tutorial_dialogue:
 		tutorial_dialogue.hide_dialogue()

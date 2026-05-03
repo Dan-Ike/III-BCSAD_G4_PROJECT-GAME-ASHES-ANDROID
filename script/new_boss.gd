@@ -55,6 +55,9 @@ const JUMP_DECISION_COOLDOWN_TIME = 1.5
 # Damage tracking
 var players_hit_this_attack: Array = []
 
+var jump_grace_timer: float = 0.0
+const JUMP_GRACE_TIME = 0.15
+
 # States
 enum State {
 	IDLE,
@@ -255,6 +258,9 @@ func _physics_process(delta: float) -> void:
 		jump_cooldown -= delta
 		if jump_cooldown <= 0:
 			can_jump = true
+
+	if jump_grace_timer > 0:
+		jump_grace_timer -= delta
 
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
@@ -708,18 +714,21 @@ func _check_platform_between_player() -> bool:
 
 func _state_jumping(delta: float) -> void:
 	animated_sprite_2d.play("jump")
+	
+	# Count down grace timer
+	if jump_grace_timer > 0:
+		jump_grace_timer -= delta
+		return  # Don't check anything until grace period is over
 
 	if player and not player.dead and not is_attacking and attack_cooldown <= 0:
 		var distance_to_player = global_position.distance_to(player.global_position)
 		var vertical_distance = player.global_position.y - global_position.y
 
-		# Player below us - jump down attack
 		if vertical_distance > 50 and distance_to_player < ATTACK_RANGE * 1.3 and velocity.y > 0:
 			jump_air_velocity_x = 0.0
 			_perform_jump_down_attack()
 			return
 
-		# Player above us - jump up attack
 		elif vertical_distance < -30 and distance_to_player < ATTACK_RANGE:
 			var has_platform = false
 			if not can_attack_through_platforms:
@@ -733,7 +742,6 @@ func _state_jumping(delta: float) -> void:
 					_perform_idle_up_attack()
 					return
 
-		# Close enough for slash
 		elif distance_to_player < ATTACK_RANGE:
 			if vertical_slash_cooldown <= 0:
 				jump_air_velocity_x = 0.0
@@ -744,13 +752,12 @@ func _state_jumping(delta: float) -> void:
 				_perform_down_slash()
 				return
 
-	# Land and return to chase
+	# Only check floor after grace period
 	if is_on_floor() and velocity.y >= 0:
 		jump_air_velocity_x = 0.0
 		change_state(State.CHASE)
 		return
 
-	# Update air velocity toward player
 	if player and not player.dead:
 		var direction_to_player = sign(player.global_position.x - global_position.x)
 		if direction_to_player != 0:
@@ -800,6 +807,7 @@ func _enter_state(state: State) -> void:
 			velocity.y = JUMP_VELOCITY * ml_jump_mult
 			can_jump = false
 			jump_cooldown = JUMP_COOLDOWN_TIME
+			jump_grace_timer = JUMP_GRACE_TIME  # Start grace period
 		State.ATTACKING:
 			is_attacking = true
 			var ml_attack_mult = ml_system.get_attack_speed_multiplier() if ml_system else 1.0
